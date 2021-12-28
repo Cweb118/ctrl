@@ -6,6 +6,8 @@ from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 
+guilds = [588095612436742173, 778448646642728991]
+
 class Commands(commands.Cog):
 
     def __init__(self, bot):

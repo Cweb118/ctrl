@@ -14,7 +14,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 cogsDir = os.path.dirname(__file__)+"\\_00_cogs"
 
 loadedCogs = []
-
+ 
 #reload method for FileWatcher
 def reloadFW(extension):
     try:
@@ -71,10 +71,9 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     global loadedCogs
 
-    await ctx.send(extension)
     try:
         bot.unload_extension(f'_00_cogs.{extension}')
-        loadedCogs.remove(extension)
+        loadedCogs.remove(str(extension)+".py")
         await ctx.send(f'Unloaded cog {extension}')
     except Exception as e:
         await ctx.send("Extension not found.")
