@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 from _99_functions import *
-from _00_cogs.mechanics.dice import roll_dice
+from _00_cogs.mechanics.dice_class import roll_dice
 
 class Commands(commands.Cog):
 
