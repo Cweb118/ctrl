@@ -1,23 +1,29 @@
 import nextcord
+from nextcord.ext import commands
 from _99_functions import *
 from _00_cogs.dice.dice import roll_dice
 
-@bot.command()
-async def ping(ctx):
-    await reply(ctx, 'Pog.')
+class Commands(commands.Cog):
 
-@bot.command()
-async def roll(ctx, quant, sides, succ):
-    report_dict = roll_dice(int(quant), int(sides), int(succ))
-    if report_dict['result']:
-        status = "SUCCESS"
-    else:
-        status = "FAILURE"
-    report_str = "-----Results-----\n\n"+"Rolls: "+str(report_dict['rolls'])+"\n"+"Hits: "+str(report_dict['hits'])+"\n"+"Hit Count: "+str(report_dict['hit_count'])
-    await reply(ctx, status)
-    await say(ctx, str(report_str))
+    def __init__(self, bot):
+        self.bot = bot
 
+    @commands.command
+    async def ping(self, ctx):
+        await reply(ctx, 'Pog.')
 
+    @commands.command
+    async def roll(self, ctx, quant, sides, succ):
+        report_dict = roll_dice(int(quant), int(sides), int(succ))
+        if report_dict['result']:
+            status = "SUCCESS"
+        else:
+            status = "FAILURE"
+        report_str = "-----Results-----\n\n"+"Rolls: "+str(report_dict['rolls'])+"\n"+"Hits: "+str(report_dict['hits'])+"\n"+"Hit Count: "+str(report_dict['hit_count'])
+        await reply(ctx, status)
+        await say(ctx, str(report_str))
+
+"""
 @bot.command()
 async def player_init(ctx):
     for channel in nextcord.utils.get(ctx.guild.categories, name='Players').channels:
@@ -61,6 +67,9 @@ async def interface_init(ctx):
 
         await channel.send("Choose!", view=view)
     await say(ctx, "interfaceinit complete!")
+ """
 
+def setup(bot):
+    bot.add_cog(Commands(bot))
 
 

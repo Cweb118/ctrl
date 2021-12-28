@@ -3,6 +3,7 @@ from watchdog.observers import Observer
 import os
 import nextcord
 import time
+import datetime
 from keys import prime_token
 from nextcord.ext import commands
 
@@ -10,7 +11,7 @@ intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-cogsDir = ".\\_00_cogs\\"
+cogsDir = os.path.dirname(__file__)+"\\_00_cogs"
 
 loadedCogs = []
 
@@ -18,12 +19,12 @@ loadedCogs = []
 def reloadFW(extension):
     try:
         try:
-            bot.unload_extension(f'cogs.{extension[:-3]}')
-            bot.load_extension(f'cogs.{extension[:-3]}')
+            bot.unload_extension(f'_00_cogs.{extension[:-3]}')
+            bot.load_extension(f'_00_cogs.{extension[:-3]}')
             print(f'Reloaded cog {extension} automatically due to modification.')
 
         except:
-            bot.load_extension(f'cogs.{extension[:-3]}')
+            bot.load_extension(f'_00_cogs.{extension[:-3]}')
             print(f'Reloaded cog {extension} automatically due to modification.')
 
     except Exception as e:
@@ -64,6 +65,10 @@ async def unload(ctx, extension):
     except:
         await ctx.send("Extension not found.")
 
+@bot.event
+async def on_ready():
+    print('Bot is ready at: ' + str(datetime.datetime.now()))
+
 
 handler = FileWatch()
 observer = Observer()
@@ -72,10 +77,8 @@ observer.start()
 
 for filename in os.listdir(cogsDir):
     if filename.endswith('.py'):
-        print(filename)
         bot.load_extension(f'_00_cogs.{filename[:-3]}')
         loadedCogs.append(filename)
         print(f'Loaded cog {filename}')
 
-print("Connected to server!")
 bot.run(prime_token)
