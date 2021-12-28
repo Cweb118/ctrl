@@ -1,4 +1,5 @@
 import nextcord
+from nextcord import slash_command
 from nextcord.ext import commands
 from _99_functions import *
 from _00_cogs.mechanics.dice_class import roll_dice
@@ -8,11 +9,11 @@ class Commands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command
+    @slash_command(name="ping")
     async def ping(self, ctx):
         await reply(ctx, 'Pog.')
 
-    @commands.command
+    @slash_command(name="roll")
     async def roll(self, ctx, quant, sides, succ):
         report_dict = roll_dice(int(quant), int(sides), int(succ))
         if report_dict['result']:
@@ -20,7 +21,7 @@ class Commands(commands.Cog):
         else:
             status = "FAILURE"
         report_str = "-----Results-----\n\n"+"Rolls: "+str(report_dict['rolls'])+"\n"+"Hits: "+str(report_dict['hits'])+"\n"+"Hit Count: "+str(report_dict['hit_count'])
-        await reply(ctx, status)
+        await say(ctx, status)
         await say(ctx, str(report_str))
 
 """

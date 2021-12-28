@@ -1,6 +1,3 @@
-
-
-
 async def say(ctx, msg):
     if "```" not in msg:
         response = "```\n"+msg+"```"

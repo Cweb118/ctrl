@@ -45,9 +45,20 @@ class FileWatch(FileSystemEventHandler):
                     reloadFW(filename)
                     self.lastReload = time.time()
 
+@bot.command(name='loaded')
+@commands.has_role('control')
+async def loaded(ctx):
+    cogs = ""
+    for cog in loadedCogs:
+        cogs = cogs + f"{cog}\n"
+    await ctx.send(cogs)
+
+
 @bot.command(name='load')
 @commands.has_role('control')
 async def load(ctx, extension):
+    global loadedCogs
+
     try:
         bot.load_extension(f'_00_cogs.{extension}')
         loadedCogs.append(extension)
@@ -58,12 +69,16 @@ async def load(ctx, extension):
 @bot.command(name='unload')
 @commands.has_role('control')
 async def unload(ctx, extension):
+    global loadedCogs
+
+    await ctx.send(extension)
     try:
         bot.unload_extension(f'_00_cogs.{extension}')
         loadedCogs.remove(extension)
         await ctx.send(f'Unloaded cog {extension}')
-    except:
+    except Exception as e:
         await ctx.send("Extension not found.")
+        print(e)
 
 @bot.event
 async def on_ready():
