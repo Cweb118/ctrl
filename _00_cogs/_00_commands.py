@@ -4,16 +4,18 @@ from nextcord.ext import commands
 from _99_functions import *
 from _00_cogs.mechanics.dice_class import roll_dice
 
+guilds = [588095612436742173, 778448646642728991]
+
 class Commands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="ping")
+    @slash_command(name="ping", guild_ids=guilds)
     async def ping(self, ctx):
-        await reply(ctx, 'Pog.')
+        await say(ctx, 'Pog.')
 
-    @slash_command(name="roll")
+    @slash_command(name="roll", guild_ids=guilds)
     async def roll(self, ctx, quant, sides, succ):
         report_dict = roll_dice(int(quant), int(sides), int(succ))
         if report_dict['result']:
@@ -72,5 +74,3 @@ async def interface_init(ctx):
 
 def setup(bot):
     bot.add_cog(Commands(bot))
-
-
