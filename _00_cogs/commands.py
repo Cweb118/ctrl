@@ -1,28 +1,56 @@
 import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
-from _99_functions import *
-from _00_cogs.mechanics.dice_class import roll_dice
+from _01_functions import *
+from _00_cogs.mechanics.dice_class import Dice
+from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
+from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 
 class Commands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
+#----------comms----------
+
     @slash_command(name="ping")
     async def ping(self, ctx):
-        await reply(ctx, 'Pog.')
+        await send(ctx, 'Pog.')
 
-    @slash_command(name="roll")
-    async def roll(self, ctx, quant, sides, succ):
-        report_dict = roll_dice(int(quant), int(sides), int(succ))
-        if report_dict['result']:
-            status = "SUCCESS"
-        else:
-            status = "FAILURE"
-        report_str = "-----Results-----\n\n"+"Rolls: "+str(report_dict['rolls'])+"\n"+"Hits: "+str(report_dict['hits'])+"\n"+"Hit Count: "+str(report_dict['hit_count'])
-        await say(ctx, status)
-        await say(ctx, str(report_str))
+    @commands.command(name="pm")
+    async def pm_c(self, ctx, user: nextcord.Member):
+        await player_pm(ctx, user)
+
+    @commands.command(name='pa')
+    @commands.has_role('control')
+    async def pa_c(self, ctx, room):
+        print('E')
+        #await pa(ctx, room)
+
+    @commands.command(name='shout')
+    @commands.has_role('control')
+    async def shout_c(self, ctx, channel: nextcord.TextChannel):
+        await shout(ctx, channel)
+
+
+#----------testing----------
+
+
+    @commands.command(name="man")
+    async def man(self, ctx, type):
+        kit = list(unit_kits_dict[type])
+        kit = [ctx.author.id]+kit
+        man = Unit(*kit)
+        report = "Unit Report: \n\n"+str(man)
+        await say(ctx,report)
+        await man.die_set.roll(ctx, man.stats['fortitude'])
+
+
+    @commands.command(name="roll")
+    async def roll_c(self, ctx, quantity, sides, threshold):
+        die_set = Dice(int(quantity), int(sides))
+        await die_set.roll(ctx, threshold)
+
 
 """
 @bot.command()
