@@ -1,4 +1,4 @@
-from watchdog.events import FileSystemEventHandler  
+from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import os
 import nextcord
@@ -37,7 +37,7 @@ class FileWatch(FileSystemEventHandler):
     def on_modified(self, event):
         filename = event.src_path.split("\\")
         filename = filename[len(filename)-1]
-        
+
         if(time.time() - self.lastReload > 1):
             for file in loadedCogs:
                 if(filename == file and event.is_directory == False):
@@ -77,4 +77,5 @@ for filename in os.listdir(cogsDir):
         loadedCogs.append(filename)
         print(f'Loaded cog {filename}')
 
+print("Connected to server!")
 bot.run(prime_token)
