@@ -15,21 +15,21 @@ class Commands(commands.Cog):
 
 #----------comms----------
 
-    @slash_command(name="ping")
+    @slash_command(name="ping", guild_ids=guilds)
     async def ping(self, ctx):
         await send(ctx, 'Pog.')
 
-    @commands.command(name="pm")
+    @commands.command(name="pm", guild_ids=guilds)
     async def pm_c(self, ctx, user: nextcord.Member):
         await player_pm(ctx, user)
 
-    @commands.command(name='pa')
+    @commands.command(name='pa', guild_ids=guilds)
     @commands.has_role('control')
     async def pa_c(self, ctx, room):
         print('E')
         #await pa(ctx, room)
 
-    @commands.command(name='shout')
+    @commands.command(name='shout', guild_ids=guilds)
     @commands.has_role('control')
     async def shout_c(self, ctx, channel: nextcord.TextChannel):
         await shout(ctx, channel)
@@ -38,7 +38,7 @@ class Commands(commands.Cog):
 #----------testing----------
 
 
-    @commands.command(name="man")
+    @commands.command(name="man", guild_ids=guilds)
     async def man(self, ctx, type):
         kit = list(unit_kits_dict[type])
         kit = [ctx.author.id]+kit
@@ -48,7 +48,7 @@ class Commands(commands.Cog):
         await man.die_set.roll(ctx, man.stats['fortitude'])
 
 
-    @commands.command(name="roll")
+    @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
