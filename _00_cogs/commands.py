@@ -2,6 +2,7 @@ import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import *
+from _02_global_dicts import player_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
@@ -41,17 +42,25 @@ class Commands(commands.Cog):
     @commands.command(name="man", guild_ids=guilds)
     async def man(self, ctx, type):
         kit = list(unit_kits_dict[type])
-        kit = [ctx.author.id]+kit
+        kit = [ctx.author]+kit
         man = Unit(*kit)
         report = "Unit Report: \n\n"+str(man)
         await say(ctx,report)
-        await man.die_set.roll(ctx, man.stats['fortitude'])
+        #await man.die_set.roll(ctx, man.stats['fortitude'])
 
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
+
+
+    @commands.command(name="inv", guild_ids=guilds)
+    async def inv_c(self, ctx):
+        snowflake = ctx.author.id
+        player = player_dict[snowflake]
+        report = str(player.inventory)
+        await say(ctx,report)
 
 
 """
