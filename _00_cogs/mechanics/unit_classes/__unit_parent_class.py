@@ -46,7 +46,7 @@ class Unit(Card):
             quantity = self.upkeep[resource]
             i = 0
             while i < quantity:
-                if not player.inventory.setResource(resource, -1):
+                if not player.inventory.addResource(resource, -1):
                     self.setStat('Fortitude', -1)
                     f += 1
                 i += 1

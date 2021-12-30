@@ -32,7 +32,7 @@ class Inventory():
         report = "Your "+str(card)+" has been given to "+new_owner.display_name+"!"
         return report
 
-    def setResource(self, resource, quantity):
+    def addResource(self, resource, quantity):
         new_val = self.resources[resource] + quantity
         if new_val >= 0:
             self.resources[resource] = new_val

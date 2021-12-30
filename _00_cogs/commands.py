@@ -113,9 +113,9 @@ class Commands(commands.Cog):
             if quantity > 0:
                 player = player_dict[ctx.author.id]
                 target = player_dict[user.id]
-                status = player.inventory.setResource(resource, -quantity)
+                status = player.inventory.addResource(resource, -quantity)
                 if status == True:
-                    target.inventory.setResource(resource, quantity)
+                    target.inventory.addResource(resource, quantity)
                     report = "You have given "+user.display_name+" "+str(quantity)+" "+str(resource)
                 else:
                     report = "Error: Insufficient quantity of resource."
@@ -125,13 +125,13 @@ class Commands(commands.Cog):
             report = "Transaction Failed."
         await say(ctx,report)
 
-    @commands.command(name="setres", guild_ids=guilds)
-    async def setres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+    @commands.command(name="addres", guild_ids=guilds)
+    async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
         resource = resource_dict[resource_name]
         try:
             if quantity > 0:
                 target = player_dict[user.id]
-                target.inventory.setResource(resource, quantity)
+                target.inventory.addResource(resource, quantity)
                 report = "You have gained "+str(quantity)+" "+str(resource)
             else:
                 report = "Error: Insufficient quantity of resource."
