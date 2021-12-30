@@ -17,8 +17,11 @@ class Player():
             self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
             self.member: nextcord.PermissionOverwrite(read_messages=True)
         }
-        topic = "Private Discussion"
-        self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
+        topic =  "Private Discussion"
+        channelNames = (channel.name for channel in self.guild.channels)
+        if (self.member.name).lower().replace(" ", "-") not in channelNames:
+            self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites)
+
 
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
