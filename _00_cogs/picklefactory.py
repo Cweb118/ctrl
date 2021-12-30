@@ -17,9 +17,8 @@ ALSO ADD ALL VARIABLSE TO varsToSave LIST
 guilds = [588095612436742173, 778448646642728991]
 
 class PickleFactory(commands.Cog):
-    bot = ""
-    def __init__(self, bot2):
-        bot = bot2
+    def __init__(self, bot):
+        self.bot = bot
     
     @commands.command(name="save")
     async def saveAll(self, ctx):
@@ -30,8 +29,11 @@ class PickleFactory(commands.Cog):
     async def loadAll(self, ctx):
         with open(f"{os.getcwd()}\\_01_pickle_jar\\currentSave.pkl", "rb") as file:
             varsToLoad = pickle.load(file)
-            player_dict = varsToLoad[0]
-            resource_dict = varsToLoad[1]
+            player_dict.clear()
+
+            for key in varsToLoad[0].keys():
+                player_dict[key] = varsToLoad[0][key]
+                player_dict[key].reinstate(self.bot)
 
 def setup(bot):
     bot.add_cog(PickleFactory(bot))

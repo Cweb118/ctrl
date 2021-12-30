@@ -23,6 +23,9 @@ class PlayerCog(commands.Cog):
     
     @slash_command(name="listplayers", guild_ids=guilds)
     async def listplayers(self, ctx):
+        if len(player_dict) == 0:
+            await ctx.send("There are no players :(")
+            return
         for key in player_dict.keys():
             await ctx.send(player_dict[key].member.name)
     
