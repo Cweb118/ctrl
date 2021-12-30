@@ -2,7 +2,7 @@ import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import *
-from _02_global_dicts import player_dict
+from _02_global_dicts import player_dict, resource_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
@@ -59,8 +59,15 @@ class Commands(commands.Cog):
     async def inv_c(self, ctx):
         snowflake = ctx.author.id
         player = player_dict[snowflake]
-        report = str(player.inventory)
+        report = player.inventory.report()
         await say(ctx,report)
+
+    @commands.command(name="resource", guild_ids=guilds)
+    async def res_c(self, ctx, resource_name):
+        resource = resource_dict[resource_name]
+        report = resource.report()
+        await say(ctx,report)
+
 
 
 """

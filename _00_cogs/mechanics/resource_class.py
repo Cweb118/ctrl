@@ -6,11 +6,14 @@ class Resource():
         self.description = description
         self.type = type #Fluid, Solid, Energy, Abstract
 
-    def __str__(self):
-        report = "Title: "+self.title+\
-                 "\nDescription: "+self.description+\
-                 "\nType: "+self.type
+    def report(self):
+        report = "Resource: "+self.title+\
+                "\nType: "+self.type+\
+                 "\nDescription: "+self.description
         return report
+
+    def __str__(self):
+        return self.title
 
 resource_kits_dict = {
     'influence':("Influence", "A representation of your favor with the people.", "Abstract"),

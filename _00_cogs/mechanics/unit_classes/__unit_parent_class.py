@@ -18,7 +18,13 @@ class Unit(Card):
         player = player_dict[owner.id]
         player.inventory.addCard(self)
 
+    def setStat(self, stat, quantity):
+        self.stats[stat] += quantity
+
     def __str__(self):
+        return self.title
+
+    def info(self):
         report = "Title: "+self.title+\
                  "\nDescription: "+self.description+\
                  "\nStatus: "+str(self.status)+\
@@ -27,8 +33,7 @@ class Unit(Card):
                  "\nDie Set: "+str(self.die_set)
         return report
 
-    def setStat(self, stat, quantity):
-        self.stats[stat] += quantity
+
 
 
 #upkeep_quantity: Int

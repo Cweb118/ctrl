@@ -17,6 +17,7 @@ class PlayerCog(commands.Cog):
 
         for member in playerRole.members:
             player_dict[member.id]=(Player(member))
+            player_dict[member.id].inventory.setResource('influence', 2)
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="deleteplayers", guild_ids=guilds)

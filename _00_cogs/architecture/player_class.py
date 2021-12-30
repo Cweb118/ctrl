@@ -9,7 +9,6 @@ class Player():
         self.channel = ""
         self.createPrivateChannel.start()
         self.inventory = Inventory(member)
-        print(self.inventory)
     
     @tasks.loop(seconds=1, count=1)
     async def createPrivateChannel(self):
@@ -19,7 +18,7 @@ class Player():
             self.member: nextcord.PermissionOverwrite(read_messages=True)
         }
         topic = "Private Discussion"
-        self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
+        #self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
 
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
