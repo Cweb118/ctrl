@@ -6,6 +6,8 @@ class Resource():
         self.description = description
         self.type = type #Fluid, Solid, Energy, Abstract
 
+        resource_dict[title] = self
+
     def report(self):
         report = "Resource: "+self.title+\
                 "\nType: "+self.type+\
@@ -25,4 +27,3 @@ resource_kits_dict = {
 for key in resource_kits_dict.keys():
     kit = resource_kits_dict[key]
     res = Resource(*kit)
-    resource_dict[key] = res

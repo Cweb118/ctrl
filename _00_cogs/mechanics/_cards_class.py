@@ -19,6 +19,10 @@ class Card():
         elif self.status == "Played":
             self.status = "Held"
 
+    def toggleLife(self):
+        if self.status == "DEAD":
+            self.status = "Held"
+
     def addTrait(self, trait):
         if trait not in self.traits:
             self.traits.append(trait)

@@ -21,19 +21,18 @@ class Inventory():
         self.cards.append(card)
 
     def delCard(self, card_number):
-        del self.cards[card_number]
+        del self.cards[card_number-1]
 
     def moveCard(self, card_number, new_owner):
-        card = self.cards[card_number]
+        card = self.cards[card_number-1]
         new_player = player_dict[new_owner.id]
         new_player.inventory.addCard(card)
-        del self.cards[card_number]
+        del self.cards[card_number-1]
 
         report = "Your "+str(card)+" has been given to "+new_owner.display_name+"!"
         return report
 
-    def setResource(self, resource_name, quantity):
-        resource = resource_dict[resource_name]
+    def setResource(self, resource, quantity):
         new_val = self.resources[resource] + quantity
         if new_val >= 0:
             self.resources[resource] = new_val
@@ -52,7 +51,7 @@ class Inventory():
         for resource in self.resources.keys():
             report += "-"+str(resource)+": "+str(self.resources[resource])+"\n"
 
-        report += "\n\n--Cards:\n"
+        report += "\n--Cards:\n"
         for card in self.cards:
             report += "-"+str(card)+" ("+card.status+")\n"
 

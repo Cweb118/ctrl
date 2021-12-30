@@ -20,7 +20,7 @@ class Player():
         topic =  "Private Discussion"
         channelNames = (channel.name for channel in self.guild.channels)
         if (self.member.name).lower().replace(" ", "-") not in channelNames:
-            self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites)
+            self.channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
 
 
     @tasks.loop(seconds=1, count=1)

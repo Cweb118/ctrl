@@ -34,14 +34,14 @@ class Dice():
             'hit_count':hit_count,
             'result':s
         }
-        return report
+        return s, report
 
 
-    async def roll(self, ctx, success_int):
-        report_dict = self.roll_math(int(success_int))
+    async def roll(self, success_int):
+        result, report_dict = self.roll_math(int(success_int))
         if report_dict['result']:
             status = "-------HIT-------"
         else:
             status = "------MISS-------"
         report_str = status+"\n\n-----Results-----\n\n"+"Rolled: "+str(self)+"\n"+"Rolls: "+str(report_dict['rolls'])+"\n"+"Threshold: "+str(report_dict['threshold'])+"\n"+"Hits: "+str(report_dict['hit_count'])
-        await say(ctx, str(report_str))
+        return result, report_str

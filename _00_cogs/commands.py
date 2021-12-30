@@ -2,8 +2,10 @@ import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import *
-from _02_global_dicts import player_dict, resource_dict
+from _02_global_dicts import player_dict, resource_dict, region_dict, district_dict
 from _00_cogs.mechanics.dice_class import Dice
+from _00_cogs.mechanics.resource_class import Resource
+from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 
@@ -38,15 +40,48 @@ class Commands(commands.Cog):
 
 #----------testing----------
 
+    @commands.command(name="makeregion", guild_ids=guilds)
+    async def makeregion_c(self, ctx, name):
+        Region(name)
+        report = "Region "+name+" created."
+        await say(ctx,report)
+
+    @commands.command(name="makedistrict", guild_ids=guilds)
+    async def makedistrict_c(self, ctx, name, region_name, paths=None):
+        district = District(name, region_name, paths)
+        region = region_dict[region_name]
+        region.addDistrict(district)
+        report = "District "+name+" created in the "+region_name+" region."
+        await say(ctx,report)
+
+    @commands.command(name="region", guild_ids=guilds)
+    async def region_c(self, ctx, name):
+        region = region_dict[name]
+        report = region.report()
+        await say(ctx,report)
+
+    @commands.command(name="district", guild_ids=guilds)
+    async def district_c(self, ctx, name):
+        district = district_dict[name]
+        report = district.report()
+        await say(ctx,report)
+
 
     @commands.command(name="man", guild_ids=guilds)
-    async def man(self, ctx, type):
+    async def man_c(self, ctx, type):
         kit = list(unit_kits_dict[type])
         kit = [ctx.author]+kit
         man = Unit(*kit)
         report = str(man.report())
         await say(ctx,report)
-        #await man.die_set.roll(ctx, man.stats['fortitude'])
+
+    @commands.command(name="harvest", guild_ids=guilds)
+    async def harvest_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        for card in player.inventory.cards:
+            report = card.harvest()
+            await say(ctx,report)
+
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
@@ -73,14 +108,15 @@ class Commands(commands.Cog):
 
     @commands.command(name="giveres", guild_ids=guilds)
     async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+        resource = resource_dict[resource_name]
         try:
             if quantity > 0:
                 player = player_dict[ctx.author.id]
                 target = player_dict[user.id]
-                status = player.inventory.setResource(resource_name, -quantity)
+                status = player.inventory.setResource(resource, -quantity)
                 if status == True:
-                    target.inventory.setResource(resource_name, quantity)
-                    report = "You have given "+user.display_name+" "+str(quantity)+" "+resource_name
+                    target.inventory.setResource(resource, quantity)
+                    report = "You have given "+user.display_name+" "+str(quantity)+" "+str(resource)
                 else:
                     report = "Error: Insufficient quantity of resource."
             else:
@@ -89,6 +125,19 @@ class Commands(commands.Cog):
             report = "Transaction Failed."
         await say(ctx,report)
 
+    @commands.command(name="setres", guild_ids=guilds)
+    async def setres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+        resource = resource_dict[resource_name]
+        try:
+            if quantity > 0:
+                target = player_dict[user.id]
+                target.inventory.setResource(resource, quantity)
+                report = "You have gained "+str(quantity)+" "+str(resource)
+            else:
+                report = "Error: Insufficient quantity of resource."
+        except:
+            report = "Transaction Failed."
+        await say(ctx,report)
 
     @commands.command(name="resource", guild_ids=guilds)
     async def res_c(self, ctx, resource_name):
