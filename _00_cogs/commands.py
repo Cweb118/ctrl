@@ -44,31 +44,57 @@ class Commands(commands.Cog):
         kit = list(unit_kits_dict[type])
         kit = [ctx.author]+kit
         man = Unit(*kit)
-        report = "Unit Report: \n\n"+str(man)
+        report = str(man.report())
         await say(ctx,report)
         #await man.die_set.roll(ctx, man.stats['fortitude'])
-
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
 
-
     @commands.command(name="inv", guild_ids=guilds)
     async def inv_c(self, ctx):
-        snowflake = ctx.author.id
-        player = player_dict[snowflake]
+        player = player_dict[ctx.author.id]
         report = player.inventory.report()
         await say(ctx,report)
+
+    @commands.command(name="cardrep", guild_ids=guilds)
+    async def cardrep_c(self, ctx, card_number):
+        player = player_dict[ctx.author.id]
+        report = player.inventory.cardReport(int(card_number))
+        await say(ctx,report)
+
+    @commands.command(name="givecard", guild_ids=guilds)
+    async def givecard_c(self, ctx, card_number, user: nextcord.Member):
+        player = player_dict[ctx.author.id]
+        report = player.inventory.moveCard(int(card_number), user)
+        await say(ctx,report)
+
+    @commands.command(name="giveres", guild_ids=guilds)
+    async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+        try:
+            if quantity > 0:
+                player = player_dict[ctx.author.id]
+                target = player_dict[user.id]
+                status = player.inventory.setResource(resource_name, -quantity)
+                if status == True:
+                    target.inventory.setResource(resource_name, quantity)
+                    report = "You have given "+user.display_name+" "+str(quantity)+" "+resource_name
+                else:
+                    report = "Error: Insufficient quantity of resource."
+            else:
+                report = "Error: Input less than zero."
+        except:
+            report = "Transaction Failed."
+        await say(ctx,report)
+
 
     @commands.command(name="resource", guild_ids=guilds)
     async def res_c(self, ctx, resource_name):
         resource = resource_dict[resource_name]
         report = resource.report()
         await say(ctx,report)
-
-
 
 """
 @bot.command()

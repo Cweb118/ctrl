@@ -24,8 +24,9 @@ class Unit(Card):
     def __str__(self):
         return self.title
 
-    def info(self):
-        report = "Title: "+self.title+\
+    def report(self):
+        report = "-----Unit Report-----\n"+\
+                 "\nTitle: "+self.title+\
                  "\nDescription: "+self.description+\
                  "\nStatus: "+str(self.status)+\
                  "\nTraits: "+str(self.traits)+\
