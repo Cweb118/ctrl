@@ -16,9 +16,19 @@ class PlayerCog(commands.Cog):
     async def initPlayers(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
+
             player_dict[member.id]=(Player(member))
             player_dict[member.id].inventory.addResource(resource_dict['Influence'], 2)
+
         await ctx.send("Players Initialized and Channels Created.")
+    
+    @slash_command(name="listplayers", guild_ids=guilds)
+    async def listplayers(self, ctx):
+        if len(player_dict) == 0:
+            await ctx.send("There are no players :(")
+            return
+        for key in player_dict.keys():
+            await ctx.send(player_dict[key].member.name)
     
     @slash_command(name="deleteplayers", guild_ids=guilds)
     async def deletePlayers(self, ctx):
