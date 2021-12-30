@@ -1,11 +1,10 @@
 from _00_cogs.mechanics.dice_class import Dice
-#Inherits from: Card
+from _00_cogs.mechanics._cards_class import Card
+from _00_cogs.initialization import player_dict
 
-class Unit():
+class Unit(Card):
     def __init__(self, owner, title, description, attack, defence, endurance, fortitude, dice_stats):
-        self.title = title
-        self.description = description
-        self.owner = owner
+        super().__init__(owner, title, description)
 
         self.stats = {
             'attack':attack,
@@ -16,30 +15,26 @@ class Unit():
 
         self.die_set = Dice(*dice_stats)
 
+        player = player_dict[owner.id]
+        player.inventory.addCard(self)
+
+    def setStat(self, stat, quantity):
+        self.stats[stat] += quantity
+
     def __str__(self):
+        return self.title
+
+    def info(self):
         report = "Title: "+self.title+\
                  "\nDescription: "+self.description+\
-                 "\nOwner: "+str(self.owner)+\
+                 "\nStatus: "+str(self.status)+\
+                 "\nTraits: "+str(self.traits)+\
                  "\nStats: "+str(self.stats)+\
                  "\nDie Set: "+str(self.die_set)
         return report
 
-    def mod_stat(self, stat, quantity):
-        self.stats[stat] += quantity
 
-#Title: Str
-#Description: Str
 
-#Attack: Int
-#Defence: Int
-#Endurance: Int [Movement]
-#Fortitude: Int [Upkeep success int]
-
-#Race: Race instance
-#Knows: Str [Age Technology Type(s)]
-#Affinity: Str
-
-#Die: Dice instance
 
 #upkeep_quantity: Int
 #upkeep_obj: Item/Unit instance
