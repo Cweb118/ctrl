@@ -1,4 +1,5 @@
 import nextcord
+from nextcord import guild
 from _00_cogs.architecture.player_class import Player
 from nextcord import slash_command
 from nextcord.ext import commands
@@ -27,6 +28,15 @@ class PlayerCog(commands.Cog):
             player_dict[snowflake].delPrivateChannel()
             del player_dict[snowflake]
         await ctx.send("Channels Deleted!")
+
+    @slash_command(name="deletechannels", guild_ids=guilds)
+    async def deletechannels(self, ctx):
+        for channel in ctx.guild.channels:
+            if channel.name == "jamsspinle" or channel.name == "the-cartographer":
+                print("Match:", channel)
+                await channel.delete()
+            else:
+                print("Not a match:", channel)
 
 def setup(bot):
     bot.add_cog(PlayerCog(bot))
