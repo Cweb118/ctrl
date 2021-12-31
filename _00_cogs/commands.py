@@ -108,20 +108,43 @@ class Commands(commands.Cog):
     @commands.command(name="giveres", guild_ids=guilds)
     async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
         resource = resource_dict[resource_name]
-        try:
-            if quantity > 0:
-                player = player_dict[ctx.author.id]
-                target = player_dict[user.id]
-                status = player.inventory.addResource(resource, -quantity)
-                if status == True:
-                    target.inventory.addResource(resource, quantity)
-                    report = "You have given "+user.display_name+" "+str(quantity)+" "+str(resource)
-                else:
-                    report = "Error: Insufficient quantity of resource."
-            else:
-                report = "Error: Input less than zero."
-        except:
-            report = "Transaction Failed."
+        giver = player_dict[ctx.author.id]
+        taker = player_dict[user.id]
+        report = giver.inventory.giveResource(resource, quantity, giver, taker)
+        await say(ctx,report)
+
+    @commands.command(name="dropres", guild_ids=guilds)
+    async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        giver = player_dict[ctx.author.id]
+        taker = None
+        if target_type == 'location':
+            taker = district_dict[target]
+        elif target_type == 'unit':
+            taker = giver.inventory.cards[target_type][int(target)-1]
+        elif target_type == 'building':
+            taker = giver.inventory.cards[target_type][int(target)-1]
+        if taker:
+            report = giver.inventory.giveResource(resource, quantity, taker)
+        else:
+            report = "Error: Invalid target type."
+        await say(ctx,report)
+
+    @commands.command(name="takeres", guild_ids=guilds)
+    async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        taker = player_dict[ctx.author.id]
+        giver = None
+        if target_type == 'location':
+            giver = district_dict[target]
+        elif target_type == 'unit':
+            giver = taker.inventory.cards[target_type][int(target)-1]
+        elif target_type == 'building':
+            giver = taker.inventory.cards[target_type][int(target)-1]
+        if giver:
+            report = giver.inventory.giveResource(resource, quantity, taker)
+        else:
+            report = "Error: Invalid target type."
         await say(ctx,report)
 
     @commands.command(name="addres", guild_ids=guilds)

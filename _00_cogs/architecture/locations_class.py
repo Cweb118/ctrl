@@ -82,7 +82,5 @@ class District():
         report += "--Paths:\n"
         for district in self.paths:
             report += "-"+str(district)+"\n"
-        #report += "\n--Buildings:\n"
-        #for building in self.buildings:
-            #report += "-"+str(building)+"\n"
+        report+"\n\n"+self.inventory.report()
         return report

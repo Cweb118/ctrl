@@ -83,10 +83,27 @@ class Inventory():
                                 can_add = True
                     else:
                         can_add = True
-
         if can_add == True:
             self.resources[resource] = new_val
         return can_add
+
+    def giveResource(self, resource, quantity, taker):
+        try:
+            if quantity > 0:
+                status = self.addResource(resource, -quantity)
+                if status == True:
+                    status2 = taker.inventory.addResource(resource, quantity)
+                    if status2 == True:
+                        report = str(taker)+" has recieved "+str(quantity)+" "+str(resource)+' from '+str(self.owner)
+                    else:
+                        report = "Error: Destination has insufficient space."
+                else:
+                    report = "Error: Insufficient quantity of resource."
+            else:
+                report = "Error: Input less than zero."
+        except:
+            report = "Transaction Failed."
+        return report
 
     def __str__(self):
         report = str(self.owner)+"'s Inventory"

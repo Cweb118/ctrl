@@ -106,6 +106,8 @@ class Unit(Card):
         report = report[:-2]
 
         report += "\nDie Set: "+str(self.die_set)
+
+        report += "\n\n"+self.inventory.report()
         return report
 
 
