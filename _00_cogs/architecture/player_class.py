@@ -3,12 +3,14 @@ from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 
 class Player():
-    def __init__(self, member):
+    def __init__(self, member, memberID):
         self.member = member
+        self._memberID = memberID #int
         self.guild = member.guild
         self.channel = ""
         self.createPrivateChannel.start()
-        self.inventory = Inventory(member)
+        self.inventory = Inventory(self, rcap=999, u_cap=99, b_cap=99) #Inventory Instance
+        self.location = "" #Location instance
     
     @tasks.loop(seconds=1, count=1)
     async def createPrivateChannel(self):

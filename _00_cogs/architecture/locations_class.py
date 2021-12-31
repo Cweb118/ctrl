@@ -1,4 +1,5 @@
 from _02_global_dicts import region_dict, district_dict
+from _00_cogs.architecture.inventory_class import Inventory
 
 class Region():
     def __init__(self, name):
@@ -21,11 +22,21 @@ class Region():
         return report
 
 class District():
-    def __init__(self, name, region, paths=None):
+    def __init__(self, name, region, size, paths=None):
         self.name = name
         self.region = region
         self.paths = []
-        self.buildings = []
+        self.players = []
+
+        sizes = {
+            #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
+            'tiny': [self, 999, None, 99, 99, 2, 0],
+            'small': [self, 999, None, 99, 99, 5, 2],
+            'medium': [self, 999, None, 99, 99, 8, 4],
+            'large': [self, 999, None, 99, 99, 13, 8],
+            'huge': [self, 999, None, 99, 99, 20, 14],
+        }
+        self.inventory = Inventory(*sizes[size])
 
         if paths:
             paths = paths.split(',')

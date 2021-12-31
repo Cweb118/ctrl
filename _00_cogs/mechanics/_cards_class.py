@@ -1,17 +1,20 @@
-
+from _00_cogs.architecture.inventory_class import Inventory
 #-----attributes-----
 class Card():
-    def __init__(self, owner, title, description):
+    def __init__(self, owner, title, description, inv_args=None, traits=None, play_cost=None):
         self.title = title
         self.description = description
         self.owner = owner
 
         self.status = "Held"
-        self.traits = []
 
-        self.cost = {
-            #item:quantity
-        }
+        self.traits = traits
+        self.play_cost = play_cost
+        #Item:quantity
+
+        if inv_args:
+            self.inventory = Inventory(*inv_args)
+
 
     def toggleStatus(self):
         if self.status == "Held":
@@ -30,10 +33,3 @@ class Card():
     def delTrait(self, trait):
         if trait in self.traits:
             self.traits.remove(trait)
-
-
-#Owner: Player instance
-#Status: enum: [Played, Held]
-#Cost (to play the card): Int
-#Cost (item needed): Item instance
-#^ may have multiple costs

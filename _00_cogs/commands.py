@@ -78,7 +78,7 @@ class Commands(commands.Cog):
     @commands.command(name="harvest", guild_ids=guilds)
     async def harvest_c(self, ctx):
         player = player_dict[ctx.author.id]
-        for card in player.inventory.cards:
+        for card in player.inventory.cards['units']:
             report = card.harvest()
             await say(ctx,report)
 
@@ -95,15 +95,15 @@ class Commands(commands.Cog):
         await say(ctx,report)
 
     @commands.command(name="cardrep", guild_ids=guilds)
-    async def cardrep_c(self, ctx, card_number):
+    async def cardrep_c(self, ctx, card_type, card_number):
         player = player_dict[ctx.author.id]
-        report = player.inventory.cardReport(int(card_number))
+        report = player.inventory.cardReport(card_type, int(card_number))
         await say(ctx,report)
 
     @commands.command(name="givecard", guild_ids=guilds)
-    async def givecard_c(self, ctx, card_number, user: nextcord.Member):
+    async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
         player = player_dict[ctx.author.id]
-        report = player.inventory.moveCard(int(card_number), user)
+        report = player.inventory.moveCard(card_type, int(card_number), user)
         await say(ctx,report)
 
     @commands.command(name="giveres", guild_ids=guilds)

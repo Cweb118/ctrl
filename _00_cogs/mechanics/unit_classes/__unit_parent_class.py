@@ -5,8 +5,9 @@ from _02_global_dicts import player_dict, resource_dict
 
 
 class Unit(Card):
-    def __init__(self, owner, title, description, attack, defence, endurance, fortitude, upkeep_dict, dice_stats):
-        super().__init__(owner, title, description)
+    def __init__(self, owner, title, description, inv_args, traits, play_cost, attack, defence, endurance, fortitude, upkeep_dict, dice_stats):
+        inv_args = [owner]+inv_args
+        super().__init__(owner, title, description, inv_args=inv_args, traits=traits, play_cost=play_cost)
 
         self.stats = {
             'Attack':attack,
@@ -21,8 +22,7 @@ class Unit(Card):
             resource = resource_dict[key]
             self.upkeep[resource] = upkeep_dict[key]
 
-        player = player_dict[owner.id]
-        player.inventory.addCard(self)
+        owner.inventory.addCard(self)
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
