@@ -1,11 +1,20 @@
 import nextcord
+from nextcord import guild
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 class Player():
-    def __init__(self, member, memberID, guildID):
+    def __init__(self, member, memberID = None, guildID = None, invDict = None):
         self._member = member
-        self._memberID = memberID
-        self._guildID = guildID
+        self._invDict = invDict
+        
+        if self._member != None:
+            self._memberID = member.id
+            self._guildID = member.guild.id
+        elif memberID != None and guildID != None:
+            self._memberID = memberID
+            self._guildID = guildID
+        else:
+            raise TypeError("Player must be constructed with a member object or memberID and guildID.")
 
         if member != None:
             self._guild = member.guild
@@ -14,10 +23,13 @@ class Player():
 
         self._channel = ""
         #self.createPrivateChannel.start()
-        self._inventory = Inventory(member)
+        if invDict == None:
+            self._inventory = Inventory(member)
+        else:
+            self._inventory = None
     
     def __reduce__(self):
-        return(self.__class__, (None, self.memberID, self.guildID))
+        return(self.__class__, (None, self.memberID, self.guildID, {"cards" : self._inventory.cards, "resources" : self._inventory.resources}))
 
 
     @tasks.loop(seconds=1, count=1)
@@ -48,6 +60,7 @@ class Player():
     def reinstate(self, bot):
         self._guild = bot.get_guild(self._guildID)
         self._member = self._guild.get_member(self._memberID)
+        self._inventory = Inventory(self._member, cards=self._invDict["cards"], resources=self._invDict["resources"])
 
     #ACCESSOR
 
