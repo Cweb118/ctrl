@@ -4,12 +4,12 @@ import os
 import nextcord
 import time
 import datetime
-from keys import prime_token
+from keys import prime_token, prefix
 from nextcord.ext import commands
 
 intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 cogsDir = os.path.dirname(__file__)+"\\_00_cogs"
 
