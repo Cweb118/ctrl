@@ -3,7 +3,7 @@ from _02_global_dicts import player_dict
 
 class Inventory():
     def __init__(self, owner, r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None):
-        self.owner = owner #Player instance
+        self.owner = owner #Player/Location/Card instance
 
         self.cont = r_cont #int
         self.cap = {
