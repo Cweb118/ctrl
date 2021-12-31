@@ -47,10 +47,8 @@ class Commands(commands.Cog):
         await say(ctx,report)
 
     @commands.command(name="makedistrict", guild_ids=guilds)
-    async def makedistrict_c(self, ctx, name, region_name, paths=None):
-        district = District(name, region_name, paths)
-        region = region_dict[region_name]
-        region.addDistrict(district)
+    async def makedistrict_c(self, ctx, name, region_name, size, paths=None):
+        district = District(name, region_name, size, paths)
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
@@ -64,14 +62,15 @@ class Commands(commands.Cog):
     async def district_c(self, ctx, name):
         district = district_dict[name]
         report = district.report()
+        report = report+"\n\n"+district.inventory.report()
         await say(ctx,report)
+
 
 
     @commands.command(name="man", guild_ids=guilds)
     async def man_c(self, ctx, type):
-        kit = list(unit_kits_dict[type])
-        kit = [ctx.author]+kit
-        man = Unit(*kit)
+        player = player_dict[ctx.author.id]
+        man = player.inventory.makeCard(unit_kits_dict[type], 'unit')
         report = str(man.report())
         await say(ctx,report)
 

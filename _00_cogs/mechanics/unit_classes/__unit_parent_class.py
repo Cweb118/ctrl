@@ -22,7 +22,7 @@ class Unit(Card):
             resource = resource_dict[key]
             self.upkeep[resource] = upkeep_dict[key]
 
-        owner.inventory.addCard(self)
+        #owner.inventory.addCard(self, 'unit')
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
@@ -37,6 +37,23 @@ class Unit(Card):
         else:
             report = "Your "+str(self)+' now has '+str(self.stats['Defense'])+' Defense.'
         return report
+
+    def addCard(self, card_kit, card_type):
+        inv = self.inventory
+        can_add = inv.capMathCard(card_type)
+        if can_add == True:
+            card = None
+            kit = [self]+card_kit
+            if card_type == 'unit':
+                card = Unit(*kit)
+            elif card_type == 'building':
+                #card = Building(*kit)
+                print("no")
+            if card:
+                inv.cards[card_type].append(card)
+            else:
+                can_add = False
+        return can_add
 
     def harvest(self):
         #if self.status == "Played"

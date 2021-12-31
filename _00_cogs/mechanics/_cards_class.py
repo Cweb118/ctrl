@@ -1,4 +1,5 @@
 from _00_cogs.architecture.inventory_class import Inventory
+
 #-----attributes-----
 class Card():
     def __init__(self, owner, title, description, inv_args=None, traits=None, play_cost=None):
