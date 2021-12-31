@@ -9,7 +9,7 @@ from nextcord.ext import commands
 
 intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='~', intents=intents)
 
 cogsDir = os.path.dirname(__file__)+"\\_00_cogs"
 
