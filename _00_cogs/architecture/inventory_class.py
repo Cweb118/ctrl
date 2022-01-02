@@ -61,6 +61,7 @@ class Inventory():
             report = "Error: Recipient lacks capacity for this item."
         return report
 
+
     def capMathRes(self):
         i = 0
         for key in self.resources.keys():
@@ -117,8 +118,13 @@ class Inventory():
                 report += "\n--Resources: ("+str(self.capMathRes())+"/"+str(self.cont)+")\n"
             else:
                 report += "\n--Resources:\n"
+            i = 0
             for resource in self.resources.keys():
-                report += "-"+str(resource)+": "+str(self.resources[resource])+"/"+str(self.cap['resource'])+"\n"
+                if self.resources[resource] > 0:
+                    report += "-"+str(resource)+": "+str(self.resources[resource])+"/"+str(self.cap['resource'])+"\n"
+                    i += 1
+            if i == 0:
+                report += "-None\n"
 
         if self.cap['unit'] or self.cap['building']:
             report += "\n---Cards:\n"
@@ -147,4 +153,9 @@ class Inventory():
 
     def cardReport(self, t, card_number):
         card = self.cards[t][card_number-1]
+        return card.report()
+
+    def cardNick(self, t, card_number, nick):
+        card = self.cards[t][card_number-1]
+        card.setNick(nick)
         return card.report()

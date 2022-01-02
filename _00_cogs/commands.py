@@ -65,8 +65,6 @@ class Commands(commands.Cog):
         report = report+"\n\n"+district.inventory.report()
         await say(ctx,report)
 
-
-
     @commands.command(name="man", guild_ids=guilds)
     async def man_c(self, ctx, type):
         player = player_dict[ctx.author.id]
@@ -80,7 +78,6 @@ class Commands(commands.Cog):
         for card in player.inventory.cards['units']:
             report = card.harvest()
             await say(ctx,report)
-
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
@@ -99,11 +96,45 @@ class Commands(commands.Cog):
         report = player.inventory.cardReport(card_type, int(card_number))
         await say(ctx,report)
 
+    @commands.command(name="cardnick", guild_ids=guilds)
+    async def cardnick_c(self, ctx, card_type, card_number, nick):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.cards[card_type][int(card_number)-1]
+        report = card.setNick(nick)
+        report = player.inventory.cardReport(card_type, int(card_number))
+        await say(ctx,report)
+
+    @commands.command(name="playcard", guild_ids=guilds)
+    async def playcard_c(self, ctx, card_type, card_number, target_type, target):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.cards[card_type][int(card_number)-1]
+        targ = None
+        if target_type == 'district':
+            targ = district_dict[target]
+        elif target_type == 'unit':
+            targ = player.inventory.cards[target_type][int(target)-1]
+        elif target_type == 'building':
+            targ = player.inventory.cards[target_type][int(target)-1]
+        if targ:
+            status = card.playCard(player, targ)
+            if status:
+                report = str(card)+" successfully played to "+str(targ)
+            else:
+                report = 'Error: One or more requirements not met.'
+        else:
+            report = 'Error: Invalid location.'
+        await say(ctx,report)
+
     @commands.command(name="givecard", guild_ids=guilds)
     async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
         player = player_dict[ctx.author.id]
         report = player.inventory.moveCard(card_type, int(card_number), user)
         await say(ctx,report)
+
+    @commands.command(name="givecard", guild_ids=guilds)
+    async def givecard_c(self, ctx, card, target_obj):
+        player = player_dict[ctx.author.id]
+        status = target_obj.inventory.playCard(self, card, player, target_obj)
 
     @commands.command(name="giveres", guild_ids=guilds)
     async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
@@ -118,7 +149,7 @@ class Commands(commands.Cog):
         resource = resource_dict[resource_name]
         giver = player_dict[ctx.author.id]
         taker = None
-        if target_type == 'location':
+        if target_type == 'district':
             taker = district_dict[target]
         elif target_type == 'unit':
             taker = giver.inventory.cards[target_type][int(target)-1]
