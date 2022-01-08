@@ -1,3 +1,4 @@
+from typing import ValuesView
 import nextcord
 import os
 from nextcord import slash_command
@@ -22,6 +23,7 @@ class PickleFactory(commands.Cog):
     
     @commands.command(name="save")
     async def saveAll(self, ctx):
+        print(resource_dict)
         if not os.path.isdir(f"{os.getcwd()}\\_01_pickle_jar\\"):
             os.makedirs(f"{os.getcwd()}\\_01_pickle_jar\\")
         with open(f"{os.getcwd()}\\_01_pickle_jar\\currentSave.pkl", "wb") as file:
@@ -32,10 +34,13 @@ class PickleFactory(commands.Cog):
         with open(f"{os.getcwd()}\\_01_pickle_jar\\currentSave.pkl", "rb") as file:
             varsToLoad = pickle.load(file)
             player_dict.clear()
+            resource_dict.clear()
 
             for key in varsToLoad[0].keys():
                 player_dict[key] = varsToLoad[0][key]
                 player_dict[key].reinstate(self.bot)
+            for key in varsToLoad[1].keys():
+                resource_dict[key] = varsToLoad[1][key]
 
 def setup(bot):
     bot.add_cog(PickleFactory(bot))
