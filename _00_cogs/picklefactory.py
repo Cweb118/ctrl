@@ -22,6 +22,8 @@ class PickleFactory(commands.Cog):
     
     @commands.command(name="save")
     async def saveAll(self, ctx):
+        if not os.path.isdir(f"{os.getcwd()}\\_01_pickle_jar\\"):
+            os.makedirs(f"{os.getcwd()}\\_01_pickle_jar\\")
         with open(f"{os.getcwd()}\\_01_pickle_jar\\currentSave.pkl", "wb") as file:
             pickle.dump(varsToSave, file)
     
