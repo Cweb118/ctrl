@@ -2,23 +2,27 @@ import random
 from _01_functions import *
 
 class Dice():
-    def __init__(self, quantity, sides):
-        self.quantity = quantity
-        self.sides = sides
-
+    def __init__(self, die):
+        self.set = die
 
     def __str__(self):
-        report = str(self.quantity)+"d"+str(self.sides)
+        report = str(self.set)
         return report
 
+    def addDice(self, dice):
+        self.set.append(dice)
 
     def roll_math(self, success):
-        i = 1
         rolls = []
-        while i <= self.quantity:
-            roll = random.randint(1,self.sides)
-            rolls.append(roll)
-            i+=1
+        for dice in self.set:
+            split_list = dice.split('d')
+            quantity = int(split_list[0])
+            sides = int(split_list[1])
+            i = 1
+            while i <= quantity:
+                roll = random.randint(1,sides)
+                rolls.append(roll)
+                i+=1
 
         hits = [e for e in rolls if e >= success]
         hit_count = len(hits)

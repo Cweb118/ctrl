@@ -15,13 +15,13 @@ class Resource():
         return report
 
     def __str__(self):
-        return self.title
+        return str(self.title)
 
 resource_kits_dict = {
-    'influence':("Influence", "A representation of your favor with the people.", "Abstract"),
-    'water':("Water", "Its wet and refreshing.", "Fluid"),
-    'food':("Food", "A mere morsel, but it will do.", "Solid"),
-    'metal':("Metal", "Scrap metal. Its hard to work with, but durable.", "Solid"),
+    'Influence':("Influence", "A representation of your favor with the people.", "Abstract"),
+    'Water':("Water", "Its wet and refreshing.", "Fluid"),
+    'Food':("Food", "A mere morsel, but it will do.", "Solid"),
+    'Metal':("Metal", "Scrap metal. Its hard to work with, but durable.", "Solid"),
 }
 
 for key in resource_kits_dict.keys():

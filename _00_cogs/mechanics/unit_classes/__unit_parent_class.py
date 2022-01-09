@@ -7,7 +7,6 @@ from _00_cogs.architecture.inventory_class import Inventory
 from _02_global_dicts import player_dict, resource_dict
 
 
-
 class Unit(Card):
     def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, upkeep_dict, dice_stats):
         inv_args = [owner]+inv_args
@@ -20,12 +19,17 @@ class Unit(Card):
             'Endurance':stats['endurance'],
             'Fortitude':stats['fortitude']
         }
-        self.upkeep = {}
+        self.statcaps = {
+            'Attack':stats['attack'],
+            'Health':stats['health'],
+            'Defense':stats['defense'],
+            'Endurance':stats['endurance'],
+            'Fortitude':stats['fortitude']
+        }
 
-        self.die_set = 'WIP!'
-        #self.die_set = Dice(*dice_stats)
-        #for dice in dice_stats:
-            #self.die_set.append(Dice(*dice))
+        self.upkeep = {}
+        self.die_list = dice_stats
+        self.die_set = Dice(dice_stats)
 
         for key in upkeep_dict.keys():
             resource = resource_dict[key]
@@ -63,10 +67,13 @@ class Unit(Card):
 
     def addTrait(self, trait):
         trait = Trait(*trait_kits_dict[trait])
-        self.title = trait.trait_title +" "+self.title
-        for mod_stat in trait.trait_stats_dict.keys():
-            value = trait.trait_stats_dict[mod_stat]
-            self.stats[mod_stat] += value
+        if trait.trait_title not in self.title:
+            self.title = trait.trait_title +" "+self.title
+        if trait.trait_stats_dict:
+            for mod_stat in trait.trait_stats_dict.keys():
+                value = trait.trait_stats_dict[mod_stat]
+                self.stats[mod_stat] += value
+                self.statcaps[mod_stat] += value
         if trait.trait_play_cost:
             for mod_cost in trait.trait_play_cost.keys():
                 value = trait.trait_play_cost[mod_cost]
@@ -107,7 +114,10 @@ class Unit(Card):
                             inv.slotcap[type] = mod
                 else:
                     print("ERROR: Invalid inventory constraint.")
-        #put dice here!
+        if trait.trait_dice_stats:
+            new_set = self.die_list + trait.trait_dice_stats
+            self.die_list = new_set
+            self.die_set = Dice(new_set)
         self.traits[trait.trigger].append(trait)
 
 
@@ -129,33 +139,36 @@ class Unit(Card):
         return can_add
 
     def harvest(self):
-        #if self.status == "Played"
-        player = player_dict[self.owner.id]
-        f = 0
-        for resource in self.upkeep.keys():
-            quantity = self.upkeep[resource]
-            i = 0
-            while i < quantity:
-                if not player.inventory.addResource(resource, -1):
-                    self.setStat('Defense', -1)
-                    f += 1
-                i += 1
-        fort_report = "Your "+str(self)+' has lost '+str(f)+' Defense due to lacking required resources.'
-        hit, report_dict = self.die_set.roll_math(self.stats['Defense'])
-        if hit:
-            health_report = self.setHealth(-1)
-        else:
-            health_report = "Your "+str(self)+' has sustained no damage.'
+        if self.status == "Played":
+            #player = player_dict[self.owner.id]
+            f = 0
+            for resource in self.upkeep.keys():
+                quantity = self.upkeep[resource]
+                i = 0
+                while i < quantity:
+                    if not self.inventory.addResource(resource, -1):
+                        self.setStat('Defense', -1)
+                        f += 1
+                    i += 1
+            if self.stats['Defense'] > 0:
+                def_report = "Your "+str(self)+' has lost '+str(f)+' Defense due to lacking required resources.'
+            else:
+                def_report = "Your "+str(self)+' has no Defense remaining.'
+            hit, report_dict = self.die_set.roll_math(self.stats['Defense']+self.stats['Fortitude'])
+            if hit:
+                health_report = self.setHealth(-1)
+            else:
+                health_report = "Your "+str(self)+' has sustained no damage.'
 
-        report = "-----"+str(self)+" Upkeep Results-----\n\n"+\
-                     "Rolled: "+str(self)+", "+str(self.die_set)+"\n"+\
-                     "Rolls: "+str(report_dict['rolls'])+"\n"+\
-                     "Defence + Fortitude: "+str(report_dict['threshold'])+"\n"+\
-                     "Damage Taken: "+str(report_dict['hit_count'])+"\n\n"+\
-                     fort_report+"\n"+\
-                     health_report
+            report = "-----"+str(self)+" Upkeep Results-----\n\n"+\
+                         "Rolled: "+str(self)+", "+str(self.die_set)+"\n"+\
+                         "Rolls: "+str(report_dict['rolls'])+"\n"+\
+                         "Defense + Fortitude: "+str(report_dict['threshold'])+"\n"+\
+                         "Damage Taken: "+str(report_dict['hit_count'])+"\n\n"+\
+                         def_report+"\n"+\
+                         health_report
 
-        return report
+            return report
 
     def __str__(self):
         return self.title
@@ -169,8 +182,9 @@ class Unit(Card):
                  "\nStats: "
         for key in self.stats.keys():
             value = self.stats[key]
-            report += str(value)+" "+str(key) +", "
-        report = report[:-1]
+            cap = self.statcaps[key]
+            report += str(value)+"/"+str(cap)+" "+str(key)+", "
+        report = report[:-2]
 
         report += "\nUpkeep: "
         for key in self.upkeep.keys():

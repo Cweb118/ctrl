@@ -48,7 +48,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="makedistrict", guild_ids=guilds)
     async def makedistrict_c(self, ctx, name, region_name, size, paths=None):
-        district = District(name, region_name, size, paths)
+        District(name, region_name, size, paths)
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
@@ -65,6 +65,14 @@ class Commands(commands.Cog):
         report = report+"\n\n"+district.inventory.report()
         await say(ctx,report)
 
+    @commands.command(name="move", guild_ids=guilds)
+    async def move_c(self, ctx, name):
+        player = player_dict[ctx.author.id]
+        district = district_dict[name]
+        report = district.movePlayer(player)
+        await say(ctx,report)
+
+
     @commands.command(name="man", guild_ids=guilds)
     async def man_c(self, ctx, type):
         player = player_dict[ctx.author.id]
@@ -75,9 +83,10 @@ class Commands(commands.Cog):
     @commands.command(name="harvest", guild_ids=guilds)
     async def harvest_c(self, ctx):
         player = player_dict[ctx.author.id]
-        for card in player.inventory.cards['units']:
-            report = card.harvest()
-            await say(ctx,report)
+        for card in player.inventory.cards['unit']:
+            if card.status == "Played":
+                report = card.harvest()
+                await say(ctx,report)
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
@@ -88,6 +97,12 @@ class Commands(commands.Cog):
     async def inv_c(self, ctx):
         player = player_dict[ctx.author.id]
         report = player.inventory.report()
+        await say(ctx,report)
+
+    @commands.command(name="stats", guild_ids=guilds)
+    async def stats_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        report = player.report()
         await say(ctx,report)
 
     @commands.command(name="cardrep", guild_ids=guilds)

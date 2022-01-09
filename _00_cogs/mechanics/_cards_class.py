@@ -32,24 +32,25 @@ class Card():
         can_play = False
         card_type = type(self).__name__.lower()
         card_status = self.status
+        target_type = type(target_obj).__name__.lower()
         slot_count = len(target_obj.inventory.slots[card_type])
         slotcap = target_obj.inventory.slotcap[card_type]
         if card_status == 'Held':
             if slot_count < slotcap:
-                influence = player.inventory.resources[resource_dict['Influence']]
-                played_cards = 0
-                for key in player.inventory.cards:
-                    for pcard in player.inventory.cards[key]:
-                        if pcard.status == 'Played':
-                            played_cards += 1
-                if played_cards < influence:
-                    can_play = True
-                    if self.play_cost:
-                        for key in self.play_cost.keys():
-                            cost = self.play_cost[key]
-                            if player.inventory.resources[key] < cost:
-                                can_play = False
+                can_play = True
+                if self.play_cost:
+                    for key in self.play_cost.keys():
+                        cost = self.play_cost[key]
+                        if player.inventory.resources[key] < cost:
+                            can_play = False
+                if card_type == 'unit':
+                    if player._stats[resource_dict['Influence']] == 0:
+                        can_play = False
+                if target_type == 'district':
+                    if player._location != target_obj:
+                        can_play = False
         if can_play:
             self.toggleStatus()
+            player.modStat(resource_dict['Influence'], -1)
             target_obj.inventory.slots[card_type].append(self)
         return can_play

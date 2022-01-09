@@ -1,12 +1,13 @@
 import nextcord
 from nextcord import guild
 from nextcord.ext import tasks
+from _02_global_dicts import resource_dict
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 #from _00_cogs.mechanics.unit_classes.__building_parent_class import Building
 
 class Player():
-    def __init__(self, member, memberID = None, guildID = None, invDict = None):
+    def __init__(self, member, memberID = None, guildID = None, invDict = None, starter_location = None):
         self._username = member.display_name
         self._member = member
         self._invDict = invDict
@@ -27,14 +28,17 @@ class Player():
 
         self._channel = ""
         self.createPrivateChannel.start()
-        """
-        if invDict == None:
-            self._inventory = Inventory(member)
-        else:
-            self._inventory = None
-        """
+
         self._inventory = Inventory(self, r_cap=1000, u_cap=100, b_cap=100) #Inventory Instance
-        self._location = "" #Location instance
+        self._location = starter_location #Location Instance
+        self._stats = {
+            #instance:quantity
+            resource_dict['Influence']:2
+        }
+        self._statcaps = {
+            #instance:cap
+            resource_dict['Influence']:2
+        }
 
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, {"cards" : self._inventory.cards, "resources" : self._inventory.resources}))
@@ -73,6 +77,17 @@ class Player():
                 can_add = False
         return can_add
 
+    def modStat(self, stat, quantity): #stat here is an INSTANCE (of resouce!)
+        new_val = self._stats[stat] + quantity
+        can_add = False
+        if self._statcaps[stat]:
+            if new_val >= 0:
+                if new_val <= self._statcaps[stat]:
+                    can_add = True
+        if can_add == True:
+            self._stats[stat] = new_val
+        return can_add
+
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
         await self._channel.delete()
@@ -88,6 +103,12 @@ class Player():
 
     def __str__(self):
         return self._username
+
+    def report(self):
+        report = "-----"+str(self)+"'s Stats-----\n\n"
+        for stat in self._stats.keys():
+            report += str(stat)+": "+str(self._stats[stat])+"/"+str(self._statcaps[stat])+"\n"
+        return report
 
 
     #ACCESSOR
