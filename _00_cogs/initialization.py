@@ -63,11 +63,11 @@ class PlayerCog(commands.Cog):
             for unit_kit in ['worker', 'worker', 'warrior', 'scout']:
                 player.addCard(unit_kits_dict[unit_kit], 'unit')
 
-        Region("Range")
+        Region("Range", guild=ctx.guild)
         #name, region_name, size, paths=None
-        District('Home', 'Range', 'medium')
-        shooting = District('Shooting', 'Range', 'small', 'Home,')
-        cattle = District('Cattle', 'Range', 'large', 'Home,')
+        District('Home', 'Range', 'medium', guild=ctx.guild)
+        shooting = District('Shooting', 'Range', 'small', 'Home,', guild=ctx.guild)
+        cattle = District('Cattle', 'Range', 'large', 'Home,', guild=ctx.guild)
 
         cattle.inventory.addResource(resource_dict['Food'], 50)
         cattle.addCard(unit_kits_dict['worker'], 'unit')

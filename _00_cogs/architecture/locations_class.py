@@ -1,13 +1,16 @@
 from _02_global_dicts import region_dict, district_dict, resource_dict
+from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 #from _00_cogs.mechanics.unit_classes.__building_parent_class import Building
 
 class Region():
-    def __init__(self, name):
+    def __init__(self, name, guild = None):
         self.name = name
         self.districts = []
         region_dict[name] = self
+        self.guild = guild
+        self.createChannel.start()
 
     def addDistrict(self, district):
         self.districts.append(district)
@@ -23,12 +26,24 @@ class Region():
 
         return report
 
+    @tasks.loop(seconds=1, count=1)
+    async def createChannel(self):
+
+        names = []
+        for category in self.guild.categories:
+            names.append(category.name)
+
+        if self.name not in names:
+            category = await self.guild.create_category(self.name)
+            await category.create_text_channel(self.name)
+
 class District():
-    def __init__(self, name, region_name, size, paths=None):
+    def __init__(self, name, region_name, size, paths=None, guild = None):
         self.name = name
         self.region = region_name
         self.paths = []
         self.players = []
+        self.guild = guild
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
@@ -49,6 +64,17 @@ class District():
 
         region_dict[region_name].addDistrict(self)
         district_dict[name] = self
+        self.createChannel.start()
+
+    @tasks.loop(seconds=1, count=1)
+    async def createChannel(self):
+
+        for category in self.guild.categories:
+            if category.name.lower() == self.region.lower():
+                for channel in category.channels:
+                    if channel.name.lower() == self.name.lower():
+                        return
+                await category.create_text_channel(self.name)
 
     def setPath(self, target):
         if target not in self.paths:

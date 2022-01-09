@@ -42,13 +42,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
-        Region(name)
+        Region(name, guild=ctx.guild)
         report = "Region "+name+" created."
         await say(ctx,report)
 
     @commands.command(name="makedistrict", guild_ids=guilds)
     async def makedistrict_c(self, ctx, name, region_name, size, paths=None):
-        District(name, region_name, size, paths)
+        District(name, region_name, size, paths, guild=ctx.guild)
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
@@ -71,7 +71,6 @@ class Commands(commands.Cog):
         district = district_dict[name]
         report = district.movePlayer(player)
         await say(ctx,report)
-
 
     @commands.command(name="man", guild_ids=guilds)
     async def man_c(self, ctx, type):
