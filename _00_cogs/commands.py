@@ -42,13 +42,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
-        Region(name)
+        Region(name, guild=ctx.guild)
         report = "Region "+name+" created."
         await say(ctx,report)
 
     @commands.command(name="makedistrict", guild_ids=guilds)
     async def makedistrict_c(self, ctx, name, region_name, size, paths=None):
-        district = District(name, region_name, size, paths)
+        district = District(name, region_name, size, paths, guild=ctx.guild)
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
