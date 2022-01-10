@@ -9,10 +9,9 @@ class Card():
         self.owner = owner
 
         self.status = "Held"
-
+        self.location = None
         self.play_cost = play_cost
         #Item:quantity
-
 
         if inv_args:
             self.inventory = Inventory(*inv_args)
@@ -41,16 +40,25 @@ class Card():
                 if self.play_cost:
                     for key in self.play_cost.keys():
                         cost = self.play_cost[key]
-                        if player.inventory.resources[key] < cost:
+                        if player._inventory.resources[key] < cost:
+                            report = "Error: You lack the required resources to play this card."
                             can_play = False
                 if card_type == 'unit':
                     if player._stats[resource_dict['Influence']] == 0:
+                        report = "Error: You lack the required influence."
                         can_play = False
                 if target_type == 'district':
-                    if player._location != target_obj:
+                    if player.location != target_obj:
+                        report = "Error: You are not currently present at the designated location."
                         can_play = False
+            else:
+                report = "Error: This destination does not have the required space."
+        else:
+            report = "Error: This card is not currently Held, and thus cannot be played."
         if can_play:
             self.toggleStatus()
             player.modStat(resource_dict['Influence'], -1)
             target_obj.inventory.slots[card_type].append(self)
-        return can_play
+            self.location = target_obj
+            report = str(self)+' has been played to '+str(target_obj)
+        return report

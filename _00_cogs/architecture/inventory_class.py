@@ -1,10 +1,9 @@
-from _00_cogs.mechanics.resource_class import resource_dict
-from _02_global_dicts import player_dict
+from _02_global_dicts import player_dict, district_dict,resource_dict
 
 
 class Inventory():
     def __init__(self, owner, r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None):
-        self.owner = owner #Player/Location/Card instance
+        self.inv_owner = owner #Player/Location/Card instance
 
         self.cont = r_cont #int
         self.cap = {
@@ -69,7 +68,7 @@ class Inventory():
                 i += 1
         return i
 
-    def addResource(self, resource, quantity): #resource here is an INSTANCE
+    def canAddMath(self, resource, quantity): #resource here is an INSTANCE
         new_val = self.resources[resource] + quantity
         can_add = False
         if self.cap['resource']:
@@ -84,30 +83,82 @@ class Inventory():
                                 can_add = True
                     else:
                         can_add = True
+        return can_add
+
+    def addResource(self, resource, quantity): #resource here is an INSTANCE
+        new_val = self.resources[resource] + quantity
+        can_add = self.canAddMath(resource, quantity)
         if can_add == True:
             self.resources[resource] = new_val
         return can_add
 
-    def giveResource(self, resource, quantity, taker):
-        try:
-            if quantity > 0:
-                status = self.addResource(resource, -quantity)
-                if status == True:
-                    status2 = taker.inventory.addResource(resource, quantity)
-                    if status2 == True:
-                        report = str(taker)+" has recieved "+str(quantity)+" "+str(resource)+' from '+str(self.owner)
-                    else:
-                        report = "Error: Destination has insufficient space."
+    def giveResource(self, resource, quantity, taker_inv):
+        if quantity > 0:
+            status = self.canAddMath(resource, -quantity)
+            if status:
+                status2 = taker_inv.canAddMath(resource, quantity)
+                if status2:
+                    self.addResource(resource, -quantity)
+                    taker_inv.addResource(resource, quantity)
+                    report = str(taker_inv.inv_owner)+" has recieved "+str(quantity)+" "+str(resource)+' from '+str(self.inv_owner)
                 else:
-                    report = "Error: Insufficient quantity of resource."
+                    report = "Error: Destination has insufficient space."
             else:
-                report = "Error: Input less than zero."
-        except:
-            report = "Transaction Failed."
+                report = "Error: Insufficient quantity of resource."
+        else:
+            report = "Error: Input less than zero."
         return report
 
+
+    def dropres(self, resource, quantity, target_type, target):
+        taker = None
+        if target_type == 'district':
+            if self.inv_owner.location == district_dict[target]:
+                taker = district_dict[target]
+            else:
+                report = "Error: Not at present location."
+        elif target_type == 'unit':
+            taker = self.getCard(target_type, int(target))
+            if self.inv_owner.location != taker.location:
+                report = "Error: Not at present location."
+                taker = None
+        elif target_type == 'building':
+            taker = self.getCard(target_type, int(target))
+            if self.inv_owner.location != taker.location:
+                report = "Error: Not at present location."
+                taker = None
+        else:
+            report = "Error: Invalid target."
+        if taker:
+            report = self.giveResource(resource, quantity, taker.inventory)
+        return report
+
+    def takeres(self, resource, quantity: int, target_type, target):
+        giver = None
+        if target_type == 'district':
+            if self.inv_owner.location == district_dict[target]:
+                giver = district_dict[target]
+            else:
+                report = "Error: Not at present location."
+        elif target_type == 'unit':
+            giver = self.getCard(target_type, int(target))
+            if self.inv_owner.location != giver.location:
+                report = "Error: Not at present location."
+                giver = None
+        elif target_type == 'building':
+            giver = self.getCard(target_type, int(target))
+            if self.inv_owner.location != giver.location:
+                report = "Error: Not at present location."
+                giver = None
+        else:
+            report = "Error: Invalid target."
+        if giver:
+            report = giver.inventory.giveResource(resource, quantity, self)
+        return report
+
+
     def __str__(self):
-        report = str(self.owner)+"'s Inventory"
+        report = str(self.inv_owner)+"'s Inventory"
         return report
 
     def report(self):
@@ -151,11 +202,15 @@ class Inventory():
 
         return report
 
+    def getCard(self, card_type, card_number):
+        card = self.cards[card_type][int(card_number)-1]
+        return card
+
     def cardReport(self, t, card_number):
-        card = self.cards[t][card_number-1]
+        card = self.getCard(t, int(card_number))
         return card.report()
 
     def cardNick(self, t, card_number, nick):
-        card = self.cards[t][card_number-1]
+        card = self.getCard(t, int(card_number))
         card.setNick(nick)
         return card.report()

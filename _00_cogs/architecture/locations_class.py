@@ -35,7 +35,7 @@ class Region():
 
         if self.name not in names:
             category = await self.guild.create_category(self.name)
-            await category.create_text_channel(self.name)
+            #await category.create_text_channel(self.name)
 
 class District():
     def __init__(self, name, region_name, size, paths=None, guild = None):
@@ -64,7 +64,7 @@ class District():
 
         region_dict[region_name].addDistrict(self)
         district_dict[name] = self
-        self.createChannel.start()
+        #self.createChannel.start()
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
@@ -84,28 +84,29 @@ class District():
 
     def moveCheck(self, player):
         can_move = False
-        print(player)
-        if self in player._location.paths:
+        if self in player.location.paths:
             can_move = player.modStat(resource_dict['Influence'], -1)
         return can_move
 
     def movePlayer(self, player):
-        if player._location:
+        #check if new region and move channel
+        if player.location:
             can_move = self.moveCheck(player)
         else:
             can_move = True
 
         if can_move:
-            if player._location:
-                player._location.players.remove(player)
+            if player.location:
+                player.location.players.remove(player)
                 #remove from old channel
-            player._location = self
+            player.location = self
             self.players.append(player)
             #add to new channel
             report = str(player) + " has moved to " + str(self)
         else:
             report = "Error: " + str(player) + " is unable to move to " + str(self)
         return report
+
 
     def addCard(self, card_kit, card_type):
         inv = self.inventory

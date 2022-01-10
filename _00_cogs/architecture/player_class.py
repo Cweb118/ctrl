@@ -36,7 +36,7 @@ class Player():
             self._inventory = Inventory(self, r_cap=1000, u_cap=100, b_cap=100) #Inventory Instance
         else:
             self._inventory = inventory
-        self._location = starter_location #Location Instance
+        self.location = starter_location #Location Instance (needs to lack _!)
         self._stats = {
             #instance:quantity
             resource_dict['Influence']:2

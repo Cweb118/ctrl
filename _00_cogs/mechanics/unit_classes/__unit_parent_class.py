@@ -9,7 +9,7 @@ from _02_global_dicts import player_dict, resource_dict
 
 class Unit(Card):
     def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, upkeep_dict, dice_stats):
-        inv_args = [owner]+inv_args
+        inv_args = [self]+inv_args
         super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
 
         self.stats = {
@@ -120,7 +120,6 @@ class Unit(Card):
             self.die_set = Dice(new_set)
         self.traits[trait.trigger].append(trait)
 
-
     def addCard(self, card_kit, card_type):
         inv = self.inventory
         can_add = inv.capMathCard(card_type)
@@ -137,6 +136,35 @@ class Unit(Card):
             else:
                 can_add = False
         return can_add
+
+    def moveUnit(self, dest_type, destination):
+        if self.status == 'Played':
+            if self.stats['Endurance'] > 0:
+                can_move = False
+                if dest_type == 'district':
+                    if destination in self.location.paths:
+                        can_move = True
+                if dest_type == 'unit':
+                    if self.location == destination.location:
+                        can_move = True
+                if can_move:
+                    slot_count = len(destination.inventory.slots['unit'])
+                    slotcap = destination.inventory.slotcap['unit']
+                    if slot_count < slotcap:
+                        destination.inventory.slots['unit'].append(self)
+                        self.location.inventory.slots['unit'].remove(self)
+                        self.location = destination
+                        self.setStat('Endurance', -1)
+                        report = "Unit moved successfully."
+                    else:
+                        report = "Error: This destination does not have the required space."
+                else:
+                    report = "Error: This destination is too far."
+            else:
+                report = "Error: This unit does not have the Endurance."
+        else:
+            report = "Error: This unit has not yet been played."
+        return report
 
     def harvest(self):
         if self.status == "Played":
@@ -178,6 +206,7 @@ class Unit(Card):
                  "\nTitle: "+self.title+\
                  "\nDescription: "+self.description+\
                  "\nStatus: "+str(self.status)+\
+                 "\nLocation: "+str(self.location)+\
                  "\nTraits: "+str(self.trait_list)+\
                  "\nStats: "
         for key in self.stats.keys():
@@ -196,15 +225,3 @@ class Unit(Card):
 
         report += "\n\n"+self.inventory.report()
         return report
-
-
-
-
-#upkeep_quantity: Int
-#upkeep_obj: Item/Unit instance
-
-#output_quantity: Int
-#output_obj: Item/Unit instance
-
-#catylist_quantity: Int
-#catylist_obj: Item/Unit instance

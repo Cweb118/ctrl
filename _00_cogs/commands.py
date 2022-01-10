@@ -72,21 +72,6 @@ class Commands(commands.Cog):
         report = district.movePlayer(player)
         await say(ctx,report)
 
-    @commands.command(name="man", guild_ids=guilds)
-    async def man_c(self, ctx, type):
-        player = player_dict[ctx.author.id]
-        man = player.inventory.makeCard(unit_kits_dict[type], 'unit')
-        report = str(man.report())
-        await say(ctx,report)
-
-    @commands.command(name="harvest", guild_ids=guilds)
-    async def harvest_c(self, ctx):
-        player = player_dict[ctx.author.id]
-        for card in player.inventory.cards['unit']:
-            if card.status == "Played":
-                report = card.harvest()
-                await say(ctx,report)
-
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
         die_set = Dice(int(quantity), int(sides))
@@ -97,6 +82,33 @@ class Commands(commands.Cog):
         player = player_dict[ctx.author.id]
         report = player.inventory.report()
         await say(ctx,report)
+
+    @commands.command(name="man", guild_ids=guilds)
+    async def man_c(self, ctx, type):
+        player = player_dict[ctx.author.id]
+        man = player.inventory.makeCard(unit_kits_dict[type], 'unit')
+        report = str(man.report())
+        await say(ctx,report)
+
+    @commands.command(name="unitmove", guild_ids=guilds)
+    async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.getCard(card_type, int(card_number))
+        if target_type == 'district':
+            destination = district_dict[target]
+        elif target_type == 'unit':
+            destination = player.inventory.getCard(target_type, int(target))
+        report = card.moveUnit(target_type, destination)
+        await say(ctx,report)
+
+
+    @commands.command(name="harvest", guild_ids=guilds)
+    async def harvest_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        for card in player.inventory.cards['unit']:
+            if card.status == "Played":
+                report = card.harvest()
+                await say(ctx,report)
 
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):
@@ -162,35 +174,34 @@ class Commands(commands.Cog):
     async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
         resource = resource_dict[resource_name]
         giver = player_dict[ctx.author.id]
-        taker = None
-        if target_type == 'district':
-            taker = district_dict[target]
-        elif target_type == 'unit':
-            taker = giver.inventory.cards[target_type][int(target)-1]
-        elif target_type == 'building':
-            taker = giver.inventory.cards[target_type][int(target)-1]
-        if taker:
-            report = giver.inventory.giveResource(resource, quantity, taker)
-        else:
-            report = "Error: Invalid target type."
+        report = giver.inventory.dropres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+    @commands.command(name="unitdropres", guild_ids=guilds)
+    async def unitdropres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        player = player_dict[ctx.author.id]
+        giver = player.inventory.getCard(unit_type, unit_number)
+        report = giver.inventory.dropres(resource, quantity, target_type, target)
         await say(ctx,report)
 
     @commands.command(name="takeres", guild_ids=guilds)
     async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
         resource = resource_dict[resource_name]
         taker = player_dict[ctx.author.id]
-        giver = None
-        if target_type == 'location':
-            giver = district_dict[target]
-        elif target_type == 'unit':
-            giver = taker.inventory.cards[target_type][int(target)-1]
-        elif target_type == 'building':
-            giver = taker.inventory.cards[target_type][int(target)-1]
-        if giver:
-            report = giver.inventory.giveResource(resource, quantity, taker)
-        else:
-            report = "Error: Invalid target type."
+        report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
+
+    @commands.command(name="unittakeres", guild_ids=guilds)
+    async def unittakeres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        player = player_dict[ctx.author.id]
+        taker = player.inventory.getCard(unit_type, unit_number)
+        report = taker.inventory.takeres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+
+
 
     @commands.command(name="addres", guild_ids=guilds)
     async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
