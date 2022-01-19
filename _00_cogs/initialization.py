@@ -4,6 +4,7 @@ from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
+from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import say
@@ -20,10 +21,7 @@ class PlayerCog(commands.Cog):
     async def initPlayers(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
-
             player_dict[member.id]=(Player(member))
-            player_dict[member.id].inventory.addResource(resource_dict['Influence'], 2)
-
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="listplayers", guild_ids=guilds)
@@ -59,9 +57,11 @@ class PlayerCog(commands.Cog):
             player.inventory.addResource(resource_dict['Water'], 10)
             player.inventory.addResource(resource_dict['Food'], 10)
             player.inventory.addResource(resource_dict['Metal'], 10)
+            player.inventory.addResource(resource_dict['Wood'], 10)
 
-            for unit_kit in ['worker', 'worker', 'warrior', 'scout']:
-                player.addCard(unit_kits_dict[unit_kit], 'unit')
+            #player.addCard(building_kits_dict['wooden_wall'], 'building')
+            #for unit_kit in ['Knight', 'Scout', 'Ranger', 'Warrior']:
+                #player.addCard(unit_kits_dict[unit_kit], 'unit')
 
         Region("Range", guild=ctx.guild)
         #name, region_name, size, paths=None
@@ -70,9 +70,9 @@ class PlayerCog(commands.Cog):
         cattle = District('Cattle', 'Range', 'large', 'Home,', guild=ctx.guild)
 
         cattle.inventory.addResource(resource_dict['Food'], 50)
-        cattle.addCard(unit_kits_dict['worker'], 'unit')
-        cattle.addCard(unit_kits_dict['worker'], 'unit')
-        shooting.addCard(unit_kits_dict['warrior'], 'unit')
+        cattle.addCard(unit_kits_dict['Worker'], 'unit')
+        cattle.addCard(unit_kits_dict['Worker'], 'unit')
+        shooting.addCard(unit_kits_dict['Warrior'], 'unit')
 
         report = "Initilization Complete."
         await say(ctx,report)

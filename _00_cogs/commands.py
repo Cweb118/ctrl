@@ -8,6 +8,8 @@ from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
+from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
+from _00_cogs.mechanics.battle_logic import battle
 
 guilds = [588095612436742173, 778448646642728991]
 
@@ -39,6 +41,29 @@ class Commands(commands.Cog):
 
 
 #----------testing----------
+    @commands.command(name="play", guild_ids=guilds)
+    async def play_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        player.addCard(building_kits_dict['wooden_wall'], 'building')
+        await self.makecard_c(ctx, 'Technophant', 'Xinn')
+        await self.makecard_c(ctx, 'Guardian', 'Aratori')
+        await self.makecard_c(ctx, 'Knight', 'Prismari')
+        await self.makecard_c(ctx, 'Alchemist', 'Yhont')
+        await self.makecard_c(ctx, 'Warrior', 'Automata')
+
+        await self.move_c(ctx, 'Home')
+
+        await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
+        await self.playcard_c(ctx, 'unit', 1, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 1, 'B0b')
+        await self.playcard_c(ctx, 'unit', 2, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 2, 'Bob')
+        await self.playcard_c(ctx, 'unit', 3, 'building', 1)
+        await self.cardnick_c(ctx, 'unit', 3, 'Tim')
+        await self.playcard_c(ctx, 'unit', 4, 'building', 1)
+        await self.cardnick_c(ctx, 'unit', 4, 'Tom')
+        await self.playcard_c(ctx, 'unit', 5, 'building', 1)
+        await self.cardnick_c(ctx, 'unit', 5, 'Tem')
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
@@ -83,12 +108,13 @@ class Commands(commands.Cog):
         report = player.inventory.report()
         await say(ctx,report)
 
-    @commands.command(name="man", guild_ids=guilds)
-    async def man_c(self, ctx, type):
+    @commands.command(name="makecard", guild_ids=guilds)
+    async def makecard_c(self, ctx, unit_class, race):
         player = player_dict[ctx.author.id]
-        man = player.inventory.makeCard(unit_kits_dict[type], 'unit')
+        status, man = player.addCard(unit_kits_dict[unit_class], 'unit')
+        man.addTrait(race)
         report = str(man.report())
-        await say(ctx,report)
+        #await say(ctx,report)
 
     @commands.command(name="unitmove", guild_ids=guilds)
     async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
@@ -110,6 +136,12 @@ class Commands(commands.Cog):
                 report = card.harvest()
                 await say(ctx,report)
 
+    @commands.command(name="battle", guild_ids=guilds)
+    async def battle_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        location = player.location
+        await battle(ctx, location)
+
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):
         player = player_dict[ctx.author.id]
@@ -128,7 +160,7 @@ class Commands(commands.Cog):
         card = player.inventory.cards[card_type][int(card_number)-1]
         report = card.setNick(nick)
         report = player.inventory.cardReport(card_type, int(card_number))
-        await say(ctx,report)
+        #await say(ctx,report)
 
     @commands.command(name="playcard", guild_ids=guilds)
     async def playcard_c(self, ctx, card_type, card_number, target_type, target):
@@ -142,11 +174,7 @@ class Commands(commands.Cog):
         elif target_type == 'building':
             targ = player.inventory.cards[target_type][int(target)-1]
         if targ:
-            status = card.playCard(player, targ)
-            if status:
-                report = str(card)+" successfully played to "+str(targ)
-            else:
-                report = 'Error: One or more requirements not met.'
+            report = card.playCard(player, targ)
         else:
             report = 'Error: Invalid location.'
         await say(ctx,report)

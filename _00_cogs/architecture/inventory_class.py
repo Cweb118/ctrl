@@ -175,7 +175,7 @@ class Inventory():
                     report += "-"+str(resource)+": "+str(self.resources[resource])+"/"+str(self.cap['resource'])+"\n"
                     i += 1
             if i == 0:
-                report += "-None\n"
+                report += "-None (0/"+str(self.cap['resource'])+")\n"
 
         if self.cap['unit'] or self.cap['building']:
             report += "\n---Cards:\n"

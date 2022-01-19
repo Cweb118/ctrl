@@ -8,7 +8,7 @@ from _02_global_dicts import player_dict, resource_dict
 
 
 class Unit(Card):
-    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, upkeep_dict, dice_stats):
+    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, upkeep_dict, initv, threat, dice_stats):
         inv_args = [self]+inv_args
         super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
 
@@ -27,6 +27,8 @@ class Unit(Card):
             'Fortitude':stats['fortitude']
         }
 
+        self.initiative = initv
+        self.threat = threat
         self.upkeep = {}
         self.die_list = dice_stats
         self.die_set = Dice(dice_stats)
@@ -40,7 +42,6 @@ class Unit(Card):
             'on_play': [],
             'on_work': [],
             'on_move': [],
-
             'on_attack': [],
             'on_defend': [],
             'on_death': [],
@@ -55,15 +56,24 @@ class Unit(Card):
         self.stats[stat] += quantity
         if self.stats[stat] < 0:
             self.stats[stat] = 0
+        return self.stats[stat]
 
     def setHealth(self, quantity):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:
             self.status = "DEAD"
-            report = "Your "+str(self)+' has died.'
+            report = "The "+str(self)+' has died.'
         else:
-            report = "Your "+str(self)+' now has '+str(self.stats['Health'])+' Health.'
+            report = "The "+str(self)+' now has '+str(self.stats['Health'])+' Health.'
         return report
+
+    def dmg(self, attack_value):
+        if self.stats['Defense'] > 0:
+            self.setStat('Defense', -attack_value)
+            health_rep = "The "+str(self)+"'s Defense is now "+str(self.stats['Defense'])
+        else:
+            health_rep = self.setHealth(-attack_value)
+        return health_rep
 
     def addTrait(self, trait):
         trait = Trait(*trait_kits_dict[trait])
@@ -114,11 +124,16 @@ class Unit(Card):
                             inv.slotcap[type] = mod
                 else:
                     print("ERROR: Invalid inventory constraint.")
+        if trait.trait_initiative:
+            self.initiative += trait.trait_initiative
+        if trait.trait_threat:
+            self.threat += trait.trait_threat
         if trait.trait_dice_stats:
             new_set = self.die_list + trait.trait_dice_stats
             self.die_list = new_set
             self.die_set = Dice(new_set)
-        self.traits[trait.trigger].append(trait)
+        for trig in trait.trigger:
+            self.traits[trig].append(trait)
 
     def addCard(self, card_kit, card_type):
         inv = self.inventory

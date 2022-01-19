@@ -2,7 +2,7 @@ from _02_global_dicts import region_dict, district_dict, resource_dict
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-#from _00_cogs.mechanics.unit_classes.__building_parent_class import Building
+from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 
 class Region():
     def __init__(self, name, guild = None):
@@ -117,13 +117,13 @@ class District():
             if card_type == 'unit':
                 card = Unit(*kit)
             elif card_type == 'building':
-                #card = Building(*kit)
-                print("no")
+                card = Building(*kit)
             if card:
                 inv.cards[card_type].append(card)
             else:
                 can_add = False
-        return can_add
+        return can_add, card
+
 
     def __str__(self):
         return self.name

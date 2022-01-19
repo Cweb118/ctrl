@@ -28,15 +28,17 @@ class Dice():
         hit_count = len(hits)
         if hit_count > 0:
             s = True
+            r = 'HIT'
         else:
             s = False
+            r = 'MISS'
 
         report = {
             'rolls':rolls,
             'threshold':success,
             'hits':hits,
             'hit_count':hit_count,
-            'result':s
+            'result':r
         }
         return s, report
 

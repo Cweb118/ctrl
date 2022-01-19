@@ -1,7 +1,7 @@
 
 
 class Trait():
-    def __init__(self, name, description, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, mod_upkeep_dict, new_dice_stats):
+    def __init__(self, name, description, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, mod_initiative, mod_threat, mod_upkeep_dict, new_dice_stats):
 
         self.trait_title = name
         self.trait_description = description
@@ -11,6 +11,8 @@ class Trait():
 
         self.trait_play_cost = mod_play_cost
         self.trait_stats_dict = mod_stats_dict
+        self.trait_initiative = mod_initiative
+        self.trait_threat = mod_threat
         self.trait_upkeep_dict = mod_upkeep_dict
         self.trait_dice_stats = new_dice_stats
 
