@@ -44,26 +44,31 @@ class Commands(commands.Cog):
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
         player = player_dict[ctx.author.id]
-        player.addCard(building_kits_dict['wooden_wall'], 'building')
-        await self.makecard_c(ctx, 'Technophant', 'Xinn')
-        await self.makecard_c(ctx, 'Guardian', 'Aratori')
-        await self.makecard_c(ctx, 'Knight', 'Prismari')
-        await self.makecard_c(ctx, 'Alchemist', 'Yhont')
-        await self.makecard_c(ctx, 'Warrior', 'Automata')
+        player.addCard(building_kits_dict['mother_tree'], 'building')
+        player.addCard(building_kits_dict['bountiful_field'], 'building')
+        await self.makecard_c(ctx, 'Worker', 'Aratori')
+        await self.makecard_c(ctx, 'Worker', 'Xinn')
+        #await self.makecard_c(ctx, 'Technophant', 'Xinn')
+        #await self.makecard_c(ctx, 'Guardian', 'Aratori')
+        #await self.makecard_c(ctx, 'Knight', 'Prismari')
+        #await self.makecard_c(ctx, 'Alchemist', 'Otavan')
+        #await self.makecard_c(ctx, 'Warrior', 'Automata')
 
         await self.move_c(ctx, 'Home')
 
         await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
-        await self.playcard_c(ctx, 'unit', 1, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 1, 'B0b')
-        await self.playcard_c(ctx, 'unit', 2, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 2, 'Bob')
-        await self.playcard_c(ctx, 'unit', 3, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 3, 'Tim')
-        await self.playcard_c(ctx, 'unit', 4, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 4, 'Tom')
-        await self.playcard_c(ctx, 'unit', 5, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 5, 'Tem')
+        await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
+        await self.playcard_c(ctx, 'unit', 1, 'building', '2')
+        await self.cardnick_c(ctx, 'unit', 1, 'Tim')
+        await self.playcard_c(ctx, 'unit', 2, 'building', '2')
+        await self.cardnick_c(ctx, 'unit', 2, 'Tem')
+
+        #await self.playcard_c(ctx, 'unit', 3, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 3, 'Tim')
+        #await self.playcard_c(ctx, 'unit', 4, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 4, 'Tom')
+        #await self.playcard_c(ctx, 'unit', 5, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 5, 'Tem')
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
@@ -141,6 +146,15 @@ class Commands(commands.Cog):
         player = player_dict[ctx.author.id]
         location = player.location
         await battle(ctx, location)
+
+    @commands.command(name="run", guild_ids=guilds)
+    async def run_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        for card in player.inventory.cards['building']:
+            if card.status == "Played":
+                report = card.run()
+                if report:
+                    await say(ctx,report)
 
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):

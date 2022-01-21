@@ -51,6 +51,15 @@ class Card():
                     if player.location != target_obj:
                         report = "Error: You are not currently present at the designated location."
                         can_play = False
+                else:
+                    if player.location != target_obj.location:
+                        report = "Error: You are not currently present at the designated location."
+                        can_play = False
+                if target_type == 'building':
+                    for tag in target_obj.worker_req:
+                        if tag not in self.trait_list:
+                            report = "Error: This unit does not meet all requirements for the destination."
+                            can_play = False
             else:
                 report = "Error: This destination does not have the required space."
         else:

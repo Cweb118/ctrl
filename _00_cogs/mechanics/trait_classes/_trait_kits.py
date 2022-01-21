@@ -29,6 +29,10 @@ trait_kits_dict = {
                 {'cap':{'resource':2}}, None,
                 {'Endurance':2}, -1, None, None, ['1d6']],
 
+    'Otavan':['Otavan', 'A mighty race of great strength, the Otavan have survived through thick and thin.',
+              ['on_play'], Otavan(),
+             None, None, None, None, -2, None, ['1d6']],
+
     'Prismari':['Prismari', "A regal race of birds who move quite fast for their size.",
               ['on_defend'], Prismari(),
              None, None,
@@ -55,9 +59,7 @@ trait_kits_dict = {
               ['on_play'], Yavari(),
              None, None, None, None, None, None, ['1d6']],
 
-    'Yhont':['Yhont', 'A mighty race of great strength, the Yhont have survived through thick and thin.',
-              ['on_play'], Yhont(),
-             None, None, None, None, -2, None, ['1d6']],
+
 
     #name, description, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, initiative, taunt, mod_upkeep_dict, new_dice_stats
     'Worker':['Worker', 'The mark of a Worker', ['on_play'], Worker(), None, None, None, None, None, None, None],
