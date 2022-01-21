@@ -1,5 +1,5 @@
 from _00_cogs.architecture.inventory_class import Inventory
-from _02_global_dicts import resource_dict
+from _02_global_dicts import resource_dict, played_cards_dict
 
 #-----attributes-----
 class Card():
@@ -51,6 +51,15 @@ class Card():
                     if player.location != target_obj:
                         report = "Error: You are not currently present at the designated location."
                         can_play = False
+                else:
+                    if player.location != target_obj.location:
+                        report = "Error: You are not currently present at the designated location."
+                        can_play = False
+                if target_type == 'building':
+                    for tag in target_obj.worker_req:
+                        if tag not in self.trait_list:
+                            report = "Error: This unit does not meet all requirements for the destination."
+                            can_play = False
             else:
                 report = "Error: This destination does not have the required space."
         else:
@@ -65,6 +74,7 @@ class Card():
                     player._inventory.addResource(resource_dict[key], -self.play_cost[key])
             target_obj.inventory.slots[card_type].append(self)
             self.location = target_obj
+            played_cards_dict[card_type].append(self)
             report = str(self)+' has been played to '+str(target_obj)
         return report
 

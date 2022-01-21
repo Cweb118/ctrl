@@ -1,7 +1,8 @@
 from _00_cogs.mechanics._cards_class import Card
+from _02_global_dicts import resource_dict
 
 class Building(Card):
-    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, input_dict, output_dict, cat_dict):
+    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, worker_req, input_dict, output_dict, cat_dict):
         inv_args = [self]+inv_args
         super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
 
@@ -20,11 +21,83 @@ class Building(Card):
         }
         self.trait_list = traits
 
+        self.worker_req = worker_req
         self.input = input_dict
         self.output = output_dict
         self.catalyst = cat_dict
 
-        input = {}
+        self.links = []
+        self.priority = 0
+
+
+    def checkReqs(self):
+        can_run = True
+        if self.input:
+            for res in self.input:
+                res_obj = resource_dict[res]
+                needed = self.input[res]
+                have = self.inventory.resources[res_obj]
+                if have < needed:
+                    can_run = False
+                    report = "Error: "+str(self)+" lacks required input resources."
+
+        if self.output:
+            for res in self.output:
+                res_obj = resource_dict[res]
+                given = self.output[res]
+                have = self.inventory.resources[res_obj]
+                max = self.inventory.cap['resource']
+                if have + given > max:
+                    can_run = False
+                    report = "Error: "+str(self)+" has insufficient space for output."
+
+        if self.catalyst:
+            for res in self.catalyst:
+                res_obj = resource_dict[res]
+                needed = self.catalyst[res]
+                have = self.inventory.resources[res_obj]
+                if have < needed:
+                    can_run = False
+                    report = "Error: "+str(self)+" lacks required catalytic resources."
+
+        if self.inventory.slotcap['unit'] > 0:
+            if len(self.inventory.slots['unit']) != self.inventory.slotcap['unit']:
+                can_run = False
+                report = "Error: "+str(self)+" lacks required workers."
+        return can_run, report
+
+    def doInput(self):
+        if self.input:
+            for res in self.input:
+                res_obj = resource_dict[res]
+                needed = self.input[res]
+                self.inventory.addResource(res_obj, -needed)
+
+    def doOutput(self):
+        for res in self.output:
+            res_obj = resource_dict[res]
+            gain = self.output[res]
+            if len(self.links) > 0:
+                link_give = self.links[0].inventory.addResource(res_obj, gain)
+                if not link_give:
+                    self.inventory.addResource(res_obj, gain)
+            else:
+                self.inventory.addResource(res_obj, gain)
+
+    def run(self):
+        if self.output:
+            can_run, req_report = self.checkReqs()
+            if can_run:
+                self.doInput()
+                self.doOutput()
+                report = str(self) + " has run successfully."
+            else:
+                report = req_report
+            return report
+
+    def addLink(self, building):
+        self.links.append(building)
+        self.priority = building.priority + 1
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
@@ -66,35 +139,36 @@ class Building(Card):
             cap = self.statcaps[key]
             report += str(value)+"/"+str(cap)+" "+str(key)+", "
         report = report[:-2]
+        report += "\n"
 
-        """
-        report += "\nUpkeep: "
-        for key in self.upkeep.keys():
-            value = self.upkeep[key]
-            report += str(value)+" "+str(key) +", "
-        report = report[:-2]
-        """
 
+        if self.worker_req:
+            report += "\nWorker Requirements: " + str(self.worker_req)
+
+        if self.input:
+            report += "\nInput: "
+            for key in self.input.keys():
+                value = self.input[key]
+                report += str(value)+" "+str(key) +", "
+            report = report[:-2]
+
+        if self.output:
+            report += "\nOutput: "
+            for key in self.output.keys():
+                value = self.output[key]
+                report += str(value)+" "+str(key) +", "
+            report = report[:-2]
+
+        if self.catalyst:
+            report += "\nRequired Catalyst: "
+            for key in self.catalyst.keys():
+                value = self.catalyst[key]
+                report += str(value)+" "+str(key) +", "
+            report = report[:-2]
+
+        if len(self.links) > 0:
+            report += "\nProduction Receptacles: " + str(self.links[0])
 
         report += "\n\n"+self.inventory.report()
         return report
-#Inherits from: Card
-
-#Name: Str
-#Description: Str
-
-#Attack: Int
-#Defence: Int
-#Size: Int
-#Age: Str
-#Affinity: Str
-
-#input_quantity: Int
-#input_obj: Item/Unit instance
-
-#output_quantity: Int
-#output_obj: Item/Unit instance
-
-#catylist_quantity: Int
-#catylist_obj: Item/Unit instance
 

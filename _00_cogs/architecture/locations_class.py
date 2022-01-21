@@ -159,7 +159,6 @@ class District():
                 can_add = False
         return can_add, card
 
-
     def __str__(self):
         return self.name
 

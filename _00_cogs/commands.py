@@ -2,7 +2,7 @@ import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import *
-from _02_global_dicts import player_dict, resource_dict, region_dict, district_dict
+from _02_global_dicts import player_dict, resource_dict, region_dict, district_dict, played_cards_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
@@ -44,26 +44,35 @@ class Commands(commands.Cog):
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
         player = player_dict[ctx.author.id]
-        player.addCard(building_kits_dict['wooden_wall'], 'building')
-        await self.makecard_c(ctx, 'Technophant', 'Xinn')
-        await self.makecard_c(ctx, 'Guardian', 'Aratori')
-        await self.makecard_c(ctx, 'Knight', 'Prismari')
-        await self.makecard_c(ctx, 'Alchemist', 'Yhont')
-        await self.makecard_c(ctx, 'Warrior', 'Automata')
+        player.addCard(building_kits_dict['mother_tree'], 'building')
+        player.addCard(building_kits_dict['bountiful_field'], 'building')
+        await self.makecard_c(ctx, 'Worker', 'Aratori')
+        await self.makecard_c(ctx, 'Worker', 'Aratori')
+        await self.makecard_c(ctx, 'Worker', 'Xinn')
+        #await self.makecard_c(ctx, 'Technophant', 'Xinn')
+        #await self.makecard_c(ctx, 'Guardian', 'Aratori')
+        #await self.makecard_c(ctx, 'Knight', 'Prismari')
+        #await self.makecard_c(ctx, 'Alchemist', 'Otavan')
+        #await self.makecard_c(ctx, 'Warrior', 'Automata')
 
         await self.move_c(ctx, 'Home')
 
         await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
-        await self.playcard_c(ctx, 'unit', 1, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 1, 'B0b')
-        await self.playcard_c(ctx, 'unit', 2, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 2, 'Bob')
-        await self.playcard_c(ctx, 'unit', 3, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 3, 'Tim')
-        await self.playcard_c(ctx, 'unit', 4, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 4, 'Tom')
-        await self.playcard_c(ctx, 'unit', 5, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 5, 'Tem')
+        await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
+        await self.link_c(ctx, 2, 1)
+        await self.playcard_c(ctx, 'unit', 1, 'building', '1')
+        await self.cardnick_c(ctx, 'unit', 1, 'Tim')
+        await self.playcard_c(ctx, 'unit', 2, 'building', '2')
+        await self.cardnick_c(ctx, 'unit', 2, 'Tom')
+        await self.playcard_c(ctx, 'unit', 3, 'building', '2')
+        await self.cardnick_c(ctx, 'unit', 3, 'Tem')
+
+        #await self.playcard_c(ctx, 'unit', 3, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 3, 'Tim')
+        #await self.playcard_c(ctx, 'unit', 4, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 4, 'Tom')
+        #await self.playcard_c(ctx, 'unit', 5, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 5, 'Tem')
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
@@ -141,6 +150,39 @@ class Commands(commands.Cog):
         player = player_dict[ctx.author.id]
         location = player.location
         await battle(ctx, location)
+
+    @commands.command(name="run", guild_ids=guilds)
+    async def run_c(self, ctx):
+
+        wave_ints = []
+        for building in played_cards_dict['building']:
+            priority = building.priority
+            if priority not in wave_ints:
+                wave_ints.append(priority)
+        wave_ints = sorted(wave_ints, reverse=True)
+
+        waves = {}
+        for num in wave_ints:
+            wave = []
+            for building in played_cards_dict['building']:
+                if building.priority == num:
+                    wave.append(building)
+            waves[num] = wave
+
+        for num in wave_ints:
+            for building in waves[num]:
+                report = building.run()
+                if report:
+                    await say(ctx,report)
+
+    @commands.command(name="link", guild_ids=guilds)
+    async def link_c(self, ctx, building_child_number, building_parent_number):
+        player = player_dict[ctx.author.id]
+        building_child = player.inventory.getCard('building', int(building_child_number))
+        building_parent = player.inventory.getCard('building', int(building_parent_number))
+        building_parent.addLink(building_child)
+
+
 
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):

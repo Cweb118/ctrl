@@ -215,6 +215,10 @@ class Loyavasi():
     def action(self):
         print('action!')
 
+class Otavan():
+    def action(self):
+        print('action!')
+
 class Prismari():
     def defend(self, defense_unit, attack_unit, dmg):
         if attack_unit.threat >= 0:
@@ -249,6 +253,4 @@ class Yavari():
     def action(self):
         print('action!')
 
-class Yhont():
-    def action(self):
-        print('action!')
+
