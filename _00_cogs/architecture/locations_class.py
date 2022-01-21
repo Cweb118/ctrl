@@ -1,5 +1,6 @@
 from _02_global_dicts import region_dict, district_dict, resource_dict
 import nextcord
+import asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
@@ -12,6 +13,7 @@ class Region():
         region_dict[name] = self
         self.guild = guild
         self.createChannel.start()
+        self.channel = None
 
     def addDistrict(self, district):
         self.districts.append(district)
@@ -31,15 +33,18 @@ class Region():
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
-        names = []
+        categoryNames = []
         for category in self.guild.categories:
-            names.append(category.name)
+            categoryNames.append(category.name)
 
-        if self.name not in names:
+        if self.name not in categoryNames:
             category = await self.guild.create_category(self.name)
-            channel = await category.create_text_channel(self.name)
-            await channel.set_permissions(self.guild.default_role, read_messages=False)
-            await channel.set_permissions(playerRole, read_messages = True)
+            self.channel = await category.create_text_channel(self.name)
+            await self.channel.set_permissions(self.guild.default_role, read_messages=False)
+            await self.channel.set_permissions(playerRole, read_messages = True)
+        else:
+            print("Channel was found for", self.name, "region.")
+            self.channel = nextcord.utils.get(self.guild.channels, name=self.name)
 
 class District():
     def __init__(self, name, region_name, size, paths=None, guild = None):
@@ -48,6 +53,7 @@ class District():
         self.paths = []
         self.players = []
         self.guild = guild
+        self.channel = None
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
@@ -73,16 +79,24 @@ class District():
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
+        
+        #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
+        await asyncio.sleep(.25)
 
         for category in self.guild.categories:
             if category.name.lower() == self.region.lower():
                 for channel in category.channels:
                     if channel.name.lower() == self.name.lower():
+                        print("Channel was found for", self.name, "district.")
+                        self.channel = channel
                         return
 
-                channel = await category.create_text_channel(self.name)
-                await channel.set_permissions(self.guild.default_role, read_messages=False)
-                await channel.set_permissions(playerRole, read_messages = True)
+                self.channel = await category.create_text_channel(self.name)
+                await self.channel.set_permissions(self.guild.default_role, read_messages=False)
+                await self.channel.set_permissions(playerRole, read_messages = True)
+                return
+        print("Error: Category not found. This may be due to the delay not long enough after the category is created.")
+
 
     def setPath(self, target):
         if target not in self.paths:
@@ -97,23 +111,36 @@ class District():
         return can_move
 
     def movePlayer(self, player):
-        #check if new region and move channel
+        #If player is already in a location, check if they can move. Otherwise, set it to true.
         if player.location:
             can_move = self.moveCheck(player)
+            #If player is in location AND can move, remove them from the current location's player list.
+            if can_move:
+                player.location.players.remove(player)
         else:
             can_move = True
 
         if can_move:
-            if player.location:
-                player.location.players.remove(player)
-                #remove from old channel
-            player.location = self
-            self.players.append(player)
-            #add to new channel
-            report = str(player) + " has moved to " + str(self)
-        else:
-            report = "Error: " + str(player) + " is unable to move to " + str(self)
-        return report
+            self._movePlayer.start(player)
+            return str(player) + " has moved to " + str(self)
+        return "Error: " + str(player) + " is unable to move to " + str(self)
+    
+    @tasks.loop(seconds=1, count=1)
+    async def _movePlayer(self, player):
+
+        #Check if player is already in a location. Player may not be in a region at the start of initialization.
+        if player.location:
+            #if player is being moved to a different region, remove permissions from old region channel and category.
+            if not player.location.region == self.region:
+                category = nextcord.utils.get(self.guild.categories, name=player.location.region)
+                await category.set_permissions(player.member, read_messages=False)
+        
+            #remove player from old district channel
+            player.location.region.channel.set_permissions(player.member, read_messages=False)
+
+        player.location = self
+        self.players.append(player)
+        await self.channel.set_permissions(player.member, read_messages=True)
 
 
     def addCard(self, card_kit, card_type):
