@@ -1,5 +1,5 @@
 from _00_cogs.architecture.inventory_class import Inventory
-from _02_global_dicts import resource_dict
+from _02_global_dicts import resource_dict, played_cards_dict
 
 #-----attributes-----
 class Card():
@@ -74,6 +74,7 @@ class Card():
                     player._inventory.addResource(resource_dict[key], -self.play_cost[key])
             target_obj.inventory.slots[card_type].append(self)
             self.location = target_obj
+            played_cards_dict[card_type].append(self)
             report = str(self)+' has been played to '+str(target_obj)
         return report
 

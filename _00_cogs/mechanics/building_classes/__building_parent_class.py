@@ -26,6 +26,9 @@ class Building(Card):
         self.output = output_dict
         self.catalyst = cat_dict
 
+        self.links = []
+        self.priority = 0
+
 
     def checkReqs(self):
         can_run = True
@@ -36,6 +39,17 @@ class Building(Card):
                 have = self.inventory.resources[res_obj]
                 if have < needed:
                     can_run = False
+                    report = "Error: "+str(self)+" lacks required input resources."
+
+        if self.output:
+            for res in self.output:
+                res_obj = resource_dict[res]
+                given = self.output[res]
+                have = self.inventory.resources[res_obj]
+                max = self.inventory.cap['resource']
+                if have + given > max:
+                    can_run = False
+                    report = "Error: "+str(self)+" has insufficient space for output."
 
         if self.catalyst:
             for res in self.catalyst:
@@ -44,12 +58,13 @@ class Building(Card):
                 have = self.inventory.resources[res_obj]
                 if have < needed:
                     can_run = False
+                    report = "Error: "+str(self)+" lacks required catalytic resources."
 
         if self.inventory.slotcap['unit'] > 0:
             if len(self.inventory.slots['unit']) != self.inventory.slotcap['unit']:
                 can_run = False
-        print(can_run)
-        return can_run
+                report = "Error: "+str(self)+" lacks required workers."
+        return can_run, report
 
     def doInput(self):
         if self.input:
@@ -62,18 +77,27 @@ class Building(Card):
         for res in self.output:
             res_obj = resource_dict[res]
             gain = self.output[res]
-            self.inventory.addResource(res_obj, gain)
+            if len(self.links) > 0:
+                link_give = self.links[0].inventory.addResource(res_obj, gain)
+                if not link_give:
+                    self.inventory.addResource(res_obj, gain)
+            else:
+                self.inventory.addResource(res_obj, gain)
 
     def run(self):
         if self.output:
-            if self.checkReqs():
+            can_run, req_report = self.checkReqs()
+            if can_run:
                 self.doInput()
                 self.doOutput()
                 report = str(self) + " has run successfully."
             else:
-                report = "Error: " +str(self)+ " lacked one or more requirements."
+                report = req_report
             return report
 
+    def addLink(self, building):
+        self.links.append(building)
+        self.priority = building.priority + 1
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
@@ -141,6 +165,9 @@ class Building(Card):
                 value = self.catalyst[key]
                 report += str(value)+" "+str(key) +", "
             report = report[:-2]
+
+        if len(self.links) > 0:
+            report += "\nProduction Receptacles: " + str(self.links[0])
 
         report += "\n\n"+self.inventory.report()
         return report

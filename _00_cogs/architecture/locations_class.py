@@ -97,7 +97,6 @@ class District():
         return can_move
 
     def movePlayer(self, player):
-        #check if new region and move channel
         if player.location:
             can_move = self.moveCheck(player)
         else:
@@ -131,7 +130,6 @@ class District():
             else:
                 can_add = False
         return can_add, card
-
 
     def __str__(self):
         return self.name
