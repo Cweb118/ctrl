@@ -4,6 +4,7 @@ from _02_global_dicts import player_dict, district_dict
 from nextcord import interactions
 from nextcord.ext import commands
 from nextcord.ext.commands import bot
+from _00_cogs.commands import Commands
 
 class TargetSelect(nextcord.ui.Select):
     def __init__(self, optionsDict):
@@ -33,7 +34,7 @@ class DropdownView(nextcord.ui.View):
     
     @nextcord.ui.button(label="Play", style=nextcord.ButtonStyle.green)
     async def playCard(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        pass
+        await Commands.playcard_c("test")
 
 
 class UserInterface(commands.Cog):
@@ -47,14 +48,18 @@ class UserInterface(commands.Cog):
         playerCards = player.inventory.cards
 
         cards = {}
-        targets = {}
+        targets = {"test" : "test"}
 
         for card in playerCards["unit"]:
             cards[card.title] = card.description
-        view = DropdownView(cards)
+        view = DropdownView(cards, targets)
 
         await ctx.send(" a", view=view)
 
+#NOTES TO SELF:
+''' -Fix the fact that the card titles are used as keys. These are not unique and will cause a problem later.
+    -Figure out or Ask money how to get all valid targets.
+    -location.inventory.slots'''
 
 def setup(bot):
     bot.add_cog(UserInterface(bot))
