@@ -1,4 +1,5 @@
 from _02_global_dicts import region_dict, district_dict, resource_dict
+import nextcord
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
@@ -28,6 +29,7 @@ class Region():
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
         names = []
         for category in self.guild.categories:
@@ -35,7 +37,9 @@ class Region():
 
         if self.name not in names:
             category = await self.guild.create_category(self.name)
-            #await category.create_text_channel(self.name)
+            channel = await category.create_text_channel(self.name)
+            await channel.set_permissions(self.guild.default_role, read_messages=False)
+            await channel.set_permissions(playerRole, read_messages = True)
 
 class District():
     def __init__(self, name, region_name, size, paths=None, guild = None):
@@ -64,17 +68,21 @@ class District():
 
         region_dict[region_name].addDistrict(self)
         district_dict[name] = self
-        #self.createChannel.start()
+        self.createChannel.start()
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
         for category in self.guild.categories:
             if category.name.lower() == self.region.lower():
                 for channel in category.channels:
                     if channel.name.lower() == self.name.lower():
                         return
-                await category.create_text_channel(self.name)
+
+                channel = await category.create_text_channel(self.name)
+                await channel.set_permissions(self.guild.default_role, read_messages=False)
+                await channel.set_permissions(playerRole, read_messages = True)
 
     def setPath(self, target):
         if target not in self.paths:
