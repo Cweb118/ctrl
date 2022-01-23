@@ -1,19 +1,32 @@
 from _02_global_dicts import region_dict, district_dict, resource_dict
 import nextcord
-import asyncio
+import time, asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 
 class Region():
-    def __init__(self, name, guild = None):
+    def __init__(self, name, guild = None, guildID = None, districts = []):
         self.name = name
-        self.districts = []
         region_dict[name] = self
+        self.districts = districts
         self.guild = guild
-        self.createChannel.start()
+        self.guildID = guildID
         self.channel = None
+
+        if guild:
+            self.createChannel.start()
+    
+    def __reduce__(self):
+        districtKeys = []
+        for district in self.districts:
+            districtKeys.append(district.name)
+        return(self.__class__, (self.name, None, self.guild.id))
+    
+    def reinstate(self, guild):
+        self.guild = guild 
+        self.createChannel.start()
 
     def addDistrict(self, district):
         self.districts.append(district)
@@ -47,13 +60,24 @@ class Region():
             self.channel = nextcord.utils.get(self.guild.channels, name=self.name)
 
 class District():
-    def __init__(self, name, region_name, size, paths=None, guild=None):
+    def __init__(self, name, region_name, size, paths = None, guild = None, guildID = None, pathsRebuild = [], inventory = None):
+
         self.name = name
         self.region = region_name
-        self.paths = []
+        self.paths = pathsRebuild
         self.players = []
-        self.guild = guild
         self.channel = None
+        self.inventory = None
+        self.guild = guild
+        self.size = size
+
+        if guild:
+            self.guildID = guild.id
+        else:
+            self.guildID = guildID
+
+        if guild:
+            self.createChannel.start()
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
@@ -63,8 +87,11 @@ class District():
             'large': [self, 1000, None, 100, 100, 13, 8],
             'huge': [self, 1000, None, 100, 100, 20, 14],
         }
+        if inventory:
+            self.inventory = inventory
+        else:
+            self.inventory = Inventory(*sizes[size])
 
-        self.inventory = Inventory(*sizes[size])
 
         pathcaps = {
             'tiny': 2,
@@ -85,6 +112,12 @@ class District():
 
         region_dict[region_name].addDistrict(self)
         district_dict[name] = self
+    
+    def __reduce__(self):
+        return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
+
+    def reinstate(self, guild):
+        self.guild = guild
         self.createChannel.start()
 
     @tasks.loop(seconds=1, count=1)

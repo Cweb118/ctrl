@@ -128,5 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 keys.py
-currentSave.pkl
+
 .vscode/launch.json
+_01_pickle_jar/*.pkl

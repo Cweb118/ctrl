@@ -8,7 +8,7 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 from nextcord import slash_command
 from nextcord.ext import commands
 from _01_functions import say
-from _02_global_dicts import player_dict, resource_dict
+from _02_global_dicts import player_dict, resource_dict, district_dict, region_dict
 
 guilds = [588095612436742173, 778448646642728991]
 
@@ -48,6 +48,20 @@ class PlayerCog(commands.Cog):
             else:
                 print("Not a match:", channel)
 
+    #For testing
+    @commands.command(name="print")
+    async def print_c(self, ctx, name):
+        match name:
+            case "districts":
+                await ctx.send(district_dict)
+            case "resources":
+                await ctx.send(resource_dict)
+            case "players":
+                await ctx.send(player_dict)
+            case "regions":
+                await ctx.send(region_dict)
+            case _:
+                await ctx.send("invalid input")
 
     @commands.command(name="init", guild_ids=guilds)
     async def init_c(self, ctx):

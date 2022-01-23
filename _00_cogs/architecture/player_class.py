@@ -10,7 +10,6 @@ class StateError(Exception):
     pass
 class Player():
     def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, allegiance = None):
-        self._username = member.display_name
         self._member = member
 
         if self._member != None:
@@ -48,6 +47,11 @@ class Player():
         self._allegiance = allegiance
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
+    
+    def reinstate(self, bot):
+        self._guild = bot.get_guild(self._guildID)
+        self._member = self._guild.get_member(self._memberID)
+        self._username = self._member.display_name
 
 
     @tasks.loop(seconds=1, count=1)
@@ -99,12 +103,6 @@ class Player():
     
     def delPrivateChannel(self):
         self.__delPrivateChannel.start()
-
-    def reinstate(self, bot):
-        self._guild = bot.get_guild(self._guildID)
-        self._member = self._guild.get_member(self._memberID)
-        self._username = self._member.display_name
-
 
     def __str__(self):
         if self._username == None:
