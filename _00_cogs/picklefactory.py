@@ -36,7 +36,7 @@ class PickleFactory(commands.Cog):
         
         await ctx.send("Save Created!")
     
-    @commands.command(name="loadSave")
+    @commands.command(name="load")
     async def loadAll(self, ctx):
             player_dict.clear()
             resource_dict.clear()
