@@ -69,7 +69,6 @@ class PickleFactory(commands.Cog):
                 districts = pickle.load(file)
                 for key in districts:
                     district_dict[key] = districts[key]
-            print("initializaing districts")
 
             for key in district_dict.keys():
                 district_dict[key].reinstate(self.bot.get_guild(district_dict[key].guildID))

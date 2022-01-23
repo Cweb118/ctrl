@@ -49,8 +49,6 @@ class Region():
         categoryNames = []
         for category in self.guild.categories:
             categoryNames.append(category.name)
-        
-        print(self.guild)
 
         if self.name not in categoryNames:
             category = await self.guild.create_category(self.name)
@@ -112,7 +110,6 @@ class District():
                 district = district_dict[path]
                 self.setPath(district)
 
-        print(region_dict.keys())
         region_dict[region_name].addDistrict(self)
         district_dict[name] = self
     
