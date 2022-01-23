@@ -1,5 +1,6 @@
 import asyncio
 from _01_functions import say
+from _02_global_dicts import allegiance_dict
 
 async def battle(ctx, location_obj):
     defense_buildings = location_obj.inventory.slots['building']
@@ -13,23 +14,45 @@ async def battle(ctx, location_obj):
 
     attack_units = sort_targets(attack_units)
     defense_units = sort_targets(defense_units)
-    wave_ints = sort_inititative(attack_units+defense_units)
-    attack_units_waves = sort_waves(attack_units, wave_ints)
-    defense_units_waves = sort_waves(defense_units, wave_ints)
+    attack_units, defense_units = attack_check(attack_units, defense_units)
 
-    i = 1
-    cont = True
-    while cont:
-        cont, final_strike = await round(ctx, i, attack_units_waves, defense_units_waves, attack_units, defense_units)
-        await battle_report(ctx, attack_units, defense_units)
-        await asyncio.sleep(10)
-        i += 1
+    if len(attack_units) > 0:
+        wave_ints = sort_inititative(attack_units+defense_units)
+        attack_units_waves = sort_waves(attack_units, wave_ints)
+        defense_units_waves = sort_waves(defense_units, wave_ints)
 
-    if final_strike:
-        await say(ctx, "-----Final Strike-----")
-        for attack_wave in attack_units_waves:
-            await wave(ctx, attack_wave, defense_buildings)
-    await say(ctx, "----End of Battle----")
+        i = 1
+        cont = True
+        while cont:
+            cont, final_strike = await round(ctx, i, attack_units_waves, defense_units_waves, attack_units, defense_units)
+            await battle_report(ctx, attack_units, defense_units)
+            await asyncio.sleep(10)
+            i += 1
+
+        if final_strike:
+            await say(ctx, "-----Final Strike-----")
+            for attack_wave in attack_units_waves:
+                await wave(ctx, attack_wave, defense_buildings)
+        await say(ctx, "----End of Battle----")
+    else:
+        await say(ctx, "----No Attacking Units----")
+
+
+async def attack_check(attack_units, defense_units):
+    for attacker in attack_units:
+        att_alg = attacker.owner._alliegance
+        print("att: ",att_alg)
+        hostiles = 0
+        for defender in defense_units:
+            def_alg = defender.owner._alliegance
+            print("def: ",def_alg)
+            if allegiance_dict[att_alg][def_alg] == 'Hostile':
+                hostiles += 1
+            else:
+                attack_units.remove(attacker)
+        if hostiles < len(defense_units)/2:
+            attack_units.remove(attacker)
+    return attack_units, defense_units
 
 
 async def round(ctx, rn, attack_units_waves, defense_units_waves, attack_units_targets, defense_units_targets):
@@ -93,9 +116,6 @@ async def fight(ctx, attack_unit, defense_unit):
             action_report = trait.action.attack(attack_unit, defense_unit)
             if action_report:
                 report += action_report
-
-
-
     await say(ctx, report)
 
 def sort_inititative(all_units):

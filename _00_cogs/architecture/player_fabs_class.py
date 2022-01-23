@@ -1,0 +1,25 @@
+from _00_cogs.architecture.inventory_class import Inventory
+from _02_global_dicts import fab_dict
+
+
+class Fab():
+    def __init__(self, owner, title, starter_location = None, allegiance = None):
+        self.owner = owner
+        self.title = title
+        self.location = starter_location
+        self._allegiance = allegiance
+        self._inventory = Inventory(self, r_cap=1000, u_cap=100, b_cap=100)
+
+        fab_dict[str(self)] = self
+
+    def __str__(self):
+        return self.title
+
+    def report(self):
+        report = "------"+str(self)+"------\n"
+        report += "\n-Owner: "+str(self.owner)
+        report += "\n-Location: "+str(self.location)
+        report += "\n-Allegiance: "+str(self._allegiance)
+        inv_rep = self._inventory.report()
+        report += "\n\n"+inv_rep
+        return report

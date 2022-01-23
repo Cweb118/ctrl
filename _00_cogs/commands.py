@@ -1,8 +1,10 @@
 import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
+
+from _00_cogs.architecture.player_fabs_class import Fab
 from _01_functions import *
-from _02_global_dicts import player_dict, resource_dict, region_dict, district_dict, played_cards_dict
+from _02_global_dicts import player_dict, resource_dict, region_dict, district_dict, played_cards_dict, fab_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
@@ -73,6 +75,19 @@ class Commands(commands.Cog):
         #await self.cardnick_c(ctx, 'unit', 4, 'Tom')
         #await self.playcard_c(ctx, 'unit', 5, 'building', 1)
         #await self.cardnick_c(ctx, 'unit', 5, 'Tem')
+
+    @commands.command(name="makefab", guild_ids=guilds)
+    async def makefab_c(self, ctx, name, region, alg):
+        player = player_dict[ctx.author.id]
+        Fab(player, name, district_dict[region], alg)
+        report = "Fab \""+name+"\" created."
+        await say(ctx,report)
+
+    @commands.command(name="fabrep", guild_ids=guilds)
+    async def fabrep_c(self, ctx, name):
+        fab = fab_dict[name]
+        report = fab.report()
+        await say(ctx,report)
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
