@@ -42,7 +42,7 @@ class Region():
             await channel.set_permissions(playerRole, read_messages = True)
 
 class District():
-    def __init__(self, name, region_name, size, paths=None, guild = None):
+    def __init__(self, name, region_name, size, paths=None, guild=None):
         self.name = name
         self.region = region_name
         self.paths = []
@@ -57,7 +57,18 @@ class District():
             'large': [self, 1000, None, 100, 100, 13, 8],
             'huge': [self, 1000, None, 100, 100, 20, 14],
         }
+
         self.inventory = Inventory(*sizes[size])
+
+        pathcaps = {
+            'tiny': 2,
+            'small': 3,
+            'medium': 4,
+            'large': 6,
+            'huge': 9,
+        }
+
+        self.pathcap = pathcaps[size]
 
         if paths:
             paths = paths.split(',')
@@ -85,10 +96,16 @@ class District():
                 await channel.set_permissions(playerRole, read_messages = True)
 
     def setPath(self, target):
-        if target not in self.paths:
-            self.paths.append(target)
-        if self not in target.paths:
-            target.paths.append(self)
+        can_path = True
+        if len(target.paths) >= target.pathcap:
+            can_path = False
+        if len(self.paths) >= self.pathcap:
+            can_path = False
+        if can_path:
+            if target not in self.paths:
+                self.paths.append(target)
+            if self not in target.paths:
+                target.paths.append(self)
 
     def moveCheck(self, player):
         can_move = False

@@ -9,7 +9,7 @@ from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 class StateError(Exception):
     pass
 class Player():
-    def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None):
+    def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, alleigance = None):
         self._username = member.display_name
         self._member = member
 
@@ -45,7 +45,7 @@ class Player():
             #instance:cap
             resource_dict['Influence']:20
         }
-
+        self._alleigance = alleigance
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
 
