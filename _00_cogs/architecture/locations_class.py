@@ -62,16 +62,16 @@ class Region():
             self.channel = nextcord.utils.get(self.guild.channels, name=self.name)
 
 class District():
-    def __init__(self, name, region_name, size = None, paths=None, pathCap = 10, guild = None, guildID = None, pathsRebuild = []):
+    def __init__(self, name, region_name, size, paths = None, guild = None, guildID = None, pathsRebuild = [], inventory = None):
 
         self.name = name
         self.region = region_name
         self.paths = pathsRebuild
-        self.pathCap = pathCap
         self.players = []
         self.channel = None
         self.inventory = None
         self.guild = guild
+        self.size = size
 
         if guild:
             self.guildID = guild.id
@@ -89,8 +89,11 @@ class District():
             'large': [self, 1000, None, 100, 100, 13, 8],
             'huge': [self, 1000, None, 100, 100, 20, 14],
         }
+        if inventory:
+            self.inventory = inventory
+        else:
+            self.inventory = Inventory(*sizes[size])
 
-        self.inventory = Inventory(*sizes[size])
 
         pathcaps = {
             'tiny': 2,
@@ -114,7 +117,7 @@ class District():
         district_dict[name] = self
     
     def __reduce__(self):
-        return(self.__class__, (self.name, self.region, None, None, self.pathCap, None, self.guildID, self.paths))
+        return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
 
     def reinstate(self, guild):
         self.guild = guild
