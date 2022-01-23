@@ -21,7 +21,7 @@ class PlayerCog(commands.Cog):
     async def initPlayers(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
-            player_dict[member.id]=(Player(member))
+            player_dict[member.id]=(Player(member, allegiance='Camp'))
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="listplayers", guild_ids=guilds)

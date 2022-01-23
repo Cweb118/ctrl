@@ -38,21 +38,19 @@ async def battle(ctx, location_obj):
         await say(ctx, "----No Attacking Units----")
 
 
-async def attack_check(attack_units, defense_units):
-    for attacker in attack_units:
-        att_alg = attacker.owner._alliegance
-        print("att: ",att_alg)
+def attack_check(attack_units_og, defense_units_og):
+    attack_units = []
+    for attacker in attack_units_og:
+        att_alg = attacker.owner._allegiance
         hostiles = 0
-        for defender in defense_units:
-            def_alg = defender.owner._alliegance
-            print("def: ",def_alg)
+        for defender in defense_units_og:
+            def_alg = defender.owner._allegiance
             if allegiance_dict[att_alg][def_alg] == 'Hostile':
                 hostiles += 1
-            else:
-                attack_units.remove(attacker)
-        if hostiles < len(defense_units)/2:
+                attack_units.append(attacker)
+        if 0 < hostiles < len(defense_units_og)/2:
             attack_units.remove(attacker)
-    return attack_units, defense_units
+    return attack_units, defense_units_og
 
 
 async def round(ctx, rn, attack_units_waves, defense_units_waves, attack_units_targets, defense_units_targets):

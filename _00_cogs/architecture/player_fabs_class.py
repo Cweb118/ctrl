@@ -1,4 +1,6 @@
 from _00_cogs.architecture.inventory_class import Inventory
+from _00_cogs.mechanics.building_classes.__building_parent_class import Building
+from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _02_global_dicts import fab_dict
 
 
@@ -11,6 +13,25 @@ class Fab():
         self._inventory = Inventory(self, r_cap=1000, u_cap=100, b_cap=100)
 
         fab_dict[str(self)] = self
+
+
+    def addCard(self, card_kit, card_type):
+        inv = self._inventory
+        can_add = inv.capMathCard(card_type)
+        if can_add == True:
+            card = None
+            kit = [self]+card_kit
+            if card_type == 'unit':
+                card = Unit(*kit)
+            elif card_type == 'building':
+                card = Building(*kit)
+            if card:
+                inv.cards[card_type].append(card)
+            else:
+                can_add = False
+        return can_add, card
+
+
 
     def __str__(self):
         return self.title

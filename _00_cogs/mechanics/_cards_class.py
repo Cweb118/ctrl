@@ -27,7 +27,8 @@ class Card():
         if self.status == "DEAD":
             self.status = "Held"
 
-    def playCard(self, player, target_obj):
+    def playerPlayCheck(self, player, target_obj):
+        report = ''
         can_play = False
         card_type = type(self).__name__.lower()
         card_status = self.status
@@ -56,19 +57,45 @@ class Card():
                         report = "Error: You are not currently present at the designated location."
                         can_play = False
                 if target_type == 'building':
+                    if target_obj.worker_req:
+                        for tag in target_obj.worker_req:
+                            if tag not in self.trait_list:
+                                report = "Error: This unit does not meet all requirements for the destination."
+                                can_play = False
+        return can_play, report
+
+    def fabPlayCheck(self, player, target_obj):
+        report = ''
+        can_play = False
+        card_type = type(self).__name__.lower()
+        card_status = self.status
+        target_type = type(target_obj).__name__.lower()
+        slot_count = len(target_obj.inventory.slots[card_type])
+        slotcap = target_obj.inventory.slotcap[card_type]
+        if card_status == 'Held':
+            if slot_count < slotcap:
+                can_play = True
+                if target_type == 'building':
                     for tag in target_obj.worker_req:
                         if tag not in self.trait_list:
                             report = "Error: This unit does not meet all requirements for the destination."
                             can_play = False
-            else:
-                report = "Error: This destination does not have the required space."
+        return can_play, report
+
+
+    def playCard(self, player, target_obj):
+        card_type = type(self).__name__.lower()
+        player_type = type(player).__name__.lower()
+        if player_type == 'player':
+            can_play, report = self.playerPlayCheck(player, target_obj)
         else:
-            report = "Error: This card is not currently Held, and thus cannot be played."
+            can_play, report = self.fabPlayCheck(player, target_obj)
 
         if can_play:
             self.toggleStatus()
             if card_type == 'unit':
-                player.modStat(resource_dict['Influence'], -1)
+                if player_type == 'player':
+                    player.modStat(resource_dict['Influence'], -1)
             if self.play_cost:
                 for key in self.play_cost.keys():
                     player._inventory.addResource(resource_dict[key], -self.play_cost[key])

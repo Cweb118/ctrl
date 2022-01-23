@@ -46,35 +46,32 @@ class Commands(commands.Cog):
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
         player = player_dict[ctx.author.id]
-        player.addCard(building_kits_dict['mother_tree'], 'building')
-        player.addCard(building_kits_dict['bountiful_field'], 'building')
-        await self.makecard_c(ctx, 'Worker', 'Aratori')
-        await self.makecard_c(ctx, 'Worker', 'Aratori')
-        await self.makecard_c(ctx, 'Worker', 'Xinn')
-        #await self.makecard_c(ctx, 'Technophant', 'Xinn')
-        #await self.makecard_c(ctx, 'Guardian', 'Aratori')
-        #await self.makecard_c(ctx, 'Knight', 'Prismari')
-        #await self.makecard_c(ctx, 'Alchemist', 'Otavan')
-        #await self.makecard_c(ctx, 'Warrior', 'Automata')
+        player.addCard(building_kits_dict['wooden_wall'], 'building')
+        #player.addCard(building_kits_dict['mother_tree'], 'building')
+        #player.addCard(building_kits_dict['bountiful_field'], 'building')
+        await self.makecard_c(ctx, 'Warrior', 'Aratori')
+        await self.makecard_c(ctx, 'Ranger', 'Aratori')
+        await self.makecard_c(ctx, 'Guardian', 'Aratori')
+        await self.makecard_c(ctx, 'Alchemist', 'Otavan')
+        await self.makecard_c(ctx, 'Warrior', 'Automata')
 
+        await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
         await self.move_c(ctx, 'Home')
 
         await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
-        await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
-        await self.link_c(ctx, 2, 1)
-        await self.playcard_c(ctx, 'unit', 1, 'building', '1')
+        #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
+        #await self.link_c(ctx, 2, 1)
+        await self.playcard_c(ctx, 'unit', 1, 'building', 1)
         await self.cardnick_c(ctx, 'unit', 1, 'Tim')
-        await self.playcard_c(ctx, 'unit', 2, 'building', '2')
+        await self.playcard_c(ctx, 'unit', 2, 'building', 1)
         await self.cardnick_c(ctx, 'unit', 2, 'Tom')
-        await self.playcard_c(ctx, 'unit', 3, 'building', '2')
+        await self.playcard_c(ctx, 'unit', 3, 'building', 1)
         await self.cardnick_c(ctx, 'unit', 3, 'Tem')
 
-        #await self.playcard_c(ctx, 'unit', 3, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 3, 'Tim')
-        #await self.playcard_c(ctx, 'unit', 4, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 4, 'Tom')
-        #await self.playcard_c(ctx, 'unit', 5, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 5, 'Tem')
+        await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 4, 'Bob')
+        await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 5, 'B0b')
 
     @commands.command(name="makefab", guild_ids=guilds)
     async def makefab_c(self, ctx, name, region, alg):
@@ -88,6 +85,24 @@ class Commands(commands.Cog):
         fab = fab_dict[name]
         report = fab.report()
         await say(ctx,report)
+
+    @commands.command(name="fabplaycard", guild_ids=guilds)
+    async def fabplaycard_c(self, ctx, name, card_type, card_number, target_type, target):
+        fab = fab_dict[name]
+        card = fab.inventory.cards[card_type][int(card_number)-1]
+        targ = None
+        if target_type == 'district':
+            targ = district_dict[target]
+        elif target_type == 'unit':
+            targ = fab.inventory.cards[target_type][int(target)-1]
+        elif target_type == 'building':
+            targ = fab.inventory.cards[target_type][int(target)-1]
+        if targ:
+            report = card.playCard(fab, targ)
+        else:
+            report = 'Error: Invalid location.'
+        await say(ctx,report)
+
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):

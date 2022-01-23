@@ -6,7 +6,7 @@ player_dict = {}
 played_cards_dict = {'unit':[], 'building':[]}
 
 allegiance_dict = {
-    'Bandits':{'Camp':'Hostile', 'Cows':'Hostile'},
-    'Camp':{'Bandits':'Hostile', 'Cows':'Friendly'},
-    'Cows':{'Bandits':'Hostile', 'Camp':'Friendly'}
+    'Bandits':{'Bandits':'Friendly', 'Camp':'Hostile', 'Cows':'Hostile'},
+    'Camp':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'},
+    'Cows':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'}
 }
