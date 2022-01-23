@@ -54,7 +54,7 @@ async def loaded(ctx):
     await ctx.send(cogs)
 
 
-@bot.command(name='load')
+@bot.command(name='loadext')
 @commands.has_role('control')
 async def load(ctx, extension):
     global loadedCogs
@@ -66,7 +66,7 @@ async def load(ctx, extension):
     except:
         await ctx.send("Extension not found.")
 
-@bot.command(name='unload')
+@bot.command(name='unloadext')
 @commands.has_role('control')
 async def unload(ctx, extension):
     global loadedCogs
