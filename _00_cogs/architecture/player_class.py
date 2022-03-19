@@ -29,6 +29,7 @@ class Player():
             self._guild = None
 
         self._channel = ""
+        self.interfaceChannel = None #Channel ID
 
         self.createPrivateChannel.start()
         if inventory == None:

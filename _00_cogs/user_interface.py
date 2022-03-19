@@ -1,4 +1,4 @@
-
+from ssl import Options
 import nextcord
 from _02_global_dicts import player_dict, district_dict
 from nextcord import interactions
@@ -6,60 +6,86 @@ from nextcord.ext import commands
 from nextcord.ext.commands import bot
 from _00_cogs.commands import Commands
 
-class TargetSelect(nextcord.ui.Select):
-    def __init__(self, optionsDict):
-        options = []
-        for key in optionsDict.keys():
-            options.append(nextcord.SelectOption(label=key, description=optionsDict[key]))
-        super().__init__(options=options, min_values=1, max_values=1, placeholder="Select a target for your card!")
+bot = None 
 
-class CardSelect(nextcord.ui.Select):
-    def __init__(self, optionsDict):
-        #Options should be a dict that contains what should be displayed in the dropdown. The key should be the name and the value the description.
-        options = []
-        for key in optionsDict.keys():
-            options.append(nextcord.SelectOption(label=key, description=optionsDict[key]))
-        super().__init__(options=options, min_values=1, max_values=1, placeholder="Select a card to play!")
 
-        self.selection = None
-    
-    async def callback(self, interaction: nextcord.Interaction):
-        self.selection = self.values[0]
-
-class DropdownView(nextcord.ui.View):
-    def __init__(self, cardsDict, targetDict):
+class LocationUI(nextcord.ui.View):
+    def __init__(self, info):
         super().__init__(timeout=None)
-        self.add_item(CardSelect(cardsDict))
-        self.add_item(TargetSelect(targetDict))
+        self.info = info #Dictionary with playerid and interface channel ID. name:UserID, channel:ChannelID
+        self.messageID = None
     
     @nextcord.ui.button(label="Play", style=nextcord.ButtonStyle.green)
     async def playCard(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await Commands.playcard_c("test")
+        pass # code here
+        #drop down menu for where to play card (building, district, or other unit)
+        #if location, congrats pick the unit
+        
+        #if unit or building, which one?
+        #after choosing that, pick the unit to play
 
+    @nextcord.ui.button(label="Move", style=nextcord.ButtonStyle.green)
+    async def move(self, button, interaction):
+        locations = player_dict[self.info["name"]].location.paths
+        locationsNames = [location.name for location in locations]
+        options = []
 
+        for locationName in locationsNames:
+            options.append(nextcord.SelectOption(label=locationName))
+        class LocationSelect(nextcord.ui.View):
+            def __init__(self, info):
+                super().__init__(timeout=300)
+                self.selection = None
+                self.info = info
+
+                if(len(locations) > 25):
+                    raise("TOO MANY ADJACENT LOCATIONS")
+
+            @nextcord.ui.select(options = options)
+            async def locationSelect(self, select, interaction):
+                self.selection = select.values[0]
+            
+            @nextcord.ui.button(label="Go", style=nextcord.ButtonStyle.green)
+            async def go(self, button, interaction):
+                player = player_dict[self.info["name"]]
+                district = district_dict[self.selection]
+                report = district.movePlayer(player)
+                embedded = nextcord.Embed(title="test", color=0x00ff00)
+                await interaction.edit(content=report, view = None)
+            
+
+        await interaction.send(content = "Select a location to move to.", ephemeral = True, delete_after=300, view=LocationSelect(self.info))
+
+    @nextcord.ui.button(label="Interact", style=nextcord.ButtonStyle.green)
+    async def interact(self, button, interaction):
+        pass # code here
+        
+    @nextcord.ui.button(label="Show Buildings", style=nextcord.ButtonStyle.green)
+    async def showBuildings(self, button, interaction):
+        pass # code here
+
+    @nextcord.ui.button(label="Show Units", style=nextcord.ButtonStyle.green)
+    async def showUnits(self, button, interaction):
+        await interaction.edit(content=player_dict[self.info[str("name")]].location.report())
+
+        
 class UserInterface(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot1):
+        global bot
+        bot = bot1
+        self.interfaceChannels = [] #List of dictionaries with Player IDs and Interface Channel IDs. name:UserID, channel:ChannelID
 
-    @commands.command(name="playUI")
-    async def playUI(self, ctx):
-        id = ctx.author.id
-        player = player_dict[id]
-        playerCards = player.inventory.cards
-
-        cards = {}
-        targets = {"test" : "test"}
-
-        for card in playerCards["unit"]:
-            cards[card.title] = card.description
-        view = DropdownView(cards, targets)
-
-        await ctx.send(" a", view=view)
-
-#NOTES TO SELF:
-''' -Fix the fact that the card titles are used as keys. These are not unique and will cause a problem later.
-    -Figure out or Ask money how to get all valid targets.
-    -location.inventory.slots'''
+    async def initializeInterface(self):
+        for player in player_dict:
+        #If there is a interfaceChannel ID. There may not be one if the game hasn't been initialized yet.
+            if type([player.interfaceChannel]) == int:
+                self.interfaceChannels.append({"name":player.memberID, "channel":player.interfaceChannel})
+    
+    @commands.command(name="testloc")
+    async def testLocationsUI(self, ctx):
+        view = LocationUI({"name":143574434874130432, "channel":925971800020643890})
+        message = await ctx.send(" ", view=view)
+        view.messageID = message.id
 
 def setup(bot):
     bot.add_cog(UserInterface(bot))

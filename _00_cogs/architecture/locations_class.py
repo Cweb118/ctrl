@@ -186,8 +186,7 @@ class District():
                 await category.set_permissions(player.member, read_messages=False)
         
             #remove player from old district channel
-            player.location.region.channel.set_permissions(player.member, read_messages=False)
-
+            await region_dict[player.location.region].channel.set_permissions(player.member, read_messages=False)
         player.location = self
         self.players.append(player)
         await self.channel.set_permissions(player.member, read_messages=True)
