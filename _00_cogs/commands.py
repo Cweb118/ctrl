@@ -46,61 +46,61 @@ class Commands(commands.Cog):
 
     @commands.command(name="region", guild_ids=guilds)
     async def region_c(self, ctx, name):
-        region = region_dict[name]
+        region = theJar['regions'][name]
         report, title, fields = region.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="district", guild_ids=guilds)
     async def district_c(self, ctx, name):
-        district = district_dict[name]
+        district = theJar['districts'][name]
         report, title, fields = district.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="move", guild_ids=guilds)
     async def move_c(self, ctx, name):
-        player = player_dict[ctx.author.id]
-        district = district_dict[name]
+        player = theJar['players'][ctx.author.id]
+        district = theJar['districts'][name]
         report = district.movePlayer(player)
         await say(ctx,report)
 
     @commands.command(name="inv", guild_ids=guilds)
     async def inv_c(self, ctx):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         report, title, fields = player.inventory.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         report, title, fields = player.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="resource", guild_ids=guilds)
     async def res_c(self, ctx, resource_name):
-        resource = resource_dict[resource_name]
+        resource = theJar['resources'][resource_name]
         report = resource.report()
         await say(ctx, report)
 
     @commands.command(name="cardrep", guild_ids=guilds)
     async def cardrep_c(self, ctx, card_type, card_number):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         report, title, fields = player.inventory.cardReport(card_type, int(card_number))
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="link", guild_ids=guilds)
     async def link_c(self, ctx, building_child_number, building_parent_number):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         building_child = player.inventory.getCard('building', int(building_child_number))
         building_parent = player.inventory.getCard('building', int(building_parent_number))
         building_parent.addLink(building_child)
 
     @commands.command(name="playcard", guild_ids=guilds)
     async def playcard_c(self, ctx, card_type, card_number, target_type, target):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         targ = None
         if target_type == 'district':
-            targ = district_dict[target]
+            targ = theJar['districts'][target]
         elif target_type == 'unit':
             targ = player.inventory.cards[target_type][int(target)-1]
         elif target_type == 'building':
@@ -113,17 +113,17 @@ class Commands(commands.Cog):
 
     @commands.command(name="unplaycard", guild_ids=guilds)
     async def unplaycard_c(self, ctx, card_type, card_number):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         report = card.unplayCard(player)
         await say(ctx,report)
 
     @commands.command(name="unitmove", guild_ids=guilds)
     async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         card = player.inventory.getCard(card_type, int(card_number))
         if target_type == 'district':
-            destination = district_dict[target]
+            destination = theJar['districts'][target]
         elif target_type == 'unit':
             destination = player.inventory.getCard(target_type, int(target))
         report = card.moveUnit(target_type, destination)
@@ -131,7 +131,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="cardnick", guild_ids=guilds)
     async def cardnick_c(self, ctx, card_type, card_number, nick):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         report = card.setNick(nick)
         report = player.inventory.cardReport(card_type, int(card_number))
@@ -139,32 +139,32 @@ class Commands(commands.Cog):
 
     @commands.command(name="givecard", guild_ids=guilds)
     async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         report = player.inventory.moveCard(card_type, int(card_number), user)
         await say(ctx,report)
 
     @commands.command(name="giveres", guild_ids=guilds)
     #player gives resource to another player
     async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
-        resource = resource_dict[resource_name]
-        giver = player_dict[ctx.author.id]
-        taker = player_dict[user.id]
+        resource = theJar['resources'][resource_name]
+        giver = theJar['players'][ctx.author.id]
+        taker = theJar['players'][user.id]
         report = giver.inventory.giveResource(resource, quantity, giver, taker)
         await say(ctx,report)
 
     @commands.command(name="dropres", guild_ids=guilds)
     #player drops a resource into a target destination (location, unit, building)
     async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        giver = player_dict[ctx.author.id]
+        resource = theJar['resources'][resource_name]
+        giver = theJar['players'][ctx.author.id]
         report = giver.inventory.dropres(resource, quantity, target_type, target)
         await say(ctx,report)
 
     @commands.command(name="unitdropres", guild_ids=guilds)
     #a unit drops a unit to a target destination (location, unit, building) as directed by a player
     async def unitdropres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        player = player_dict[ctx.author.id]
+        resource = theJar['resources'][resource_name]
+        player = theJar['players'][ctx.author.id]
         giver = player.inventory.getCard(unit_type, unit_number)
         report = giver.inventory.dropres(resource, quantity, target_type, target)
         await say(ctx,report)
@@ -172,16 +172,16 @@ class Commands(commands.Cog):
     @commands.command(name="takeres", guild_ids=guilds)
     #a player takes a resource from a public storage (location, unit, building)
     async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        taker = player_dict[ctx.author.id]
+        resource = theJar['resources'][resource_name]
+        taker = theJar['players'][ctx.author.id]
         report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
 
     @commands.command(name="unittakeres", guild_ids=guilds)
     #a unit takes a resource from a public storage (location, unit, building) as directed by a player
     async def unittakeres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        player = player_dict[ctx.author.id]
+        resource = theJar['resources'][resource_name]
+        player = theJar['players'][ctx.author.id]
         taker = player.inventory.getCard(unit_type, unit_number)
         report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
@@ -192,7 +192,7 @@ class Commands(commands.Cog):
 #----------testing/control----------
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         player.addCard(building_kits_dict['wooden_wall'], 'building')
         player.addCard(building_kits_dict['mother_tree'], 'building')
         player.addCard(building_kits_dict['bountiful_field'], 'building')
@@ -269,10 +269,10 @@ class Commands(commands.Cog):
 
     @commands.command(name="addres", guild_ids=guilds)
     async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
-        resource = resource_dict[resource_name]
+        resource = theJar['resources'][resource_name]
         try:
             if quantity > 0:
-                target = player_dict[user.id]
+                target = theJar['players'][user.id]
                 target.inventory.addResource(resource, quantity)
                 report = "You have gained "+str(quantity)+" "+str(resource)
             else:
@@ -299,7 +299,7 @@ class Commands(commands.Cog):
         player = theJar['players'][ctx.author.id]
         card = player.inventory.getCard(card_type, int(card_number))
         if target_type == 'district':
-            destination = district_dict[target]
+            destination = theJar['districts'][target]
         elif target_type == 'unit':
             destination = player.inventory.getCard(target_type, int(target))
         report = card.moveUnit(target_type, destination)
@@ -307,13 +307,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="unitaction", guild_ids=guilds)
     async def unit_action_c(self, ctx, action_name, action_arg, card_type, card_number, target_type, target_id):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         actor = player.inventory.getCard(card_type, int(card_number))
         actee = None
         trait_action = None
         #cover all possible cases pls
         if target_type == 'district':
-            actee = district_dict[target_id]
+            actee = theJar['districts'][target_id]
         elif target_type == 'unit':
             actee = player.inventory.getCard(target_type, int(target_id))
 
@@ -328,7 +328,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="harvest", guild_ids=guilds)
     async def harvest_c(self, ctx):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         for card in player.inventory.cards['unit']:
             if card.status == "Played":
                 report, title = card.harvest()
@@ -337,7 +337,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="battle", guild_ids=guilds)
     async def battle_c(self, ctx):
-        player = player_dict[ctx.author.id]
+        player = theJar['players'][ctx.author.id]
         location = player.location
         await battle(ctx, location)
 
@@ -345,7 +345,7 @@ class Commands(commands.Cog):
     async def run_c(self, ctx):
 
         wave_ints = []
-        for building in played_cards_dict['building']:
+        for building in theJar['played_cards']['building']:
             priority = building.priority
             if priority not in wave_ints:
                 wave_ints.append(priority)
@@ -354,7 +354,7 @@ class Commands(commands.Cog):
         waves = {}
         for num in wave_ints:
             wave = []
-            for building in played_cards_dict['building']:
+            for building in theJar['played_cards']['building']:
                 if building.priority == num:
                     wave.append(building)
             waves[num] = wave
