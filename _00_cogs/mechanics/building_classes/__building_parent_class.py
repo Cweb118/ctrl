@@ -1,8 +1,9 @@
 from _00_cogs.mechanics._cards_class import Card
-from _02_global_dicts import resource_dict
+from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
+from _02_global_dicts import theJar
 
 class Building(Card):
-    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, worker_req, input_dict, output_dict, cat_dict):
+    def __init__(self, owner, title, description, inv_args, traits, logic_args, play_cost, stats, worker_req, input_dict, output_dict, cat_dict, priority=0):
         inv_args = [self]+inv_args
         super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
 
@@ -19,22 +20,50 @@ class Building(Card):
             'Defense':stats['defense'],
             'Size':stats['size'],
         }
-        self.trait_list = traits
 
+        self.trait_list = traits
+        self.traits = {
+            'on_play': [],
+            'on_work': [],
+            'on_move': [],
+            'on_battle': [],
+            'on_attack': [],
+            'on_defend': [],
+            'on_death': [],
+            'on_act': [],
+        }
+        for trait_name in traits:
+            self.addTrait(trait_name)
+
+        self.logic_args = logic_args
         self.worker_req = worker_req
         self.input = input_dict
         self.output = output_dict
         self.catalyst = cat_dict
 
         self.links = []
-        self.priority = 0
+        self.priority = priority
+
+    #TODO: ADD addTrait and delTrait
+
+    def addBuilding(self, card_kit_id, inv_owner, owner_type):
+        inv = theJar[owner_type][inv_owner].inventory
+        can_add = inv.capMathCard('building')
+        if can_add == True:
+            kit = [self]+building_kits_dict[card_kit_id]
+            card = Building(*kit)
+            if card:
+                inv.cards['building'].append(card)
+            else:
+                can_add = False
+        return can_add, card
 
 
     def checkReqs(self):
         can_run = True
         if self.input:
             for res in self.input:
-                res_obj = resource_dict[res]
+                res_obj = theJar['resources'][res]
                 needed = self.input[res]
                 have = self.inventory.resources[res_obj]
                 if have < needed:
@@ -43,7 +72,7 @@ class Building(Card):
 
         if self.output:
             for res in self.output:
-                res_obj = resource_dict[res]
+                res_obj = theJar['resources'][res]
                 given = self.output[res]
                 have = self.inventory.resources[res_obj]
                 max = self.inventory.cap['resource']
@@ -53,7 +82,7 @@ class Building(Card):
 
         if self.catalyst:
             for res in self.catalyst:
-                res_obj = resource_dict[res]
+                res_obj = theJar['resources'][res]
                 needed = self.catalyst[res]
                 have = self.inventory.resources[res_obj]
                 if have < needed:
@@ -69,13 +98,13 @@ class Building(Card):
     def doInput(self):
         if self.input:
             for res in self.input:
-                res_obj = resource_dict[res]
+                res_obj = theJar['resources'][res]
                 needed = self.input[res]
                 self.inventory.addResource(res_obj, -needed)
 
     def doOutput(self):
         for res in self.output:
-            res_obj = resource_dict[res]
+            res_obj = theJar['resources'][res]
             gain = self.output[res]
             if len(self.links) > 0:
                 link_give = self.links[0].inventory.addResource(res_obj, gain)
@@ -90,19 +119,41 @@ class Building(Card):
             if can_run:
                 self.doInput()
                 self.doOutput()
+                if len(self.traits['on_work']) > 0:
+                    for trait in self.traits['on_work']:
+                        workers = self.inventory.slots['units']
+                        args = [self, workers]+self.logic_args
+                        trait.action.work(*args)
                 report = str(self) + " has run successfully."
             else:
                 report = req_report
             return report
 
-    def addLink(self, building):
-        self.links.append(building)
-        self.priority = building.priority + 1
+    def addLink(self, receiver_building):
+        if len(self.links) == 0:
+            self.links.append(receiver_building)
+            if self.priority <= receiver_building.priority:
+                self.priority = receiver_building.priority + 1
+
+    def delLink(self, receiver_building):
+        if receiver_building in self.links:
+            self.links.remove(receiver_building)
+
+    def harvest(self):
+        report = ''
+        if len(self.traits['on_harvest']) > 0:
+            for trait in self.traits['on_harvest']:
+                action_report = trait.action.harvest()
+                if action_report:
+                    report += action_report
+        return report
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
         if self.stats[stat] < 0:
             self.stats[stat] = 0
+        if self.stats[stat] > self.statcaps[stat]:
+            self.stats[stat] = self.statcaps[stat]
         return self.stats[stat]
 
 

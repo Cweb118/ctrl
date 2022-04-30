@@ -1,10 +1,8 @@
 import nextcord
 from nextcord import guild
 from nextcord.ext import tasks
-from _02_global_dicts import resource_dict
+from _02_global_dicts import theJar
 from _00_cogs.architecture.inventory_class import Inventory
-from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 
 class StateError(Exception):
     pass
@@ -39,11 +37,11 @@ class Player():
         self.location = starter_location #Location Instance (needs to lack _!)
         self._stats = {
             #instance:quantity
-            resource_dict['Influence']:20
+            theJar['resource']['Influence']:20
         }
         self._statcaps = {
             #instance:cap
-            resource_dict['Influence']:20
+            theJar['resource']['Influence']:20
         }
         self._allegiance = allegiance
     def __reduce__(self):
@@ -70,22 +68,6 @@ class Player():
         channelNames = (channel.name for channel in self.guild.channels)
         if (self.member.name).lower().replace(" ", "-") not in channelNames:
             self._channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
-
-    def addCard(self, card_kit, card_type):
-        inv = self._inventory
-        can_add = inv.capMathCard(card_type)
-        if can_add == True:
-            card = None
-            kit = [self]+card_kit
-            if card_type == 'unit':
-                card = Unit(*kit)
-            elif card_type == 'building':
-                card = Building(*kit)
-            if card:
-                inv.cards[card_type].append(card)
-            else:
-                can_add = False
-        return can_add, card
 
     def modStat(self, stat, quantity): #stat here is an INSTANCE (of resouce!)
         new_val = self._stats[stat] + quantity

@@ -1,7 +1,7 @@
 from _00_cogs.architecture.inventory_class import Inventory
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-from _02_global_dicts import fab_dict
+from _02_global_dicts import theJar
 
 
 class Fab():
@@ -12,7 +12,7 @@ class Fab():
         self._allegiance = allegiance
         self._inventory = Inventory(self, r_cap=1000, u_cap=100, b_cap=100)
 
-        fab_dict[str(self)] = self
+        theJar['fabs'][str(self)] = self
 
 
     def addCard(self, card_kit, card_type):

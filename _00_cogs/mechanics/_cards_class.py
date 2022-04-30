@@ -1,5 +1,5 @@
 from _00_cogs.architecture.inventory_class import Inventory
-from _02_global_dicts import resource_dict, played_cards_dict
+from _02_global_dicts import theJar
 
 #-----attributes-----
 class Card():
@@ -41,11 +41,11 @@ class Card():
                 if self.play_cost:
                     for key in self.play_cost.keys():
                         cost = self.play_cost[key]
-                        if player._inventory.resources[resource_dict[key]] < cost:
+                        if player._inventory.resources[theJar['resources'][key]] < cost:
                             report = "Error: You lack the required resources to play this card."
                             can_play = False
                 if card_type == 'unit':
-                    if player._stats[resource_dict['Influence']] == 0:
+                    if player._stats[theJar['resources']['Influence']] == 0:
                         report = "Error: You lack the required influence."
                         can_play = False
                 if target_type == 'district':
@@ -58,8 +58,9 @@ class Card():
                         can_play = False
                 if target_type == 'building':
                     if target_obj.worker_req:
-                        for tag in target_obj.worker_req:
-                            if tag not in self.trait_list:
+                        certs = self.getTraitCerts()
+                        for req in target_obj.worker_req:
+                            if req not in certs:
                                 report = "Error: This unit does not meet all requirements for the destination."
                                 can_play = False
         return can_play, report
@@ -95,13 +96,13 @@ class Card():
             self.toggleStatus()
             if card_type == 'unit':
                 if player_type == 'player':
-                    player.modStat(resource_dict['Influence'], -1)
+                    player.modStat(theJar['resources']['Influence'], -1)
             if self.play_cost:
                 for key in self.play_cost.keys():
-                    player._inventory.addResource(resource_dict[key], -self.play_cost[key])
+                    player._inventory.addResource(theJar['resources'][key], -self.play_cost[key])
             target_obj.inventory.slots[card_type].append(self)
             self.location = target_obj
-            played_cards_dict[card_type].append(self)
+            theJar['played_cards'][card_type].append(self)
             report = str(self)+' has been played to '+str(target_obj)
         return report
 

@@ -1,4 +1,4 @@
-from _02_global_dicts import player_dict, district_dict,resource_dict
+from _02_global_dicts import theJar
 
 
 class Inventory():
@@ -27,8 +27,8 @@ class Inventory():
         self.resources = {
             #instance:quantity
         }
-        for key in resource_dict.keys():
-            resource = resource_dict[key]
+        for key in theJar['resources'].keys():
+            resource = theJar['resources'][key]
             try:
                 self.resources[resource]
             except:
@@ -51,7 +51,7 @@ class Inventory():
 
     def moveCard(self, t, card_number, new_owner_name, new_owner_id):
         card = self.cards[t][card_number-1]
-        new_player = player_dict[new_owner_id]
+        new_player = theJar['players'][new_owner_id]
         status = new_player.inventory.addCard(card, t)
         if status:
             del self.cards[card_number-1]
@@ -113,8 +113,8 @@ class Inventory():
     def dropres(self, resource, quantity, target_type, target):
         taker = None
         if target_type == 'district':
-            if self.inv_owner.location == district_dict[target]:
-                taker = district_dict[target]
+            if self.inv_owner.location == theJar['districts'][target]:
+                taker = theJar['districts'][target]
             else:
                 report = "Error: Not at present location."
         elif target_type == 'unit':
@@ -136,8 +136,8 @@ class Inventory():
     def takeres(self, resource, quantity: int, target_type, target):
         giver = None
         if target_type == 'district':
-            if self.inv_owner.location == district_dict[target]:
-                giver = district_dict[target]
+            if self.inv_owner.location == theJar['districts'][target]:
+                giver = theJar['districts'][target]
             else:
                 report = "Error: Not at present location."
         elif target_type == 'unit':

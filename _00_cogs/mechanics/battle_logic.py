@@ -1,6 +1,6 @@
 import asyncio
 from _01_functions import say
-from _02_global_dicts import allegiance_dict
+from _02_global_dicts import theJar
 
 async def battle(ctx, location_obj):
     defense_buildings = location_obj.inventory.slots['building']
@@ -45,7 +45,7 @@ def attack_check(attack_units_og, defense_units_og):
         hostiles = 0
         for defender in defense_units_og:
             def_alg = defender.owner._allegiance
-            if allegiance_dict[att_alg][def_alg] == 'Hostile':
+            if theJar['alleigances'][att_alg][def_alg] == 'Hostile':
                 hostiles += 1
                 attack_units.append(attacker)
         if 0 < hostiles < len(defense_units_og)/2:

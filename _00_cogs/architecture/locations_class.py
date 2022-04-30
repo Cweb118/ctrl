@@ -1,15 +1,13 @@
-from _02_global_dicts import region_dict, district_dict, resource_dict
+from _02_global_dicts import theJar
 import nextcord
 import time, asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
-from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 
 class Region():
     def __init__(self, name, guild = None, guildID = None, districts = []):
         self.name = name
-        region_dict[name] = self
+        theJar['regions'][name] = self
         self.districts = districts
         self.guild = guild
         self.guildID = guildID
@@ -107,11 +105,11 @@ class District():
             paths = paths.split(',')
             paths = [i for i in paths if i != '']
             for path in paths:
-                district = district_dict[path]
+                district = theJar['districts'][path]
                 self.setPath(district)
 
-        region_dict[region_name].addDistrict(self)
-        district_dict[name] = self
+        theJar['regions'][region_name].addDistrict(self)
+        theJar['districts'][name] = self
     
     def __reduce__(self):
         return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
@@ -157,7 +155,7 @@ class District():
     def moveCheck(self, player):
         can_move = False
         if self in player.location.paths:
-            can_move = player.modStat(resource_dict['Influence'], -1)
+            can_move = player.modStat(theJar['resources']['Influence'], -1)
         return can_move
 
     def movePlayer(self, player):
@@ -186,27 +184,13 @@ class District():
                 await category.set_permissions(player.member, read_messages=False)
         
             #remove player from old district channel
-            await region_dict[player.location.region].channel.set_permissions(player.member, read_messages=False)
+            await theJar['regions'][player.location.region].channel.set_permissions(player.member, read_messages=False)
         player.location = self
         self.players.append(player)
         await self.channel.set_permissions(player.member, read_messages=True)
 
 
-    def addCard(self, card_kit, card_type):
-        inv = self.inventory
-        can_add = inv.capMathCard(card_type)
-        if can_add == True:
-            card = None
-            kit = [self]+card_kit
-            if card_type == 'unit':
-                card = Unit(*kit)
-            elif card_type == 'building':
-                card = Building(*kit)
-            if card:
-                inv.cards[card_type].append(card)
-            else:
-                can_add = False
-        return can_add, card
+
 
     def __str__(self):
         return self.name

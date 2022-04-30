@@ -1,4 +1,4 @@
-from _02_global_dicts import resource_dict
+from _02_global_dicts import theJar
 
 class Resource():
     def __init__(self, title, description, type):
@@ -6,7 +6,7 @@ class Resource():
         self.description = description
         self.type = type #Fluid, Solid, Energy, Abstract
 
-        resource_dict[title] = self
+        theJar['resources'][title] = self
 
     def report(self):
         report = "Resource: "+self.title+\

@@ -1,12 +1,15 @@
 
 
 class Trait():
-    def __init__(self, name, description, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, mod_initiative, mod_threat, mod_upkeep_dict, new_dice_stats):
+    def __init__(self, name, description, type, certs, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, mod_initiative, mod_threat, mod_upkeep_dict, new_dice_stats):
 
         self.trait_title = name
         self.trait_description = description
-        #triggers: on_play, on_work, on_move, on_attack, on_defend, on_death,
+        self.trait_type = type
+        #triggers: on_play, on_work, on_move, on_battle, on_attack, on_defend, on_death, on_act
         self.trigger = trigger
+        self.trait_certs = certs
+        #action: the class which holds the trait code (in trait_classes.py)
         self.action = action
 
         self.trait_play_cost = mod_play_cost
