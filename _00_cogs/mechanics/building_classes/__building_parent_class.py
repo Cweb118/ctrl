@@ -61,6 +61,7 @@ class Building(Card):
 
     def checkReqs(self):
         can_run = True
+        report = "**"+str(self)+"** has run successfully."
         if self.input:
             for res in self.input:
                 res_obj = theJar['resources'][res]
@@ -68,7 +69,7 @@ class Building(Card):
                 have = self.inventory.resources[res_obj]
                 if have < needed:
                     can_run = False
-                    report = "Error: "+str(self)+" lacks required input resources."
+                    report = "Error: **"+str(self)+"** lacks required input resources."
 
         if self.output:
             for res in self.output:
@@ -78,7 +79,7 @@ class Building(Card):
                 max = self.inventory.cap['resource']
                 if have + given > max:
                     can_run = False
-                    report = "Error: "+str(self)+" has insufficient space for output."
+                    report = "Error: **"+str(self)+"** has insufficient space for output."
 
         if self.catalyst:
             for res in self.catalyst:
@@ -87,12 +88,12 @@ class Building(Card):
                 have = self.inventory.resources[res_obj]
                 if have < needed:
                     can_run = False
-                    report = "Error: "+str(self)+" lacks required catalytic resources."
+                    report = "Error: **"+str(self)+"** lacks required catalytic resources."
 
         if self.inventory.slotcap['unit'] > 0:
             if len(self.inventory.slots['unit']) != self.inventory.slotcap['unit']:
                 can_run = False
-                report = "Error: "+str(self)+" lacks required workers."
+                report = "Error: **"+str(self)+"** lacks required workers."
         return can_run, report
 
     def doInput(self):
@@ -124,7 +125,7 @@ class Building(Card):
                         workers = self.inventory.slots['units']
                         args = [self, workers]+self.logic_args
                         trait.action.work(*args)
-                report = str(self) + " has run successfully."
+                report = "**"+str(self) + "** has run successfully."
             else:
                 report = req_report
             return report
@@ -161,15 +162,15 @@ class Building(Card):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:
             self.status = "DESTROYED"
-            report = "The "+str(self)+' has been destroyed.'
+            report = "The **"+str(self)+'** has been destroyed.'
         else:
-            report = "The "+str(self)+' now has '+str(self.stats['Health'])+' Health.'
+            report = "The **"+str(self)+'** now has '+str(self.stats['Health'])+' Health.'
         return report
 
     def dmg(self, attack_value):
         if self.stats['Defense'] > 0:
             new_def_def = self.setStat('Defense', -attack_value)
-            health_rep = "The "+str(self)+"'s Defense has been lowered to "+str(new_def_def)
+            health_rep = "The **"+str(self)+"'s** Defense has been lowered to "+str(new_def_def)
         else:
             health_rep = self.setHealth(-attack_value)
         return health_rep
@@ -178,48 +179,80 @@ class Building(Card):
         return self.title
 
     def report(self):
-        report = "-----Building Report-----\n"+\
-                 "\nTitle: "+self.title+\
-                 "\nDescription: "+self.description+\
-                 "\nStatus: "+str(self.status)+\
-                 "\nLocation: "+str(self.location)+\
-                 "\nTraits: "+str(self.trait_list)+\
-                 "\nStats: "
+        title = "-----"+self.title+"-----"
+        report = self.description
+        fields = []
+        info_rep = {'inline':True}
+        info_rep['title'] = '-- Info:'
+        info_rep['value'] = "- Status: "+str(self.status)+\
+                 "\n- Location: "+str(self.location)+\
+                 "\n- Traits: "+str(self.trait_list)
+        fields.append(info_rep)
+
+        stats_rep = {'inline':True}
+        stats_rep['title'] = "-- Stats:"
+        stats_rep['value'] = ''
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            report += str(value)+"/"+str(cap)+" "+str(key)+", "
-        report = report[:-2]
-        report += "\n"
+            stats_rep['value'] += "- "+str(key)+": "+str(value)+"/"+str(cap)+"\n"
+        stats_rep['value'] = stats_rep['value'][:-1]
+        fields.append(stats_rep)
 
-
+        req_rep = {'inline':False}
+        req_rep['title'] = "-- Worker Requirements:"
+        req_rep['value'] = ''
         if self.worker_req:
-            report += "\nWorker Requirements: " + str(self.worker_req)
+            for req in self.worker_req:
+                req_rep['value'] += "- "+str(req)+"\n"
+            req_rep['value'] = req_rep['value'][:-1]
+        else:
+            req_rep['value'] = "- None"
+        fields.append(req_rep)
 
+        input_rep = {'inline':False}
+        input_rep['title'] = "-- Input:"
+        input_rep['value'] = ''
         if self.input:
-            report += "\nInput: "
             for key in self.input.keys():
                 value = self.input[key]
-                report += str(value)+" "+str(key) +", "
-            report = report[:-2]
-
-        if self.output:
-            report += "\nOutput: "
-            for key in self.output.keys():
-                value = self.output[key]
-                report += str(value)+" "+str(key) +", "
-            report = report[:-2]
+                input_rep['value'] += "- "+str(value)+" "+str(key) +"\n"
+            input_rep['value'] = input_rep['value'][:-1]
+        else:
+            input_rep['value'] = "- None"
+        fields.append(input_rep)
 
         if self.catalyst:
-            report += "\nRequired Catalyst: "
+            cat_rep = {'inline':False}
+            cat_rep['title'] = "-- Required Catalyst:"
+            cat_rep['value'] = ''
             for key in self.catalyst.keys():
                 value = self.catalyst[key]
-                report += str(value)+" "+str(key) +", "
-            report = report[:-2]
+                cat_rep['value'] += "- "+str(value)+" "+str(key) +"\n"
+            cat_rep['value'] = cat_rep['value'][:-1]
+            fields.append(cat_rep)
+
+        output_rep = {'inline':False}
+        output_rep['title'] = "-- Output:"
+        output_rep['value'] = ''
+        if self.output:
+            for key in self.output.keys():
+                value = self.output[key]
+                output_rep['value'] += "- "+str(value)+" "+str(key) +"\n"
+            output_rep['value'] = output_rep['value'][:-1]
+        else:
+            output_rep['value'] = "- None"
+        fields.append(output_rep)
 
         if len(self.links) > 0:
-            report += "\nProduction Receptacles: " + str(self.links[0])
+            links_rep = {'inline':False}
+            links_rep['title'] = "-- Production Receptacles:"
+            links_rep['value'] = ''
+            for link in self.links:
+                links_rep['value'] += "- "+str(link)
+            fields.append(links_rep)
 
-        report += "\n\n"+self.inventory.report()
-        return report
+        inv_report, inv_title, inv_fields = self.inventory.report()
+        fields += inv_fields
+        return report, title, fields
 

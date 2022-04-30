@@ -79,11 +79,11 @@ class District():
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
-            'tiny': [self, 1000, None, 100, 100, 2, 0],
-            'small': [self, 1000, None, 100, 100, 5, 2],
-            'medium': [self, 1000, None, 100, 100, 8, 4],
-            'large': [self, 1000, None, 100, 100, 13, 8],
-            'huge': [self, 1000, None, 100, 100, 20, 14],
+            'tiny': [self, 100, None, 10, 10, 2, 0],
+            'small': [self, 100, None, 10, 10, 5, 2],
+            'medium': [self, 100, None, 10, 10, 8, 4],
+            'large': [self, 100, None, 10, 10, 13, 8],
+            'huge': [self, 100, None, 10, 10, 20, 14],
         }
         if inventory:
             self.inventory = inventory
@@ -196,13 +196,29 @@ class District():
         return self.name
 
     def report(self):
-        report = "-----"+str(self)+"-----\n"
-        report += "---"+str(self.region)+"\n\n"
-        report += "--Players Present:\n"
+        title = "-----"+str(self)+"-----\n"
+        report = "*The "+str(self.region)+" Region*\n\n"
+        fields = []
+
+        player_rep = {'inline':True}
+        player_rep['title'] = "-- Players Present:"
+        player_rep['value'] = ''
         for player in self.players:
-            report += "-"+str(player)+"\n"
-        report += "\n--Paths:\n"
+            player_rep['value'] += "- "+str(player)+"\n"
+        player_rep['value'] = player_rep['value'][:-1]
+        if len(player_rep['value']) == 0:
+            player_rep['value'] = '- ...'
+        fields.append(player_rep)
+
+        path_rep = {'inline':True}
+        path_rep['title'] = "-- Paths:"
+        path_rep['value'] = ''
         for district in self.paths:
-            report += "-"+str(district)+"\n"
-        report+"\n\n"+self.inventory.report()
-        return report
+            path_rep['value'] += "- "+str(district)+"\n"
+        path_rep['value'] = path_rep['value'][:-1]
+        fields.append(path_rep)
+
+        inv_report, inv_title, inv_fields = self.inventory.report()
+
+        fields += inv_fields
+        return report, title, fields

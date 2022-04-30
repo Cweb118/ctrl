@@ -109,7 +109,6 @@ class Inventory():
             report = "Error: Input less than zero."
         return report
 
-
     def dropres(self, resource, quantity, target_type, target):
         taker = None
         if target_type == 'district':
@@ -162,45 +161,71 @@ class Inventory():
         return report
 
     def report(self):
-        report = "-----"+str(self)+"-----\n"
-
+        title = "-----"+str(self)+"-----\n"
+        fields = []
+        report = ''
         if self.cap['resource']:
+            res_field = {'inline':False}
             if self.cont:
-                report += "\n--Resources: ("+str(self.capMathRes())+"/"+str(self.cont)+")\n"
+                res_field['title'] = "-- Resources: ("+str(self.capMathRes())+"/"+str(self.cont)+")"
             else:
-                report += "\n--Resources:\n"
+                res_field['title'] = "-- Resources:"
             i = 0
+            res_rep = ''
             for resource in self.resources.keys():
                 if self.resources[resource] > 0:
-                    report += "-"+str(resource)+": "+str(self.resources[resource])+"/"+str(self.cap['resource'])+"\n"
+                    res_rep += "- "+str(resource)+" ("+str(self.resources[resource])+"/"+str(self.cap['resource'])+")\n"
                     i += 1
             if i == 0:
-                report += "-None (0/"+str(self.cap['resource'])+")\n"
+                res_rep += "- None (0/"+str(self.cap['resource'])+")\n"
+            res_field['value'] = res_rep
+            fields.append(res_field)
 
-        if self.cap['unit'] or self.cap['building']:
-            report += "\n---Cards:\n"
+        #if self.cap['unit'] or self.cap['building']:
+            #report += "\n---Cards:\n"
         if self.cap['unit']:
-            report += "--Units: ("+str(len(self.cards['unit']))+"/"+str(self.cap['unit'])+")\n"
+            unit_field = {'inline':False}
+            unit_field['title'] = "-- Units (Inventory): ("+str(len(self.cards['unit']))+"/"+str(self.cap['unit'])+")\n"
+            unit_field['value'] = ''
             for card in self.cards['unit']:
-                report += "-"+str(card)+" ("+card.status+")\n"
+                unit_field['value'] += "- "+str(card)+" ("+card.status+")\n"
+            if len(unit_field['value']) == 0:
+                unit_field['value'] = '- Empty'
+            fields.append(unit_field)
+
         if self.cap['building']:
-            report += "--Buildings: ("+str(len(self.cards['building']))+"/"+str(self.cap['building'])+")\n"
+            building_field = {'inline':False}
+            building_field['title'] = "-- Buildings (Inventory): ("+str(len(self.cards['building']))+"/"+str(self.cap['building'])+")\n"
+            building_field['value'] = ''
             for card in self.cards['building']:
-                report += "-"+str(card)+" ("+card.status+")\n"
+                building_field['value'] += "- "+str(card)+" ("+card.status+")\n"
+            if len(building_field['value']) == 0:
+                building_field['value'] = '- Empty'
+            fields.append(building_field)
 
-        if self.slotcap['unit'] or self.slotcap['building']:
-            report += "\n---Slots:\n"
+        #if self.slotcap['unit'] or self.slotcap['building']:
+            #report += "\n---Slots:\n"
         if self.slotcap['unit']:
-            report += "--Unit Slots: ("+str(len(self.slots['unit']))+"/"+str(self.slotcap['unit'])+")\n"
+            uslot_field = {'inline':False}
+            uslot_field['title'] =  "-- Unit Slots: ("+str(len(self.slots['unit']))+"/"+str(self.slotcap['unit'])+")\n"
+            uslot_field['value'] = ''
             for card in self.slots['unit']:
-                report += "-"+str(card)+" ("+card.status+")\n"
+                uslot_field['value'] += "- "+str(card)+" ("+card.status+")\n"
+            if len(uslot_field['value']) == 0:
+                uslot_field['value'] = '- Empty'
+            fields.append(uslot_field)
+
         if self.slotcap['building']:
-            report += "--Building Slots: ("+str(len(self.slots['building']))+"/"+str(self.slotcap['building'])+")\n"
+            bslot_field = {'inline':False}
+            bslot_field['title'] = "-- Building Slots: ("+str(len(self.slots['building']))+"/"+str(self.slotcap['building'])+")\n"
+            bslot_field['value'] = ''
             for card in self.slots['building']:
-                report += "-"+str(card)+" ("+card.status+")\n"
+                bslot_field['value'] += "- "+str(card)+" ("+card.status+")\n"
+            if len(bslot_field['value']) == 0:
+                bslot_field['value'] = '- Empty'
+            fields.append(bslot_field)
 
-
-        return report
+        return report, title, fields
 
     def getCard(self, card_type, card_number):
         card = self.cards[card_type][int(card_number)-1]

@@ -18,7 +18,9 @@ trait_kits_dict = {
 
     'Automata':['Automata', 'A creation of the Barheim.',
               'race', None, ['on_play'], Automata(),
-             {'cont':1}, {'Health':1,'Defense':2}, None, None, None, {'Food':-10, 'Water':-10}, ['2d4']],
+             {'cont':1}, None,
+             {'Health':1,'Defense':2}, None, None,
+             {'Food':-10, 'Water':-10}, ['2d4']],
 
     'Eelaki':['Eelaki', 'Natural engineers, the Eelaki are strong kin with the Tevaru, whose chitinous suits they designed.',
               'race', None, ['on_play'], Eelaki(),

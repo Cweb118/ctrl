@@ -4,6 +4,7 @@ from nextcord.ext import commands
 
 from _00_cogs.architecture.player_fabs_class import Fab
 from _01_functions import *
+from info_dict import info_dict
 from _02_global_dicts import theJar
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.resource_class import Resource
@@ -41,37 +42,187 @@ class Commands(commands.Cog):
     async def shout_c(self, ctx, channel: nextcord.TextChannel):
         await shout(ctx, channel)
 
+#----------player----------
 
-#----------testing----------
+    @commands.command(name="region", guild_ids=guilds)
+    async def region_c(self, ctx, name):
+        region = region_dict[name]
+        report, title, fields = region.report()
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="district", guild_ids=guilds)
+    async def district_c(self, ctx, name):
+        district = district_dict[name]
+        report, title, fields = district.report()
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="move", guild_ids=guilds)
+    async def move_c(self, ctx, name):
+        player = player_dict[ctx.author.id]
+        district = district_dict[name]
+        report = district.movePlayer(player)
+        await say(ctx,report)
+
+    @commands.command(name="inv", guild_ids=guilds)
+    async def inv_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        report, title, fields = player.inventory.report()
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="stats", guild_ids=guilds)
+    async def stats_c(self, ctx):
+        player = player_dict[ctx.author.id]
+        report, title, fields = player.report()
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="resource", guild_ids=guilds)
+    async def res_c(self, ctx, resource_name):
+        resource = resource_dict[resource_name]
+        report = resource.report()
+        await say(ctx, report)
+
+    @commands.command(name="cardrep", guild_ids=guilds)
+    async def cardrep_c(self, ctx, card_type, card_number):
+        player = player_dict[ctx.author.id]
+        report, title, fields = player.inventory.cardReport(card_type, int(card_number))
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="link", guild_ids=guilds)
+    async def link_c(self, ctx, building_child_number, building_parent_number):
+        player = player_dict[ctx.author.id]
+        building_child = player.inventory.getCard('building', int(building_child_number))
+        building_parent = player.inventory.getCard('building', int(building_parent_number))
+        building_parent.addLink(building_child)
+
+    @commands.command(name="playcard", guild_ids=guilds)
+    async def playcard_c(self, ctx, card_type, card_number, target_type, target):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.cards[card_type][int(card_number)-1]
+        targ = None
+        if target_type == 'district':
+            targ = district_dict[target]
+        elif target_type == 'unit':
+            targ = player.inventory.cards[target_type][int(target)-1]
+        elif target_type == 'building':
+            targ = player.inventory.cards[target_type][int(target)-1]
+        if targ:
+            report = card.playCard(player, targ)
+        else:
+            report = 'Error: Invalid location.'
+        await say(ctx,report)
+
+    @commands.command(name="unplaycard", guild_ids=guilds)
+    async def unplaycard_c(self, ctx, card_type, card_number):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.cards[card_type][int(card_number)-1]
+        report = card.unplayCard(player)
+        await say(ctx,report)
+
+    @commands.command(name="unitmove", guild_ids=guilds)
+    async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.getCard(card_type, int(card_number))
+        if target_type == 'district':
+            destination = district_dict[target]
+        elif target_type == 'unit':
+            destination = player.inventory.getCard(target_type, int(target))
+        report = card.moveUnit(target_type, destination)
+        await say(ctx,report)
+
+    @commands.command(name="cardnick", guild_ids=guilds)
+    async def cardnick_c(self, ctx, card_type, card_number, nick):
+        player = player_dict[ctx.author.id]
+        card = player.inventory.cards[card_type][int(card_number)-1]
+        report = card.setNick(nick)
+        report = player.inventory.cardReport(card_type, int(card_number))
+        #await say(ctx,report)
+
+    @commands.command(name="givecard", guild_ids=guilds)
+    async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
+        player = player_dict[ctx.author.id]
+        report = player.inventory.moveCard(card_type, int(card_number), user)
+        await say(ctx,report)
+
+    @commands.command(name="giveres", guild_ids=guilds)
+    #player gives resource to another player
+    async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+        resource = resource_dict[resource_name]
+        giver = player_dict[ctx.author.id]
+        taker = player_dict[user.id]
+        report = giver.inventory.giveResource(resource, quantity, giver, taker)
+        await say(ctx,report)
+
+    @commands.command(name="dropres", guild_ids=guilds)
+    #player drops a resource into a target destination (location, unit, building)
+    async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        giver = player_dict[ctx.author.id]
+        report = giver.inventory.dropres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+    @commands.command(name="unitdropres", guild_ids=guilds)
+    #a unit drops a unit to a target destination (location, unit, building) as directed by a player
+    async def unitdropres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        player = player_dict[ctx.author.id]
+        giver = player.inventory.getCard(unit_type, unit_number)
+        report = giver.inventory.dropres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+    @commands.command(name="takeres", guild_ids=guilds)
+    #a player takes a resource from a public storage (location, unit, building)
+    async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        taker = player_dict[ctx.author.id]
+        report = taker.inventory.takeres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+    @commands.command(name="unittakeres", guild_ids=guilds)
+    #a unit takes a resource from a public storage (location, unit, building) as directed by a player
+    async def unittakeres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
+        resource = resource_dict[resource_name]
+        player = player_dict[ctx.author.id]
+        taker = player.inventory.getCard(unit_type, unit_number)
+        report = taker.inventory.takeres(resource, quantity, target_type, target)
+        await say(ctx,report)
+
+
+
+
+#----------testing/control----------
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
         player = player_dict[ctx.author.id]
         player.addCard(building_kits_dict['wooden_wall'], 'building')
+        player.addCard(building_kits_dict['mother_tree'], 'building')
+        player.addCard(building_kits_dict['bountiful_field'], 'building')
         #player.addCard(building_kits_dict['mother_tree'], 'building')
         #player.addCard(building_kits_dict['bountiful_field'], 'building')
         await self.makecard_c(ctx, 'Warrior', 'Aratori')
         await self.makecard_c(ctx, 'Ranger', 'Aratori')
         await self.makecard_c(ctx, 'Guardian', 'Aratori')
         await self.makecard_c(ctx, 'Alchemist', 'Otavan')
-        await self.makecard_c(ctx, 'Warrior', 'Automata')
+        await self.makecard_c(ctx, 'Worker', 'Automata')
 
-        await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
+        #await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
         await self.move_c(ctx, 'Home')
 
         await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
+        await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
+        await self.playcard_c(ctx, 'building', 3, 'district', 'Home')
         #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
         #await self.link_c(ctx, 2, 1)
-        await self.playcard_c(ctx, 'unit', 1, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 1, 'Tim')
-        await self.playcard_c(ctx, 'unit', 2, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 2, 'Tom')
-        await self.playcard_c(ctx, 'unit', 3, 'building', 1)
-        await self.cardnick_c(ctx, 'unit', 3, 'Tem')
+        #await self.playcard_c(ctx, 'unit', 1, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 1, 'Tim')
+        #await self.playcard_c(ctx, 'unit', 2, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 2, 'Tom')
+        #await self.playcard_c(ctx, 'unit', 3, 'building', 1)
+        #await self.cardnick_c(ctx, 'unit', 3, 'Tem')
 
-        await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 4, 'Bob')
-        await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 5, 'B0b')
+        #await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
+        #await self.cardnick_c(ctx, 'unit', 4, 'Bob')
+        #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
+        #await self.cardnick_c(ctx, 'unit', 5, 'B0b')
 
     @commands.command(name="makefab", guild_ids=guilds)
     async def makefab_c(self, ctx, name, region, alg):
@@ -116,38 +267,24 @@ class Commands(commands.Cog):
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
-    @commands.command(name="region", guild_ids=guilds)
-    async def region_c(self, ctx, name):
-        region = theJar['regions'][name]
-        report = region.report()
+    @commands.command(name="addres", guild_ids=guilds)
+    async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+        resource = resource_dict[resource_name]
+        try:
+            if quantity > 0:
+                target = player_dict[user.id]
+                target.inventory.addResource(resource, quantity)
+                report = "You have gained "+str(quantity)+" "+str(resource)
+            else:
+                report = "Error: Insufficient quantity of resource."
+        except:
+            report = "Transaction Failed."
         await say(ctx,report)
-
-    @commands.command(name="district", guild_ids=guilds)
-    async def district_c(self, ctx, name):
-        district = theJar['districts'][name]
-        report = district.report()
-        report = report+"\n\n"+district.inventory.report()
-        await say(ctx,report)
-
-    @commands.command(name="move", guild_ids=guilds)
-    async def move_c(self, ctx, name):
-        player = theJar['players'][ctx.author.id]
-        district = theJar['districts'][name]
-        report = district.movePlayer(player)
-        await say(ctx,report)
-
-
 
     @commands.command(name="roll", guild_ids=guilds)
     async def roll_c(self, ctx, quantity, sides, threshold):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
-
-    @commands.command(name="inv", guild_ids=guilds)
-    async def inv_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
-        report = player.inventory.report()
-        await say(ctx,report)
 
     @commands.command(name="makecard", guild_ids=guilds)
     async def makecard_c(self, ctx, unit_class, race):
@@ -194,8 +331,9 @@ class Commands(commands.Cog):
         player = player_dict[ctx.author.id]
         for card in player.inventory.cards['unit']:
             if card.status == "Played":
-                report = card.harvest()
-                await say(ctx,report)
+                report, title = card.harvest()
+                await say(ctx, report, title=title)
+
 
     @commands.command(name="battle", guild_ids=guilds)
     async def battle_c(self, ctx):
@@ -227,169 +365,16 @@ class Commands(commands.Cog):
                 if report:
                     await say(ctx,report)
 
-    @commands.command(name="link", guild_ids=guilds)
-    async def link_c(self, ctx, building_child_number, building_parent_number):
-        player = player_dict[ctx.author.id]
-        building_child = player.inventory.getCard('building', int(building_child_number))
-        building_parent = player.inventory.getCard('building', int(building_parent_number))
-        building_parent.addLink(building_child)
-
-
-
-    @commands.command(name="stats", guild_ids=guilds)
-    async def stats_c(self, ctx):
-        player = player_dict[ctx.author.id]
-        report = player.report()
-        await say(ctx,report)
-
-    @commands.command(name="cardrep", guild_ids=guilds)
-    async def cardrep_c(self, ctx, card_type, card_number):
-        player = player_dict[ctx.author.id]
-        report = player.inventory.cardReport(card_type, int(card_number))
-        await say(ctx,report)
-
-    @commands.command(name="cardnick", guild_ids=guilds)
-    async def cardnick_c(self, ctx, card_type, card_number, nick):
-        player = player_dict[ctx.author.id]
-        card = player.inventory.cards[card_type][int(card_number)-1]
-        report = card.setNick(nick)
-        report = player.inventory.cardReport(card_type, int(card_number))
-        #await say(ctx,report)
-
-    @commands.command(name="playcard", guild_ids=guilds)
-    async def playcard_c(self, ctx, card_type, card_number, target_type, target):
-        player = player_dict[ctx.author.id]
-        card = player.inventory.cards[card_type][int(card_number)-1]
-        targ = None
-        if target_type == 'district':
-            targ = district_dict[target]
-        elif target_type == 'unit':
-            targ = player.inventory.cards[target_type][int(target)-1]
-        elif target_type == 'building':
-            targ = player.inventory.cards[target_type][int(target)-1]
-        if targ:
-            report = card.playCard(player, targ)
-        else:
-            report = 'Error: Invalid location.'
-        await say(ctx,report)
-
-    @commands.command(name="givecard", guild_ids=guilds)
-    async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
-        player = player_dict[ctx.author.id]
-        report = player.inventory.moveCard(card_type, int(card_number), user)
-        await say(ctx,report)
-
-    @commands.command(name="givecard", guild_ids=guilds)
-    async def givecard_c(self, ctx, card, target_obj):
-        player = player_dict[ctx.author.id]
-        status = target_obj.inventory.playCard(self, card, player, target_obj)
-
-    @commands.command(name="giveres", guild_ids=guilds)
-    async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
-        resource = resource_dict[resource_name]
-        giver = player_dict[ctx.author.id]
-        taker = player_dict[user.id]
-        report = giver.inventory.giveResource(resource, quantity, giver, taker)
-        await say(ctx,report)
-
-    @commands.command(name="dropres", guild_ids=guilds)
-    async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        giver = player_dict[ctx.author.id]
-        report = giver.inventory.dropres(resource, quantity, target_type, target)
-        await say(ctx,report)
-
-    @commands.command(name="unitdropres", guild_ids=guilds)
-    async def unitdropres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        player = player_dict[ctx.author.id]
-        giver = player.inventory.getCard(unit_type, unit_number)
-        report = giver.inventory.dropres(resource, quantity, target_type, target)
-        await say(ctx,report)
-
-    @commands.command(name="takeres", guild_ids=guilds)
-    async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        taker = player_dict[ctx.author.id]
-        report = taker.inventory.takeres(resource, quantity, target_type, target)
-        await say(ctx,report)
-
-    @commands.command(name="unittakeres", guild_ids=guilds)
-    async def unittakeres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
-        resource = resource_dict[resource_name]
-        player = player_dict[ctx.author.id]
-        taker = player.inventory.getCard(unit_type, unit_number)
-        report = taker.inventory.takeres(resource, quantity, target_type, target)
-        await say(ctx,report)
-
-
-
-
-    @commands.command(name="addres", guild_ids=guilds)
-    async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
-        resource = resource_dict[resource_name]
+    @commands.command(name="info", guild_ids=guilds)
+    async def run_c(self, ctx, argu):
         try:
-            if quantity > 0:
-                target = player_dict[user.id]
-                target.inventory.addResource(resource, quantity)
-                report = "You have gained "+str(quantity)+" "+str(resource)
-            else:
-                report = "Error: Insufficient quantity of resource."
+            info = info_dict[argu.lower()]
+            await say(ctx, info['info'], title=info['title'])
         except:
-            report = "Transaction Failed."
-        await say(ctx,report)
+            await say(ctx, 'Error: No results for query \''+argu+'\'')
 
-    @commands.command(name="resource", guild_ids=guilds)
-    async def res_c(self, ctx, resource_name):
-        resource = resource_dict[resource_name]
-        report = resource.report()
-        await say(ctx,report)
 
-"""
-@bot.command()
-async def player_init(ctx):
-    for channel in nextcord.utils.get(ctx.guild.categories, name='Players').channels:
-        await channel.delete()
 
-    for player in nextcord.utils.get(ctx.guild.roles, name='player').members:
-        print("Processing "+player.display_name)
-        category = nextcord.utils.get(ctx.guild.categories, name='Players')
-        overwrites = {
-            ctx.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-            player: nextcord.PermissionOverwrite(read_messages=True),
-        }
-        await ctx.message.guild.create_text_channel(player.display_name.lower(), category=category, overwrites=overwrites)
-    await say(ctx, "playerinit complete!")
-
-@bot.command()
-async def interface_init(ctx):
-    for channel in nextcord.utils.get(ctx.guild.categories, name='Interface').channels:
-        await channel.delete()
-
-    for player in nextcord.utils.get(ctx.guild.roles, name='player').members:
-        print("Processing "+player.display_name)
-        category = nextcord.utils.get(ctx.guild.categories, name='Interface')
-        overwrites = {
-            ctx.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-            player: nextcord.PermissionOverwrite(read_messages=True),
-        }
-        name = player.display_name.lower().replace(" ",'-')+"_interface"
-        print(name)
-        await ctx.message.guild.create_text_channel(name, category=category, overwrites=overwrites)
-
-        channel = nextcord.utils.get(ctx.guild.channels, name=name)
-        options = [
-            nextcord.SelectOption(label="Red", description="The color red!"),
-            nextcord.SelectOption(label="Blue", description="The color blue!")
-        ]
-        select = nextcord.ui.Select(custom_id=name+"_colorsel", placeholder="Select a color!", options=options)
-        view = nextcord.ui.View()
-        view.add_item(select)
-        print(view)
-
-        await channel.send("Choose!", view=view)
-    await say(ctx, "interfaceinit complete!")
- """
 
 def setup(bot):
     bot.add_cog(Commands(bot))

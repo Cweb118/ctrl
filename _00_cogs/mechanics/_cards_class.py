@@ -65,6 +65,25 @@ class Card():
                                 can_play = False
         return can_play, report
 
+    def playerUnplayCheck(self, player):
+        report = ''
+        can_unplay = False
+        card_status = self.status
+        target_obj = self.location
+        target_type = type(target_obj).__name__.lower()
+        if card_status == 'Played':
+            can_unplay = True
+            if target_type == 'district':
+                if player.location != target_obj:
+                    report = "Error: You are not currently present at the designated location."
+                    can_unplay = False
+            else:
+                if player.location != target_obj.location:
+                    report = "Error: You are not currently present at the designated location."
+                    can_unplay = False
+        return can_unplay, report
+
+
     def fabPlayCheck(self, player, target_obj):
         report = ''
         can_play = False
@@ -103,7 +122,24 @@ class Card():
             target_obj.inventory.slots[card_type].append(self)
             self.location = target_obj
             theJar['played_cards'][card_type].append(self)
-            report = str(self)+' has been played to '+str(target_obj)
+            report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
         return report
 
+    def unplayCard(self, player):
+        card_type = type(self).__name__.lower()
+        player_type = type(player).__name__.lower()
+        #if player_type == 'player':
+        can_unplay, report = self.playerUnplayCheck(player)
+
+        if can_unplay:
+            target_obj = self.location
+            self.toggleStatus()
+            if card_type == 'unit':
+                if player_type == 'player':
+                    player.modStat(resource_dict['Influence'], 1)
+            self.location.inventory.slots[card_type].remove(self)
+            self.location = None
+            played_cards_dict[card_type].append(self)
+            report = str(self)+' has been unplayed from '+str(target_obj)
+        return report
 

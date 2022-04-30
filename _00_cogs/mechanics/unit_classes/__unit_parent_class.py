@@ -80,15 +80,15 @@ class Unit(Card):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:
             self.status = "DEAD"
-            report = "The "+str(self)+' has died.'
+            report = "The **"+str(self)+'** has died.'
         else:
-            report = "The "+str(self)+' now has '+str(self.stats['Health'])+' Health.'
+            report = "The **"+str(self)+'** now has '+str(self.stats['Health'])+' Health.'
         return report
 
     def dmg(self, attack_value):
         if self.stats['Defense'] > 0:
             self.setStat('Defense', -attack_value)
-            health_rep = "The "+str(self)+"'s Defense is now "+str(self.stats['Defense'])
+            health_rep = "The **"+str(self)+"'s** Defense is now "+str(self.stats['Defense'])
         else:
             health_rep = self.setHealth(-attack_value)
         return health_rep
@@ -102,61 +102,67 @@ class Unit(Card):
                         self.title =  self.title+" "+trait.trait_title
                     else:
                         self.title = trait.trait_title+" "+self.title
-            if trait.trait_stats_dict:
-                for mod_stat in trait.trait_stats_dict.keys():
-                    value = trait.trait_stats_dict[mod_stat]
-                    self.stats[mod_stat] += value
-                    self.statcaps[mod_stat] += value
-            if trait.trait_play_cost:
-                for mod_cost in trait.trait_play_cost.keys():
-                    value = trait.trait_play_cost[mod_cost]
+        if trait.trait_stats_dict:
+            for mod_stat in trait.trait_stats_dict.keys():
+                value = trait.trait_stats_dict[mod_stat]
+                self.stats[mod_stat] += value
+                self.statcaps[mod_stat] += value
+                if self.stats[mod_stat] < 0:
+                    self.stats[mod_stat] = 0
+                    self.statcaps[mod_stat] = 0
+        if trait.trait_play_cost:
+            for mod_cost in trait.trait_play_cost.keys():
+                value = trait.trait_play_cost[mod_cost]
+                try:
+                    self.upkeep[mod_cost] += value
+                except:
+                    self.upkeep[mod_cost] = value
+        if trait.trait_upkeep_dict:
+            for mod_upkeep in trait.trait_upkeep_dict.keys():
+                resource = resource_dict[mod_upkeep]
+                value = trait.trait_upkeep_dict[mod_upkeep]
+                try:
+                    self.upkeep[resource] += value
+                except:
+                    self.upkeep[resource] = value
+                if self.upkeep[resource] < 0:
+                    self.upkeep[resource] = 0
+
+        if trait.trait_inv_args:
+            inv = self.inventory
+            for key in trait.trait_inv_args.keys():
+                value = trait.trait_inv_args[key]
+                if key == 'cont':
                     try:
-                        self.upkeep[mod_cost] += value
+                        inv.cont += value
                     except:
-                        self.upkeep[mod_cost] = value
-            if trait.trait_upkeep_dict:
-                for mod_upkeep in trait.trait_upkeep_dict.keys():
-                    resource = theJar['resource'][mod_upkeep]
-                    value = trait.trait_upkeep_dict[mod_upkeep]
-                    try:
-                        self.upkeep[resource] += value
-                    except:
-                        self.upkeep[resource] = value
-            if trait.trait_inv_args:
-                inv = self.inventory
-                for key in trait.trait_inv_args.keys():
-                    value = trait.trait_inv_args[key]
-                    if key == 'cont':
+                        inv.cont = value
+                elif key == "cap":
+                    for type in value.keys():
+                        mod = value[type]
                         try:
-                            inv.cont += value
+                            inv.cap[type] += mod
                         except:
-                            inv.cont = value
-                    elif key == "cap":
-                        for type in value.keys():
-                            mod = value[type]
-                            try:
-                                inv.cap[type] += mod
-                            except:
-                                inv.cap[type] = mod
-                    elif key == "slotcap":
-                        for type in value.keys():
-                            mod = value[type]
-                            try:
-                                inv.slotcap[type] += mod
-                            except:
-                                inv.slotcap[type] = mod
-                    else:
-                        print("ERROR: Invalid inventory constraint.")
-            if trait.trait_initiative:
-                self.initiative += trait.trait_initiative
-            if trait.trait_threat:
-                self.threat += trait.trait_threat
-            if trait.trait_dice_stats:
-                new_set = self.die_list + trait.trait_dice_stats
-                self.die_list = new_set
-                self.die_set = Dice(new_set)
-            for trig in trait.trigger:
-                self.traits[trig].append(trait)
+                            inv.cap[type] = mod
+                elif key == "slotcap":
+                    for type in value.keys():
+                        mod = value[type]
+                        try:
+                            inv.slotcap[type] += mod
+                        except:
+                            inv.slotcap[type] = mod
+                else:
+                    print("Error: Invalid inventory constraint.")
+        if trait.trait_initiative:
+            self.initiative += trait.trait_initiative
+        if trait.trait_threat:
+            self.threat += trait.trait_threat
+        if trait.trait_dice_stats:
+            new_set = self.die_list + trait.trait_dice_stats
+            self.die_list = new_set
+            self.die_set = Dice(new_set)
+        for trig in trait.trigger:
+            self.traits[trig].append(trait)
 
     def hasTrait(self, trait_name):
         trait = Trait(*trait_kits_dict[trait_name])
@@ -250,51 +256,59 @@ class Unit(Card):
                 self.setStat('Defense', -f)
 
             if self.stats['Defense'] > 0:
-                def_report = "Your "+str(self)+' has lost '+str(f)+' Defense due to lacking required resources.'
+                def_report = "Your **"+str(self)+'** has lost '+str(f)+' Defense due to lacking required resources.'
             else:
-                def_report = "Your "+str(self)+' has no Defense remaining.'
+                def_report = "Your **"+str(self)+'** has no Defense remaining.'
             hit, report_dict = self.die_set.roll_math(self.stats['Defense']+self.stats['Fortitude'])
             if hit:
                 health_report = self.setHealth(-1)
             else:
-                health_report = "Your "+str(self)+' has sustained no damage.'
+                health_report = "Your **"+str(self)+'** has sustained no damage.'
 
             #TODO: HARVEST TRAIT ACTIVATE
 
-            report = "-----"+str(self)+" Upkeep Results-----\n\n"+\
-                         "Rolled: "+str(self)+", "+str(self.die_set)+"\n"+\
-                         "Rolls: "+str(report_dict['rolls'])+"\n"+\
-                         "Defense + Fortitude: "+str(report_dict['threshold'])+"\n"+\
-                         "Damage Taken: "+str(report_dict['hit_count'])+"\n\n"+\
-                         def_report+"\n"+\
-                         health_report
+            title = "-----"+str(self)+" Upkeep Results-----"
+            report = "- Rolled: "+str(self.die_set)+" ("+str(self)+")\n"+\
+                     "- Rolls: "+str(report_dict['rolls'])+"\n"+\
+                     "- Defense + Fortitude: "+str(report_dict['threshold'])+"\n"+\
+                     "- Damage Taken: "+str(report_dict['hit_count'])+"\n\n"+\
+                     def_report+"\n"+\
+                     health_report
 
-            return report
+            return report, title
 
     def __str__(self):
         return self.title
 
     def report(self):
-        report = "-----Unit Report-----\n"+\
-                 "\nTitle: "+self.title+\
-                 "\nDescription: "+self.description+\
-                 "\nStatus: "+str(self.status)+\
-                 "\nLocation: "+str(self.location)+\
-                 "\nTraits: "+str(self.trait_list)+\
-                 "\nStats: "
+        fields = []
+        title = "-----"+self.title+"-----"
+
+        report = self.description
+
+        info_rep = {'inline':True}
+        info_rep['title'] = '-- Info:'
+        info_rep['value'] =  "\n- Status: "+str(self.status)+\
+                             "\n- Location: "+str(self.location)+\
+                             "\n- Traits: "+str(self.trait_list)
+        info_rep['value'] += "\n- Die Set: "+str(self.die_set)
+        info_rep['value'] += "\n- Upkeep: "
+        for key in self.upkeep.keys():
+            value = self.upkeep[key]
+            info_rep['value'] += str(value)+" "+str(key) +", "
+        info_rep['value'] = info_rep['value'][:-2]
+        fields.append(info_rep)
+
+        stats_rep = {'inline':True}
+        stats_rep['title'] = "-- Stats:"
+        stats_rep['value'] = ''
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            report += str(value)+"/"+str(cap)+" "+str(key)+", "
-        report = report[:-2]
+            stats_rep['value'] += "- "+str(key)+" "+str(value)+"/"+str(cap)+"\n"
+        stats_rep['value'] = stats_rep['value'][:-1]
+        fields.append(stats_rep)
 
-        report += "\nUpkeep: "
-        for key in self.upkeep.keys():
-            value = self.upkeep[key]
-            report += str(value)+" "+str(key) +", "
-        report = report[:-2]
-
-        report += "\nDie Set: "+str(self.die_set)
-
-        report += "\n\n"+self.inventory.report()
-        return report
+        inv_report, inv_title, inv_fields = self.inventory.report()
+        fields += inv_fields
+        return report, title, fields

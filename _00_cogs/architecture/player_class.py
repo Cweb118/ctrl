@@ -93,11 +93,26 @@ class Player():
         return self._username
 
     def report(self):
-        report = "-----"+str(self)+"'s Stats-----\n\n"
-        for stat in self._stats.keys():
-            report += str(stat)+": "+str(self._stats[stat])+"/"+str(self._statcaps[stat])+"\n"
-        return report
+        report = ''
+        fields = []
+        title = "-----"+str(self)+"-----"
 
+        al_rep = {'inline':True}
+        al_rep['title'] = "-- Alliegence:"
+        al_rep['value'] = '- None'
+        if self._allegiance:
+            al_rep['value'] = "- "+str(self._allegiance)
+        fields.append(al_rep)
+
+        stats_rep = {'inline':True}
+        stats_rep['title'] = "-- Stats:"
+        stats_rep['value'] = ''
+        for stat in self._stats.keys():
+            stats_rep['value'] += "- "+str(stat)+": "+str(self._stats[stat])+"/"+str(self._statcaps[stat])+"\n"
+        stats_rep['value'] = stats_rep['value'][:-1]
+        fields.append(stats_rep)
+
+        return report, title, fields
 
     #ACCESSOR
 

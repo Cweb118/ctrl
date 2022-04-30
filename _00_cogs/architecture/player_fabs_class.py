@@ -37,10 +37,17 @@ class Fab():
         return self.title
 
     def report(self):
-        report = "------"+str(self)+"------\n"
-        report += "\n-Owner: "+str(self.owner)
-        report += "\n-Location: "+str(self.location)
-        report += "\n-Allegiance: "+str(self._allegiance)
-        inv_rep = self._inventory.report()
-        report += "\n\n"+inv_rep
-        return report
+
+        title = "------"+str(self)+"------\n"
+        report = ''
+        fields = []
+        player_rep = {'inline':True}
+        player_rep['title'] = "-- Info:"
+        player_rep['value'] = ''
+        player_rep['value'] += "- Owner: "+str(self.owner)
+        player_rep['value'] += "\n- Location: "+str(self.location)
+        player_rep['value'] += "\n- Allegiance: "+str(self._allegiance)
+        fields.append(player_rep)
+        inv_rep, inv_title, inv_fields = self._inventory.report()
+        fields += inv_fields
+        return report, title, fields
