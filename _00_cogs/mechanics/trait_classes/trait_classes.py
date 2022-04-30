@@ -168,6 +168,8 @@ class Technophant():
     def attack(self, attack_unit, defense_unit):
         att_att = attack_unit.stats['Attack']
         hit, report_dict = attack_unit.die_set.roll_math(att_att)
+        if attack_unit.hasTraitCert('Charged'):
+            hit += 1
         if hit:
             attack_unit.setStat('Attack', int(report_dict['hit_count']))
             act_rep = "The "+str(attack_unit)+"'s power grows."
@@ -243,6 +245,7 @@ class Prismari():
             return report
 
 class Rivenborne():
+    #PASSIVE: Has cert Charged
     def action(self):
         print('action!')
 

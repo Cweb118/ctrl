@@ -42,7 +42,7 @@ trait_kits_dict = {
              {'Water':1}, ['1d5']],
 
     'Rivenborne':['Rivenborne', 'A mighty race of great strength, the Barheim have built an empire to last the test of time.',
-              'race', None, ['on_play'], Rivenborne(),
+              'race', ['Charged'], ['on_play'], Rivenborne(),
              None, None, {'Health':2}, None, None, None, ['1d4', '1d8']],
 
     'Tevaru':['Tevaru', 'The Tevaru are aliens to the surface world, but despite the dangerous environment they feel more at home here.',

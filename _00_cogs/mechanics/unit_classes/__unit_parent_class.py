@@ -194,6 +194,13 @@ class Unit(Card):
                     trait_name_list.append(current_trait.trait_title)
         return trait_name_list
 
+    def hasTraitCert(self, cert_name):
+        has = False
+        certs = self.getTraitCerts()
+        if cert_name in certs:
+            has = True
+        return has
+
     def getTraitCerts(self):
         cert_list = []
         for trigger in self.traits.keys():
