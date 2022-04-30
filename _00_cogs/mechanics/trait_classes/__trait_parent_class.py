@@ -1,5 +1,3 @@
-
-
 class Trait():
     def __init__(self, name, description, type, certs, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, mod_initiative, mod_threat, mod_upkeep_dict, new_dice_stats):
 

@@ -136,10 +136,10 @@ class Card():
             self.toggleStatus()
             if card_type == 'unit':
                 if player_type == 'player':
-                    player.modStat(resource_dict['Influence'], 1)
+                    player.modStat(theJar['resources']['Influence'], 1)
             self.location.inventory.slots[card_type].remove(self)
             self.location = None
-            played_cards_dict[card_type].append(self)
+            theJar['played_cards'][card_type].append(self)
             report = str(self)+' has been unplayed from '+str(target_obj)
         return report
 

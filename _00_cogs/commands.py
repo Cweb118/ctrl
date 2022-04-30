@@ -1,4 +1,3 @@
-import nextcord
 from nextcord import slash_command
 from nextcord.ext import commands
 
