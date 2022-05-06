@@ -93,8 +93,38 @@ class Ranger():
         return report
 
 class Scout():
-    def action(self):
-        print('action!')
+    #TODO: TEST
+    def __init__(self):
+        self.loot = theJar['resources']['food']
+
+    def act(self, sender, receiver, operation):
+        #toggles savenging loot
+        if self.loot == theJar['resources']['food']:
+            self.loot = theJar['resources']['water']
+        else:
+            self.loot = theJar['resources']['food']
+
+    def move(self, self_unit, from_location, to_location):
+        res = self.loot
+        loc_size_pass_bars = {
+            'tiny': 1,
+            'small': 2,
+            'medium': 3,
+            'large': 4,
+            'huge': 5,
+        }
+
+        res_per_hit = {
+            1:2,
+            2:5,
+            3:8,
+            4:11,
+            5:14,
+        }
+        #get the to_location's size
+        #roll unit's dice
+        #if under the bar, find res per hit
+
 
 class Knight():
     def attack(self, attack_unit, defense_unit):
@@ -215,14 +245,18 @@ class Barheim():
         print('action!')
 
 class Eelaki():
+    #Gives defencive buff to someone
     def action(self):
         print('action!')
 
 class Loyavasi():
+    #PASSIVE: +2 Endurance
+    #SCAVANGE: On move, roll dice to try and pick up food or water (maybe set in act? or random)
     def action(self):
         print('action!')
 
 class Otavan():
+    #PASSIVE: Stealth (-2 Taunt)
     def action(self):
         print('action!')
 

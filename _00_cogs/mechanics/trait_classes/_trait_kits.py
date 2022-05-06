@@ -24,12 +24,12 @@ trait_kits_dict = {
 
     'Eelaki':['Eelaki', 'Natural engineers, the Eelaki are strong kin with the Tevaru, whose chitinous suits they designed.',
               'race', None, ['on_play'], Eelaki(),
-              None, None, None, -2, None, None, ['2d3']],
+              None, None, {'Endurance':-1}, -2, -1, None, ['2d3']],
 
     'Loyavasi':['Loyavasi', "A mighty race of great strength, the Loyavasi have built an empire to last the test of time.",
                 'race', None, ['on_move'], Loyavasi(),
                 {'cap':{'resource':2}}, None,
-                {'Endurance':2}, -1, None, None, ['1d6']],
+                {'Endurance':2}, -1, None, None, ['1d6', '1d2']],
 
     'Otavan':['Otavan', 'A mighty race of great strength, the Otavan have survived through thick and thin.',
               'race', None, ['on_play'], Otavan(),
@@ -48,7 +48,7 @@ trait_kits_dict = {
     'Tevaru':['Tevaru', 'The Tevaru are aliens to the surface world, but despite the dangerous environment they feel more at home here.',
               'race', None, ['on_play'], Tevaru(),
              {'cap':{'resource':4, 'unit':1}, 'cont':2}, None,
-             {'Health':2,'Fortitude':-1}, 1, None,
+             {'Health':2,'Fortitude':-1}, 1, 1,
              {'Water':3}, ['1d3']],
 
     'Xinn':['Xinn', 'An intimidating race of brutal bipedal bovines, what the Xinn lack in intellect they more than make up for in raw strength.',
