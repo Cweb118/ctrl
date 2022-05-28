@@ -119,7 +119,7 @@ class Unit(Card):
                     self.upkeep[mod_cost] = value
         if trait.trait_upkeep_dict:
             for mod_upkeep in trait.trait_upkeep_dict.keys():
-                resource = resource_dict[mod_upkeep]
+                resource = theJar['resources'][mod_upkeep]
                 value = trait.trait_upkeep_dict[mod_upkeep]
                 try:
                     self.upkeep[resource] += value

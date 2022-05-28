@@ -28,6 +28,7 @@ class Card():
             self.status = "Held"
 
     def playerPlayCheck(self, player, target_obj):
+        #TODO: Check and make sure the alleigences are the Friendly
         report = ''
         can_play = False
         card_type = type(self).__name__.lower()

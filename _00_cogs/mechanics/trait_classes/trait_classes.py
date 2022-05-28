@@ -214,6 +214,33 @@ class Technophant():
                  "---"+str(report_dict['result'])+"---\n"+act_rep
         return report
 
+#----------vehicles----------
+class Vehicle():
+    def attack(self, attack_unit, defense_unit):
+        report = str(attack_unit)+" has attacked "+str(defense_unit)+". Others follow suit:"
+        subunit_list = attack_unit.inventory.slots['units']
+        for subunit in subunit_list:
+            if len(subunit.traits['on_attack']) > 0:
+                for trait in subunit.traits['on_attack']:
+                    action_report = trait.action.attack(subunit, defense_unit)
+                    if action_report:
+                        report += action_report
+        return report
+
+    #TODO: Gotta think about this a bit more, not sure if every defense move can be compatible with this love triangle thing going on
+    def defend(self, defense_unit, attack_unit, dmg):
+        report = str(defense_unit)+" has been attacked by"+str(attack_unit)+". Others come to defend:"
+        subunit_list = attack_unit.inventory.slots['units']
+        for subunit in subunit_list:
+            if len(subunit.traits['on_defend']) > 0:
+                for trait in subunit.traits['on_defend']:
+                    action_report = trait.action.attack(defense_unit, attack_unit, dmg, bystander=subunit)
+                    if action_report:
+                        report += action_report
+        return report
+
+
+
 #----------races----------
 
 class Aratori():
@@ -240,12 +267,12 @@ class Automata():
         print('action!')
 
 class Barheim():
-    #NOTE: On work (double worked)
+    #NOTE: On work, reduce unit cap
     def action(self):
         print('action!')
 
 class Eelaki():
-    #Gives defencive buff to someone
+    #Somehow decide a target; they get a big buff (defence or dodge idk)
     def action(self):
         print('action!')
 
@@ -284,11 +311,12 @@ class Rivenborne():
         print('action!')
 
 class Tevaru():
-    #NOTE: PASSIVE (can have a 'partner' played to them')
+    #NOTE: PASSIVE (can have a 'partner' played to them)
     def action(self):
         print('action!')
 
 class Xinn():
+    #PASSIVE: Has the Harvest cert by default
     def action(self):
         print('action!')
 
@@ -321,6 +349,8 @@ class Harmony():
             self_unit.setStat('Defense', def_regen)
             health_rep = "The "+str(self_unit)+" steels itself. "+str(def_regen)+" defence was regained."
         return health_rep
+
+#TODO: Charged effect (self deletes, gives and takes Charged cert)
 
 
 #----------building_logic----------
