@@ -1,6 +1,6 @@
 from ssl import Options
 import nextcord
-from _02_global_dicts import player_dict, district_dict
+from _02_global_dicts import theJar
 from nextcord import interactions
 from nextcord.ext import commands
 from nextcord.ext.commands import bot
@@ -26,7 +26,7 @@ class LocationUI(nextcord.ui.View):
 
     @nextcord.ui.button(label="Move", style=nextcord.ButtonStyle.green)
     async def move(self, button, interaction):
-        locations = player_dict[self.info["name"]].location.paths
+        locations = theJar['player_dict'][self.info["name"]].location.paths
         locationsNames = [location.name for location in locations]
         options = []
 
@@ -47,8 +47,8 @@ class LocationUI(nextcord.ui.View):
             
             @nextcord.ui.button(label="Go", style=nextcord.ButtonStyle.green)
             async def go(self, button, interaction):
-                player = player_dict[self.info["name"]]
-                district = district_dict[self.selection]
+                player = theJar['player_dict'][self.info["name"]]
+                district = theJar['district_dict'][self.selection]
                 report = district.movePlayer(player)
                 embedded = nextcord.Embed(title="test", color=0x00ff00)
                 await interaction.edit(content=report, view = None)
@@ -66,7 +66,7 @@ class LocationUI(nextcord.ui.View):
 
     @nextcord.ui.button(label="Show Units", style=nextcord.ButtonStyle.green)
     async def showUnits(self, button, interaction):
-        await interaction.edit(content=player_dict[self.info[str("name")]].location.report())
+        await interaction.edit(content=theJar['player_dict'][self.info[str("name")]].location.report())
 
         
 class UserInterface(commands.Cog):
@@ -76,7 +76,7 @@ class UserInterface(commands.Cog):
         self.interfaceChannels = [] #List of dictionaries with Player IDs and Interface Channel IDs. name:UserID, channel:ChannelID
 
     async def initializeInterface(self):
-        for player in player_dict:
+        for player in theJar['player_dict']:
         #If there is a interfaceChannel ID. There may not be one if the game hasn't been initialized yet.
             if type([player.interfaceChannel]) == int:
                 self.interfaceChannels.append({"name":player.memberID, "channel":player.interfaceChannel})
