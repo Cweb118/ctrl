@@ -43,7 +43,9 @@ class Player():
             #instance:cap
             theJar['resource']['Influence']:20
         }
-        self._allegiance = allegiance
+        self.allegiance = allegiance
+        self.squads = []
+
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
     

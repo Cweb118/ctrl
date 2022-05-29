@@ -373,6 +373,13 @@ class Commands(commands.Cog):
             await say(ctx, 'Error: No results for query \''+argu+'\'')
 
 
+#-----Squads-----
+    @commands.command(name="joinsquad", guild_ids=guilds)
+    async def battle_c(self, ctx, unit_number, join_unit_number):
+        player = theJar['players'][ctx.author.id]
+        location = player.location
+        await battle(ctx, location)
+
 
 
 def setup(bot):

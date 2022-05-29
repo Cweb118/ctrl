@@ -32,6 +32,7 @@ class Unit(Card):
         self.upkeep = {}
         self.die_list = dice_stats
         self.die_set = Dice(dice_stats)
+        self.squad = None
 
         for key in upkeep_dict.keys():
             resource = theJar['resources'][key]
@@ -56,7 +57,7 @@ class Unit(Card):
         inv = theJar[owner_type][inv_owner].inventory
         can_add = inv.capMathCard('unit')
         if can_add == True:
-            kit = [self]+unit_kits_dict[card_kit_id]
+            kit = [inv_owner]+unit_kits_dict[card_kit_id]
             card = Unit(*kit)
             if card:
                 inv.cards['unit'].append(card)
@@ -218,33 +219,42 @@ class Unit(Card):
                     if cert_name in current_trait.trait_certs:
                         current_trait.trait_certs.remove(cert_name)
 
-    def moveUnit(self, dest_type, destination):
+    def unitCanMove(self, dest_type, destination):
+        can_move = False
+        report = ''
         if self.status == 'Played':
             if self.stats['Endurance'] > 0:
-                can_move = False
                 if dest_type == 'district':
                     if destination in self.location.paths:
                         can_move = True
                 if dest_type == 'unit':
                     if self.location == destination.location:
                         can_move = True
-                if can_move:
-                    slot_count = len(destination.inventory.slots['unit'])
-                    slotcap = destination.inventory.slotcap['unit']
-                    if slot_count < slotcap:
-                        destination.inventory.slots['unit'].append(self)
-                        self.location.inventory.slots['unit'].remove(self)
-                        self.location = destination
-                        self.setStat('Endurance', -1)
-                        report = "Unit moved successfully."
-                    else:
-                        report = "Error: This destination does not have the required space."
-                else:
-                    report = "Error: This destination is too far."
+                if dest_type == 'building':
+                    if self.location == destination.location:
+                        can_move = True
             else:
                 report = "Error: This unit does not have the Endurance."
         else:
             report = "Error: This unit has not yet been played."
+        return can_move, report
+
+    def moveUnit(self, dest_type, destination):
+        can_move, report = self.unitCanMove(dest_type, destination)
+        if can_move:
+            slot_count = len(destination.inventory.slots['unit'])
+            slotcap = destination.inventory.slotcap['unit']
+            if slot_count < slotcap:
+                destination.inventory.slots['unit'].append(self)
+                self.location.inventory.slots['unit'].remove(self)
+                self.location = destination
+                self.setStat('Endurance', -1)
+                report = "Unit moved successfully."
+            else:
+                report = "Error: This destination does not have the required space."
+        else:
+            report = "Error: This destination is too far."
+
         return report
 
     def harvest(self):
@@ -287,6 +297,17 @@ class Unit(Card):
     def __str__(self):
         return self.title
 
+    def drop_rep(self):
+        str = self.title+"("+self.location+")\n"
+
+        for key in self.stats.keys():
+            value = self.stats[key]
+            cap = self.statcaps[key]
+            str += str(key)+" "+str(value)+"/"+str(cap)+", "
+
+        return str
+
+
     def report(self):
         fields = []
         title = "-----"+self.title+"-----"
@@ -318,4 +339,113 @@ class Unit(Card):
 
         inv_report, inv_title, inv_fields = self.inventory.report()
         fields += inv_fields
+        return report, title, fields
+
+
+class Squad():
+    def __init__(self, units):
+        self.units = None
+
+        if len(units) < 5:
+            self.units = units
+
+            self.location = self.units[0].location
+
+            for unit in self.units:
+                unit.squad = self
+
+            self.priority = 1
+            self.rank = None
+            self.owner = self.units[0].owner
+            self.owner.squads.append(self)
+            self.location.civics.addPlayer(self.owner)
+            self.allegiance = self.owner.allegiance
+
+            self.nick = self.units[0].title +"'s Squad"
+        else:
+            print('Units list too long!')
+
+    def addUnit(self, unit):
+        if len(self.units) < 4:
+            self.units.append(unit)
+            unit.squad = self
+
+    def setNick(self, nick):
+        self.nick = nick
+
+    def setPriority(self, priority):
+        priority = int(priority)
+        if priority > 99:
+            priority = 99
+        if priority < 0:
+            priority = 1
+        self.setRank(priority)
+        self.priority = priority
+
+
+    def setRank(self, newpriority):
+        loc = self.location.civics.squads[self.allegiance]
+        if self.rank:
+            loc[self.priority].remove(self)
+        try:
+            loc[newpriority].append(self)
+        except:
+            loc[newpriority] = [self]
+        self.rank = newpriority+loc[newpriority].index(self)
+
+    def moveSquad(self, dest_type, destination):
+        squad_move = True
+        checks = []
+        for unit in self.units:
+            can_move, report = unit.unitCanMove(dest_type, destination)
+            checks.append(can_move)
+
+        if False in checks:
+            squad_move = False
+        slot_count = len(destination.inventory.slots['unit'])
+        slotcap = destination.inventory.slotcap['unit']
+        if slotcap-slot_count < len(self.units):
+            squad_move = False
+
+        if squad_move:
+            for unit in self.units:
+                unit.moveUnit(dest_type, destination)
+            self.location.civics.delPlayer(self.owner)
+            self.location = self.units[0].location
+            self.location.civics.addPlayer(self.owner)
+            report = self.nick+" has moved successfully."
+        else:
+            report = self.nick+" is unable to move."
+
+        return report
+
+    def attackSquad(self, def_allegiance):
+        loc = self.location.civics.squads[def_allegiance]
+        priorities = sorted(loc.keys())
+        def_squad = loc[priorities[0]][0]
+        print(def_squad)
+
+    def __str__(self):
+        return self.nick
+
+    def drop_rep(self):
+        str = self.nick+"("+len(self.units)+"/4)"
+        return str
+
+    def report(self):
+        fields = []
+        title = "-----"+self.nick+"-----"
+        report = ''
+        info_rep = {'inline':True}
+        info_rep['title'] = '-- Info:'
+        info_rep['value'] =  "\n- Name: "+str(self.nick)+\
+                             "\n- Location: "+str(self.location)+\
+                             "\n- Priority: "+str(self.priority)+\
+                             "\n- Rank: "+str(self.rank)
+        info_rep['value'] += "\n- Units: "
+        for unit in self.units:
+            value = unit.title
+            info_rep['value'] += str(value)+"\n"
+        info_rep['value'] = info_rep['value'][:-2]
+        fields.append(info_rep)
         return report, title, fields

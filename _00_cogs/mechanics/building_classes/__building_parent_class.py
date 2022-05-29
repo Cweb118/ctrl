@@ -50,7 +50,7 @@ class Building(Card):
         inv = theJar[owner_type][inv_owner].inventory
         can_add = inv.capMathCard('building')
         if can_add == True:
-            kit = [self]+building_kits_dict[card_kit_id]
+            kit = [inv_owner]+building_kits_dict[card_kit_id]
             card = Building(*kit)
             if card:
                 inv.cards['building'].append(card)
@@ -177,6 +177,11 @@ class Building(Card):
 
     def __str__(self):
         return self.title
+
+    def drop_rep(self):
+        str = self.title+"("+self.location+")\n"
+        str += "Workers: x/x, Input: xy/xy, Output: xy/xy, Catalyst: xy"
+        return str
 
     def report(self):
         title = "-----"+self.title+"-----"

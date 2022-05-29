@@ -2,6 +2,11 @@ import asyncio
 from _01_functions import say
 from _02_global_dicts import theJar
 
+
+#At start: Get main players
+#Detrmine stance of other groups (aligned with attacker, defender, or neutral)
+#Get squad ranks, shuffle between multiple allegiances in a side
+
 async def battle(ctx, location_obj):
     defense_buildings = location_obj.inventory.slots['building']
     attack_units = location_obj.inventory.slots['unit']

@@ -44,7 +44,7 @@ class Inventory():
         can_add = self.capMathCard(card_type)
         if can_add == True:
             self.cards[card_type].append(card)
-        return can_add
+        return can_add, card
 
     def delCard(self, t, card_number):
         del self.cards[t][card_number-1]
