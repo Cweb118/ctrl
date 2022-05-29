@@ -115,8 +115,6 @@ class District():
 
         theJar['regions'][region_name].addDistrict(self)
         theJar['districts'][name] = self
-        for allegiance in theJar['allegiances'].keys():
-            theJar['squads'][self][allegiance] = {}
     
     def __reduce__(self):
         return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
@@ -142,7 +140,7 @@ class District():
                 overwrites = {
                     self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
                     playerRole: nextcord.PermissionOverwrite(read_messages=True)
-                }.replace(' ', '-')
+                }
 
                 foundInterface = False
                 foundChannel = False
@@ -164,11 +162,11 @@ class District():
                     self.channel = await category.create_text_channel(self.name.replace(' ', '-'), overwrites=overwrites)
 
                 interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
-                if (len(interfaceMessages) == 0):
-                    self.interfaceMessage = await districtMenu.send(self.interfaceChannel, state={'district': self.name})
-                else:
-                    self.interfaceMessage = interfaceMessages[0]
-                    await districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+                #if (len(interfaceMessages) == 0):
+                #    self.interfaceMessage = await districtMenu.send(self.interfaceChannel, state={'district': self.name})
+                #else:
+                #    self.interfaceMessage = interfaceMessages[0]
+                #    await districtMenu.update(self.interfaceMessage, newState={'district': self.name})
                 
                 return
         print("Error: Category not found. This may be due to the delay not long enough after the category is created.")
@@ -228,7 +226,7 @@ class District():
         player.location = self
         self.players.append(player)
         self.updateInterface()
-        self.civics.players.addPlayer(player)
+        self.civics.addPlayer(player)
         await self.channel.set_permissions(player.member, read_messages=True)
 
 
@@ -268,7 +266,8 @@ class District():
 class Civics():
     def __init__(self, location):
         self.location = location
-        self.players = location.players
+        self.players = [x for x in location.players]
+        self.squad_list = []
         self.squads = {}
         self.allegiances = []
         self.commanders = []
@@ -276,15 +275,34 @@ class Civics():
         self.conflicts = []
         self.retreats = {}
 
+    def addSquad(self, squad):
+        if squad not in self.squad_list:
+            self.squad_list.append(squad)
+            squad.setPriority(squad.priority)
+            self.getCommander(squad.allegiance)
+
+    def delSquad(self, squad):
+        if squad in self.squad_list:
+            self.squad_list.remove(squad)
+            self.squads[squad.allegiance][squad.priority].remove(squad)
+            self.getCommander(squad.allegiance)
+
     def addPlayer(self, player):
         if player not in self.players:
             self.players.append(player)
+            if player.allegiance not in self.allegiances:
+                self.allegiances.append(player.allegiance)
             self.getCommander(player.allegiance)
 
     def delPlayer(self, player):
         if player in self.players:
-            self.players.remove(player)
-            self.getCommander(player.allegiance)
+            if player.location != self.location:
+                remove = True
+                for squad in self.squad_list:
+                    if squad.owner==player:
+                        remove = False
+                self.players.remove(player)
+                self.getCommander(player.allegiance)
 
     def getCommander(self, allegiance):
         candidates = []
@@ -294,14 +312,26 @@ class Civics():
         metrics = []
         squad_count = 0
         for cand in candidates:
-            inf = cand._statcaps[theJar['resource']['Influence']]
+            inf = cand._statcaps[theJar['resources']['Influence']]
             squads = [x for x in cand.squads if x.location == self.location]
             metric = {'cmd':cand, 'inf': inf, 'squads': len(squads)}
             metrics.append(metric)
             squad_count += len(squads)
-        metrics.sort(key=operator.itemgetter('inf','squads'))
-        cmdr = metrics[0]
-        self.commanders.append({"cmdr":cmdr['cmd'], 'allegiance':allegiance, 'inf':cmdr['inf'], 'squads':squad_count})
+        metrics.sort(key=operator.itemgetter('inf','squads'), reverse=True)
+        if len(metrics) > 0:
+            cmdr = metrics[0]
+            try:
+                old_cmdr = next(item for item in self.commanders if item['allegiance']==allegiance)
+                self.commanders.remove(old_cmdr)
+            except:
+                pass
+            self.commanders.append({"cmdr":cmdr['cmd'], 'allegiance':allegiance, 'inf':cmdr['inf'], 'squads':squad_count})
+        else:
+            try:
+                self.allegiances.remove(allegiance)
+            except:
+                pass
+
         self.setCommanderRankings()
 
     def setCommanderRankings(self):
@@ -325,9 +355,9 @@ class Civics():
         self.conflicts[conflict_id][ally_target+"allies"].remove(ally)
 
     def setStance(self, player, stance):
-        #TODO: this is broke now
-        if player in self.commanders.keys():
-            allegiance = self.commanders[player]
+        commanders = [x['cmdr'] for x in self.commanders]
+        if player in commanders:
+            allegiance = player.allegiance
             self.allegiance_stances[allegiance] = stance
         else:
             print('Error: Player is not a commander!')
@@ -340,3 +370,23 @@ class Civics():
         self.allegiance_stances = {}
         self.conflicts = []
         self.retreats = {}
+
+    def report(self):
+        fields = []
+        title = "-----"+str(self.location)+" Civics-----"
+        report = ''
+        info_rep = {'inline':True}
+        info_rep['title'] = '-- Info:'
+        info_rep['value'] =  "\n- Location: "+str(self.location)+\
+                             "\n- Players: "+str([str(x) for x in self.players])+\
+                             "\n- Squads: "+str(self.squad_list)+\
+                             "\n- Allegiances: "+str(self.allegiances)+\
+                             "\n- Commanders: "+str([str(x['cmdr']) for x in self.commanders])+\
+                             "\n- Allegiance Stances: "+str(self.allegiance_stances)
+        #info_rep['value'] += "\n- Units: "
+        #for unit in self.units:
+        #    value = unit.title
+        #    info_rep['value'] += str(value)+"\n"
+        #info_rep['value'] = info_rep['value'][:-2]
+        fields.append(info_rep)
+        return report, title, fields

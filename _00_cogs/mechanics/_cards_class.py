@@ -28,7 +28,8 @@ class Card():
 
     def playerPlayCheck(self, player, target_obj):
         #TODO: Check and make sure the alleigences are the Friendly
-        report = ''
+        #^What ????
+        report = '...'
         can_play = False
         card_type = type(self).__name__.lower()
         card_status = self.status
@@ -63,6 +64,8 @@ class Card():
                             if req not in certs:
                                 report = "Error: This unit does not meet all requirements for the destination."
                                 can_play = False
+            else:
+                report = "Error: This destination lacks the required number of slots available."
         return can_play, report
 
     def playerUnplayCheck(self, player):

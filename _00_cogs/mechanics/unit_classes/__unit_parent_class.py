@@ -245,8 +245,8 @@ class Unit(Card):
             slot_count = len(destination.inventory.slots['unit'])
             slotcap = destination.inventory.slotcap['unit']
             if slot_count < slotcap:
-                destination.inventory.addToSlot(self, 'unit')
-                self.location.inventory.removeFromSlot(self, 'unit')
+                destination.inventory.addCardToSlot(self, 'unit')
+                self.location.inventory.removeCardFromSlot(self, 'unit')
                 self.location = destination
                 self.setStat('Endurance', -1)
                 report = "Unit moved successfully."
@@ -358,8 +358,10 @@ class Squad():
             self.rank = None
             self.owner = self.units[0].owner
             self.owner.squads.append(self)
-            self.location.civics.addPlayer(self.owner)
             self.allegiance = self.owner.allegiance
+            self.location.civics.squad_list.append(self)
+            self.location.civics.addPlayer(self.owner)
+            self.setPriority(self.priority)
 
             self.nick = self.units[0].title +"'s Squad"
         else:
@@ -382,16 +384,22 @@ class Squad():
         self.setRank(priority)
         self.priority = priority
 
-
     def setRank(self, newpriority):
-        loc = self.location.civics.squads[self.allegiance]
+        try:
+            loc = self.location.civics.squads[self.allegiance]
+        except:
+            loc = self.location.civics.squads[self.allegiance] = {}
         if self.rank:
-            loc[self.priority].remove(self)
+            try:
+                loc[self.priority].remove(self)
+            except:
+                pass
         try:
             loc[newpriority].append(self)
         except:
             loc[newpriority] = [self]
         self.rank = newpriority+loc[newpriority].index(self)
+        self.location.civics.getCommander(self.allegiance)
 
     def moveSquad(self, dest_type, destination):
         squad_move = True
@@ -411,8 +419,10 @@ class Squad():
             for unit in self.units:
                 unit.moveUnit(dest_type, destination)
             self.location.civics.delPlayer(self.owner)
+            self.location.civics.delSquad(self)
             self.location = self.units[0].location
             self.location.civics.addPlayer(self.owner)
+            self.location.civics.addSquad(self)
             report = self.nick+" has moved successfully."
         else:
             report = self.nick+" is unable to move."
@@ -429,7 +439,7 @@ class Squad():
         return self.nick
 
     def drop_rep(self):
-        str = self.nick+"("+len(self.units)+"/4)"
+        str = self.nick+"("+str(len(self.units))+"/4)"
         return str
 
     def report(self):

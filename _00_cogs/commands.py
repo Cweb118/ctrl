@@ -8,7 +8,7 @@ from _02_global_dicts import theJar
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
-from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
+from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit, Squad
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
@@ -212,13 +212,14 @@ class Commands(commands.Cog):
         await self.playcard_c(ctx, 'building', 3, 'district', 'Home')
         #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
         #await self.link_c(ctx, 2, 1)
-        #await self.playcard_c(ctx, 'unit', 1, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 1, 'Tim')
-        #await self.playcard_c(ctx, 'unit', 2, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 2, 'Tom')
-        #await self.playcard_c(ctx, 'unit', 3, 'building', 1)
-        #await self.cardnick_c(ctx, 'unit', 3, 'Tem')
+        await self.playcard_c(ctx, 'unit', 1, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 1, 'Tim')
+        await self.playcard_c(ctx, 'unit', 2, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 2, 'Tom')
+        await self.playcard_c(ctx, 'unit', 3, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 3, 'Tem')
 
+        await self.joinsquad_c(ctx, 2, 1)
         #await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
         #await self.cardnick_c(ctx, 'unit', 4, 'Bob')
         #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
@@ -377,10 +378,42 @@ class Commands(commands.Cog):
 
 #-----Squads-----
     @commands.command(name="joinsquad", guild_ids=guilds)
-    async def battle_c(self, ctx, unit_number, join_unit_number):
+    async def joinsquad_c(self, ctx, unit_number, join_unit_number):
         player = theJar['players'][ctx.author.id]
-        location = player.location
-        await battle(ctx, location)
+        joiner = player.inventory.getCard('unit', int(unit_number))
+        joinee = player.inventory.getCard('unit', int(join_unit_number))
+        if joiner.location == joinee.location:
+            if joinee.squad:
+                joinee.squad.addUnit(joiner)
+            else:
+                squad_units = [joinee, joiner]
+                Squad(squad_units)
+
+    @commands.command(name="squad", guild_ids=guilds)
+    async def squad_c(self, ctx, squad_id):
+        player = theJar['players'][ctx.author.id]
+        squad = player.squads[int(squad_id)-1]
+        report, title, fields = squad.report()
+        await say(ctx, report, title=title, fields=fields)
+
+    @commands.command(name="squadmove", guild_ids=guilds)
+    async def squadmove_c(self, ctx, squad_id, target_type, target):
+        player = theJar['players'][ctx.author.id]
+        squad = player.squads[int(squad_id)-1]
+        if target_type == 'district':
+            destination = theJar['districts'][target]
+        #elif target_type == 'unit':
+        #    destination = player.inventory.getCard(target_type, int(target))
+        report = squad.moveSquad(target_type, destination)
+        await say(ctx,report)
+
+
+    @commands.command(name="civics", guild_ids=guilds)
+    async def civics_c(self, ctx, location):
+        location = theJar['districts'][location]
+        civ = location.civics
+        report, title, fields = civ.report()
+        await say(ctx, report, title=title, fields=fields)
 
 
 
