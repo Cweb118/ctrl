@@ -1,6 +1,10 @@
 import nextcord
 
 async def say(ctx, msg, title=None, color=None, fields=None):
+    embedded = createEmbed(msg, title, color, fields)
+    await ctx.send(embed = embedded)
+
+def createEmbed(msg, title=None, color=None, fields=None):
     if not title:
         title = ''
     if not color:
@@ -9,9 +13,8 @@ async def say(ctx, msg, title=None, color=None, fields=None):
     if fields:
         for field in fields:
             embedded.add_field(name=field['title'], value=field['value'], inline=field['inline'])
-    #embedded.add_field(name="Highest Streak", value=1)
-    await ctx.send(embed = embedded)
 
+    return embedded
 
 async def send(ctx, msg):
     if "```" not in msg:

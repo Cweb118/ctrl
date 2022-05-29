@@ -40,21 +40,36 @@ class Inventory():
                 can_add = True
         return can_add
 
+    def addCardToSlot(self, card, card_type):
+        self.slots[card_type].append(card)
+        # Ginger: Make sure it gets displayed visually
+        self.inv_owner.updateInterface()
+
+    def removeCardFromSlot(self, card, card_type):
+        self.slots[card_type].remove(card)
+        # Ginger: Make sure it gets displayed visually
+        self.inv_owner.updateInterface()
+
     def addCard(self, card, card_type):
         can_add = self.capMathCard(card_type)
         if can_add == True:
             self.cards[card_type].append(card)
-        return can_add
+            card.owner = self.inv_owner
+            # Ginger: Make sure it gets displayed visually
+            self.inv_owner.updateInterface()
+        return can_add, card
 
     def delCard(self, t, card_number):
         del self.cards[t][card_number-1]
+        # Ginger: Make sure it gets displayed visually
+        self.inv_owner.updateInterface()
 
     def moveCard(self, t, card_number, new_owner_name, new_owner_id):
         card = self.cards[t][card_number-1]
         new_player = theJar['players'][new_owner_id]
         status = new_player.inventory.addCard(card, t)
         if status:
-            del self.cards[card_number-1]
+            self.delCard(t, card_number)
             report = "Your "+str(card)+"("+t+") has been given to "+new_owner_name+"!"
         else:
             report = "Error: Recipient lacks capacity for this item."
@@ -90,6 +105,8 @@ class Inventory():
         can_add = self.canAddMath(resource, quantity)
         if can_add == True:
             self.resources[resource] = new_val
+            # Ginger: Make sure it gets displayed visually
+            self.inv_owner.updateInterface()
         return can_add
 
     def giveResource(self, resource, quantity, taker_inv):

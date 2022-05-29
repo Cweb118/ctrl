@@ -1,3 +1,5 @@
+from code import interact
+from nextcord import Interaction, InteractionType
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import os
@@ -6,12 +8,13 @@ import time
 import datetime
 from keys import prime_token, prefix
 from nextcord.ext import commands
+from _00_cogs.frontend.menu import menus
 
 intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
-cogsDir = os.path.dirname(__file__)+"\\_00_cogs"
+cogsDir = os.path.join(os.path.dirname(__file__), "_00_cogs")
 
 loadedCogs = []
  
@@ -83,6 +86,18 @@ async def unload(ctx, extension):
 async def on_ready():
     print('Bot is ready at: ' + str(datetime.datetime.now()))
 
+@bot.event
+async def on_interaction(interaction: Interaction):
+    if interaction.type == InteractionType.component:
+        id = interaction.data['custom_id']
+        (menuid, elementid) = id.split(':')
+
+        if menuid in menus:
+            menu = menus[menuid]
+            await interaction.response.defer()
+            await menu.onInteraction(elementid, interaction)
+    else:
+        await bot.process_application_commands(interaction) 
 
 handler = FileWatch()
 observer = Observer()

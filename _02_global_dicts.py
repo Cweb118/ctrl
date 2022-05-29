@@ -10,6 +10,7 @@ theJar = {
         'Cows':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'}
     },
     'fabs': {},
+    'states': {}
 
 
 

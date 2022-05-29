@@ -3,10 +3,9 @@ from _02_global_dicts import theJar
 
 #-----attributes-----
 class Card():
-    def __init__(self, owner, title, description, inv_args=None, play_cost=None):
+    def __init__(self, title, description, inv_args=None, play_cost=None):
         self.title = title
         self.description = description
-        self.owner = owner
 
         self.status = "Held"
         self.location = None
@@ -120,7 +119,7 @@ class Card():
             if self.play_cost:
                 for key in self.play_cost.keys():
                     player._inventory.addResource(theJar['resources'][key], -self.play_cost[key])
-            target_obj.inventory.slots[card_type].append(self)
+            target_obj.inventory.addCardToSlot(self, card_type)
             self.location = target_obj
             theJar['played_cards'][card_type].append(self)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)

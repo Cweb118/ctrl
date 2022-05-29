@@ -3,9 +3,9 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 from _02_global_dicts import theJar
 
 class Building(Card):
-    def __init__(self, owner, title, description, inv_args, traits, logic_args, play_cost, stats, worker_req, input_dict, output_dict, cat_dict, priority=0):
+    def __init__(self, title, description, inv_args, traits, logic_args, play_cost, stats, worker_req, input_dict, output_dict, cat_dict, priority=0):
         inv_args = [self]+inv_args
-        super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
+        super().__init__(title, description, inv_args=inv_args, play_cost=play_cost)
 
         self.stats = {
             'Attack':stats['attack'],

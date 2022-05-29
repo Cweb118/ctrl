@@ -1,8 +1,10 @@
+from unicodedata import name
 from _02_global_dicts import theJar
 import nextcord
 import time, asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
+from _00_cogs.frontend.district_menu import districtMenu
 
 class Region():
     def __init__(self, name, guild = None, guildID = None, districts = []):
@@ -127,18 +129,49 @@ class District():
 
         for category in self.guild.categories:
             if category.name.lower() == self.region.lower():
+                # Ginger: Added interface channel
+                interfaceOverwrites = {
+                    self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
+                    playerRole: nextcord.PermissionOverwrite(read_messages=True)
+                }
+                overwrites = {
+                    self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
+                    playerRole: nextcord.PermissionOverwrite(read_messages=True)
+                }.replace(' ', '-')
+
+                foundInterface = False
+                foundChannel = False
+
                 for channel in category.channels:
-                    if channel.name.lower() == self.name.lower():
+                    if channel.name.lower() == self.name.replace(' ', '-').lower() + '_interface':
+                        print("Interface Channel was found for", self.name, "district.")
+                        self.interfaceChannel = channel
+                        foundInterface = True
+                    elif channel.name.lower() == self.name.replace(' ', '-').lower():
                         print("Channel was found for", self.name, "district.")
                         self.channel = channel
-                        return
+                        foundChannel = True
 
-                self.channel = await category.create_text_channel(self.name)
-                await self.channel.set_permissions(self.guild.default_role, read_messages=False)
-                await self.channel.set_permissions(playerRole, read_messages = True)
+                if not foundInterface:
+                    self.interfaceChannel = await category.create_text_channel(self.name.replace(' ', '-') + '_interface', overwrites=interfaceOverwrites)
+
+                if not foundChannel:
+                    self.channel = await category.create_text_channel(self.name.replace(' ', '-'), overwrites=overwrites)
+
+                interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
+                if (len(interfaceMessages) == 0):
+                    self.interfaceMessage = await districtMenu.send(self.interfaceChannel, state={'district': self.name})
+                else:
+                    self.interfaceMessage = interfaceMessages[0]
+                    await districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+                
                 return
         print("Error: Category not found. This may be due to the delay not long enough after the category is created.")
 
+    # Ginger: Updates the interface message
+    def updateInterface(self):
+        if hasattr(self, 'interfaceMessage'):
+            asyncio.create_task(districtMenu.update(self.interfaceMessage, newState={'district': self.name}))
 
     def setPath(self, target):
         can_path = True
@@ -165,6 +198,7 @@ class District():
             #If player is in location AND can move, remove them from the current location's player list.
             if can_move:
                 player.location.players.remove(player)
+                player.location.updateInterface()
         else:
             can_move = True
 
@@ -187,6 +221,7 @@ class District():
             await theJar['regions'][player.location.region].channel.set_permissions(player.member, read_messages=False)
         player.location = self
         self.players.append(player)
+        self.updateInterface()
         await self.channel.set_permissions(player.member, read_messages=True)
 
 

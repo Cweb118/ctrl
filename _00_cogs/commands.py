@@ -10,6 +10,7 @@ from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
+from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.battle_logic import battle
 
@@ -192,9 +193,9 @@ class Commands(commands.Cog):
     @commands.command(name="play", guild_ids=guilds)
     async def play_c(self, ctx):
         player = theJar['players'][ctx.author.id]
-        player.addCard(building_kits_dict['wooden_wall'], 'building')
-        player.addCard(building_kits_dict['mother_tree'], 'building')
-        player.addCard(building_kits_dict['bountiful_field'], 'building')
+        player.inventory.addCard(Building(*building_kits_dict['wooden_wall']), 'building')
+        player.inventory.addCard(Building(*building_kits_dict['mother_tree']), 'building')
+        player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
         #player.addCard(building_kits_dict['mother_tree'], 'building')
         #player.addCard(building_kits_dict['bountiful_field'], 'building')
         await self.makecard_c(ctx, 'Warrior', 'Aratori')
@@ -288,7 +289,8 @@ class Commands(commands.Cog):
     @commands.command(name="makecard", guild_ids=guilds)
     async def makecard_c(self, ctx, unit_class, race):
         player = theJar['players'][ctx.author.id]
-        status, man = player.addCard(unit_kits_dict[unit_class], 'unit')
+        status, man = player.inventory.addCard(Unit(*unit_kits_dict[unit_class]), 'unit')
+        print(man)
         man.addTrait(race)
         report = str(man.report())
         #await say(ctx,report)

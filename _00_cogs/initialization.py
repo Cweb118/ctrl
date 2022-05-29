@@ -84,9 +84,9 @@ class PlayerCog(commands.Cog):
         cattle = District('Cattle', 'Range', 'large', 'Home,', guild=ctx.guild)
 
         cattle.inventory.addResource(theJar['resources']['Food'], 50)
-        cattle.addCard(unit_kits_dict['Worker'], 'unit')
-        cattle.addCard(unit_kits_dict['Worker'], 'unit')
-        shooting.addCard(unit_kits_dict['Warrior'], 'unit')
+        cattle.inventory.addCard(Unit(*unit_kits_dict['Worker']), 'unit')
+        cattle.inventory.addCard(Unit(*unit_kits_dict['Worker']), 'unit')
+        shooting.inventory.addCard(Unit(*unit_kits_dict['Warrior']), 'unit')
 
         report = "Initilization Complete."
         await say(ctx,report)

@@ -95,7 +95,8 @@ class Ranger():
 class Scout():
     #TODO: TEST
     def __init__(self):
-        self.loot = theJar['resources']['food']
+        pass
+        #self.loot = theJar['resources']['food']
 
     def act(self, sender, receiver, operation):
         #toggles savenging loot

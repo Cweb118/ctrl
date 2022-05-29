@@ -8,9 +8,9 @@ from _02_global_dicts import theJar
 
 
 class Unit(Card):
-    def __init__(self, owner, title, description, inv_args, traits, play_cost, stats, upkeep_dict, initv, threat, dice_stats):
+    def __init__(self, title, description, inv_args, traits, play_cost, stats, upkeep_dict, initv, threat, dice_stats):
         inv_args = [self]+inv_args
-        super().__init__(owner, title, description, inv_args=inv_args, play_cost=play_cost)
+        super().__init__(title, description, inv_args=inv_args, play_cost=play_cost)
 
         self.stats = {
             'Attack':stats['attack'],
@@ -232,8 +232,8 @@ class Unit(Card):
                     slot_count = len(destination.inventory.slots['unit'])
                     slotcap = destination.inventory.slotcap['unit']
                     if slot_count < slotcap:
-                        destination.inventory.slots['unit'].append(self)
-                        self.location.inventory.slots['unit'].remove(self)
+                        destination.inventory.addCardToSlot(self, 'unit')
+                        self.location.inventory.removeCardFromSlot(self, 'unit')
                         self.location = destination
                         self.setStat('Endurance', -1)
                         report = "Unit moved successfully."

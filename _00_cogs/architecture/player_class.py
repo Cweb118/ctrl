@@ -3,6 +3,9 @@ from nextcord import guild
 from nextcord.ext import tasks
 from _02_global_dicts import theJar
 from _00_cogs.architecture.inventory_class import Inventory
+from _00_cogs.frontend.squads_menu import squadsMenu
+from _00_cogs.frontend.units_menu import unitsMenu
+from _00_cogs.frontend.buildings_menu import buildingsMenu
 
 class StateError(Exception):
     pass
@@ -37,11 +40,11 @@ class Player():
         self.location = starter_location #Location Instance (needs to lack _!)
         self._stats = {
             #instance:quantity
-            theJar['resource']['Influence']:20
+            theJar['resources']['Influence']:20
         }
         self._statcaps = {
             #instance:cap
-            theJar['resource']['Influence']:20
+            theJar['resources']['Influence']:20
         }
         self._allegiance = allegiance
     def __reduce__(self):
@@ -58,16 +61,59 @@ class Player():
         if self._member == None or self._guild == None:
             return
 
+        # Ginger: Added Interface Channel
+        interfaceCategory = nextcord.utils.get(self._guild.categories, name='Interface')
         category = nextcord.utils.get(self._guild.categories, name='Players')
+        interfaceOverwrites = {
+            self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
+            self._member: nextcord.PermissionOverwrite(read_messages=True)
+        }
         overwrites = {
             self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
             self._member: nextcord.PermissionOverwrite(read_messages=True)
         }
         topic =  "Private Discussion"
 
-        channelNames = (channel.name for channel in self.guild.channels)
-        if (self.member.name).lower().replace(" ", "-") not in channelNames:
-            self._channel = await self.guild.create_text_channel(name=self.member.name, topic=topic, overwrites=overwrites, category=category)
+        foundInterface = False
+        foundChannel = False
+
+        for channel in interfaceCategory.channels:
+            if channel.name.lower() == self._member.name.replace(' ', '-').lower() + '_interface':
+                self.interfaceChannel = channel
+                foundInterface = True
+        
+        for channel in category.channels:
+            if channel.name.lower() == self._member.name.replace(' ', '-').lower():
+                self._channel = channel
+                foundChannel = True
+                
+        if not foundInterface:
+            self.interfaceChannel = await self._guild.create_text_channel(name=self._member.replace(' ', '-').name + '_interface', overwrites=interfaceOverwrites, category=interfaceCategory)            
+
+        if not foundChannel:
+            self._channel = await self._guild.create_text_channel(name=self._member.replace(' ', '-').name, topic=topic, overwrites=overwrites, category=category)
+
+        interfaceMessages = await self.interfaceChannel.history(limit=3).flatten()
+        if (len(interfaceMessages) < 1):
+            self.squadsMessage = await squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
+        else:
+            self.squadsMessage = interfaceMessages[0]
+            await squadsMenu.update(self.squadsMessage, newState={'player': self._member.id})
+        
+        if (len(interfaceMessages) < 2):
+            self.unitsMessage = await unitsMenu.send(self.interfaceChannel, state={'player': self._member.id})
+        else:
+            self.unitsMessage = interfaceMessages[1]
+            await unitsMenu.update(self.unitsMessage, newState={'player': self.member.id})
+        
+        if (len(interfaceMessages) < 3):
+            self.buildingsMessage = await buildingsMenu.send(self.interfaceChannel, state={'player': self.member.id})
+        else:
+            self.buildingsMessage = interfaceMessages[2]
+            await buildingsMenu.update(self.buildingsMessage, newState={'player': self.member.id})
+
+    def updateInterface(self):
+        pass
 
     def modStat(self, stat, quantity): #stat here is an INSTANCE (of resouce!)
         new_val = self._stats[stat] + quantity

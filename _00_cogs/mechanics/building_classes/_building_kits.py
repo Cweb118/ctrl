@@ -37,12 +37,12 @@ building_kits_dict = {
     #harmony:
 
     'mother_tree':['Mother Tree', 'A kind tree who drinks from the deep.',
-              [4, 1, None, None, 1, None], None, None, {'Food':3,'Water':2},
+              [4, 1, None, None, 1, None], [], None, {'Food':3,'Water':2},
               {'attack':0, 'health':4, 'defense':2, 'size':1},
               ['Harvest', 'Harmony'], None, {'Water':2}, None],
 
     'bountiful_field':['Bountiful Field', 'A field with grounds ripe for harvesting.',
-              [10, 2, None, None, 2, None], None, None, {'Food':2},
+              [10, 2, None, None, 2, None], [], None, {'Food':2},
               {'attack':0, 'health':2, 'defense':0, 'size':1},
               ['Production', 'Harmony'], {'Water':2}, {'Food':4}, None],
 
@@ -57,39 +57,39 @@ building_kits_dict = {
               ['Harmony'], None, None, None],
 
     'towering_forest':['Towering Forest', 'A forest of towering trees which can be processed into wood.',
-              [14, 2, None, None, 3, None], None, None, {'Food':4},
+              [14, 2, None, None, 3, None], [], None, {'Food':4},
               {'attack':0, 'health':4, 'defense':0, 'size':2},
               ['Production', 'Harmony'], {'Water':3}, {'Wood':6}, None],
 
 
     #defensive (need 10, vary wood/stone/metal)
     'wooden_wall':['Wooden Wall', 'A Simple Wall',
-                  [10, 2, None, None, 3, None], None, None, {'Wood':4},
+                  [10, 2, None, None, 3, None], [], None, {'Wood':4},
                   {'attack':0, 'health':3, 'defense':8, 'size':2},
                   None, None, None, None],
 
     'metal_wall':['Metal Wall', 'A Sturdy Wall',
-                  [10, 2, None, None, 2, None], None, None, {'Metal':4},
+                  [10, 2, None, None, 2, None], [], None, {'Metal':4},
                   {'attack':0, 'health':4, 'defense':12, 'size':2},
                   None, None, None, None],
 
     'outpost':['Outpost', 'A Simple Outpost',
-              [5, 1, None, None, 1, None], None, None, {'Wood':1},
+              [5, 1, None, None, 1, None], [], None, {'Wood':1},
               {'attack':0, 'health':2, 'defense':8, 'size':1},
               None, None, None, None],
 
     'bunker':['Bunker', 'A Simple Bunker',
-              [10, 3, None, None, 4, None], None, None, {'Metal':4, 'Wood':2},
+              [10, 3, None, None, 4, None], [], None, {'Metal':4, 'Wood':2},
               {'attack':0, 'health':5, 'defense':14, 'size':3},
               None, None, None, None],
 
     'fort':['Fort', 'A Simple Fort',
-              [15, 4, None, None, 6, None], None, None, {'Metal':7, 'Wood':5},
+              [15, 4, None, None, 6, None], [], None, {'Metal':7, 'Wood':5},
               {'attack':0, 'health':8, 'defense':16, 'size':4},
               None, None, None, None],
 
     'bastion':['Bastion', 'A Simple Bastion',
-              [20, 5, None, None, 9, None], None, None, {'Metal':12, 'Wood':8},
+              [20, 5, None, None, 9, None], [], None, {'Metal':12, 'Wood':8},
               {'attack':0, 'health':10, 'defense':20, 'size':6},
               None, None, None, None],
     }
