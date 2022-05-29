@@ -180,7 +180,7 @@ class Building(Card):
 
     def drop_rep(self):
         str = self.title+"("+self.location+")\n"
-        str += "Workers: x/x, Input: xy/xy, Output: xy/xy, Catalyst: xy"
+        str += "Workers: "+str(self.inventory.slots['unit'])+"/"+str(self.inventory.slotcap['unit'])
         return str
 
     def report(self):

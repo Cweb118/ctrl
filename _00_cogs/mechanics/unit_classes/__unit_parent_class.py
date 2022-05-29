@@ -303,7 +303,7 @@ class Unit(Card):
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            str += str(key)+" "+str(value)+"/"+str(cap)+", "
+            str += str(key)[0]+" "+str(value)+"/"+str(cap)+", "
 
         return str
 
@@ -386,9 +386,9 @@ class Squad():
 
     def setRank(self, newpriority):
         try:
-            loc = self.location.civics.squads[self.allegiance]
+            loc = self.location.civics.squads_ranked[self.allegiance]
         except:
-            loc = self.location.civics.squads[self.allegiance] = {}
+            loc = self.location.civics.squads_ranked[self.allegiance] = {}
         if self.rank:
             try:
                 loc[self.priority].remove(self)
@@ -428,12 +428,6 @@ class Squad():
             report = self.nick+" is unable to move."
 
         return report
-
-    def attackSquad(self, def_allegiance):
-        loc = self.location.civics.squads[def_allegiance]
-        priorities = sorted(loc.keys())
-        def_squad = loc[priorities[0]][0]
-        print(def_squad)
 
     def __str__(self):
         return self.nick

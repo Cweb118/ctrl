@@ -268,12 +268,16 @@ class Civics():
         self.location = location
         self.players = [x for x in location.players]
         self.squad_list = []
-        self.squads = {}
+        self.squads_ranked = {}
         self.allegiances = []
         self.commanders = []
+        self.occupance = None
+        self.governors = []
+        self.governance = None
+        #Stand, Attack, Defend, Retreat [Target Location]
         self.allegiance_stances = {}
-        self.conflicts = []
-        self.retreats = {}
+        for alleg in theJar['allegiances'].keys():
+            self.allegiance_stances[alleg] = {'stance': None}
 
     def addSquad(self, squad):
         if squad not in self.squad_list:
@@ -284,14 +288,13 @@ class Civics():
     def delSquad(self, squad):
         if squad in self.squad_list:
             self.squad_list.remove(squad)
-            self.squads[squad.allegiance][squad.priority].remove(squad)
+            self.squads_ranked[squad.allegiance][squad.priority].remove(squad)
             self.getCommander(squad.allegiance)
 
     def addPlayer(self, player):
         if player not in self.players:
             self.players.append(player)
-            if player.allegiance not in self.allegiances:
-                self.allegiances.append(player.allegiance)
+            self.addAllegiance(player.allegiance)
             self.getCommander(player.allegiance)
 
     def delPlayer(self, player):
@@ -303,6 +306,50 @@ class Civics():
                         remove = False
                 self.players.remove(player)
                 self.getCommander(player.allegiance)
+
+    def addAllegiance(self, allegiance):
+        if allegiance not in self.allegiances:
+            self.allegiances.append(allegiance)
+            self.allegiance_stances[allegiance] = {'stance':'Stand'}
+
+    def delAllegiance(self, allegiance):
+        if allegiance in self.allegiances:
+            self.allegiances.remove(allegiance)
+            self.allegiance_stances[allegiance] = {'stance':None}
+
+    def getGovernor(self, allegiance):
+        candidates = []
+        for player in self.players:
+            if player.allegiance == allegiance:
+                candidates.append(player)
+        for building in self.location.inventory.slots['building']:
+            if building.owner.allegiance == allegiance:
+                if building.owner not in candidates:
+                    candidates.append(building.owner)
+        metrics = []
+        alg_building_count = 0
+        for cand in candidates:
+            inf = cand._statcaps[theJar['resources']['Influence']]
+            buildings = [x for x in cand.inventory.cards['building'] if x.location == self.location]
+            metric = {'gov':cand, 'inf': inf, 'buildings': len(buildings)}
+            metrics.append(metric)
+            alg_building_count += len(buildings)
+        metrics.sort(key=operator.itemgetter('inf','buildings'), reverse=True)
+        if len(metrics) > 0:
+            gov = metrics[0]
+            try:
+                old_gov = next(x for x in self.governors if x['allegiance']==allegiance)
+                self.governors.remove(old_gov)
+            except:
+                pass
+            self.governors.append({"gov":gov['gov'], 'allegiance':allegiance, 'inf':gov['inf'], 'buildings':alg_building_count})
+        else:
+            self.delAllegiance(allegiance)
+        self.setGovernorRankings()
+
+    def setGovernorRankings(self):
+        self.governors.sort(key=operator.itemgetter('buildings','inf'))
+        self.governance = self.governors[0]['allegiance']
 
     def getCommander(self, allegiance):
         candidates = []
@@ -327,38 +374,24 @@ class Civics():
                 pass
             self.commanders.append({"cmdr":cmdr['cmd'], 'allegiance':allegiance, 'inf':cmdr['inf'], 'squads':squad_count})
         else:
-            try:
-                self.allegiances.remove(allegiance)
-            except:
-                pass
-
+            self.delAllegiance(allegiance)
         self.setCommanderRankings()
 
     def setCommanderRankings(self):
         self.commanders.sort(key=operator.itemgetter('squads','inf'))
+        self.occupance = self.commanders[0]['allegiance']
 
-    def conflictInit(self, attacker, defender):
-        can_init = True
-        for conflict in self.conflicts:
-            if conflict['attacker'] == attacker:
-                can_init = False
-            if conflict['defender'] == defender:
-                can_init = False
-        if can_init:
-            conflict = {'attacker':attacker, 'defender':defender, 'attack_allies':[], 'defence_allies':[]}
-            self.conflicts.append(conflict)
-
-    def addConflictAlly(self, conflict_id, ally_target, ally):
-        self.conflicts[conflict_id][ally_target+"allies"].append(ally)
-
-    def delConflictAlly(self, conflict_id, ally_target, ally):
-        self.conflicts[conflict_id][ally_target+"allies"].remove(ally)
-
-    def setStance(self, player, stance):
+    def setStance(self, player, stance, target=None):
+        if not target:
+            stance_dict = {'stance': stance}
+        else:
+            stance_dict = {'stance': stance, 'target': target}
         commanders = [x['cmdr'] for x in self.commanders]
         if player in commanders:
             allegiance = player.allegiance
-            self.allegiance_stances[allegiance] = stance
+            self.allegiance_stances[allegiance] = stance_dict
+            #if stance == "Attack":
+               # self.joinConflict(player.allegiance, target)
         else:
             print('Error: Player is not a commander!')
 
@@ -368,6 +401,8 @@ class Civics():
 
     def refresh(self):
         self.allegiance_stances = {}
+        for alleg in theJar['allegiances'].keys():
+            self.allegiance_stances[alleg] = {'stance':None}
         self.conflicts = []
         self.retreats = {}
 
@@ -382,6 +417,9 @@ class Civics():
                              "\n- Squads: "+str(self.squad_list)+\
                              "\n- Allegiances: "+str(self.allegiances)+\
                              "\n- Commanders: "+str([str(x['cmdr']) for x in self.commanders])+\
+                             "\n- Occupance: "+str(self.occupance)+\
+                             "\n- Governors: "+str([str(x['gov']) for x in self.governors])+\
+                             "\n- Governance: "+str(self.governance)+\
                              "\n- Allegiance Stances: "+str(self.allegiance_stances)
         #info_rep['value'] += "\n- Units: "
         #for unit in self.units:

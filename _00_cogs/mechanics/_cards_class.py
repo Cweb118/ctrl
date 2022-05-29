@@ -125,6 +125,8 @@ class Card():
             target_obj.inventory.addCardToSlot(self, card_type)
             self.location = target_obj
             theJar['played_cards'][card_type].append(self)
+            if card_type == 'building':
+                self.location.civics.getGovernor(player.allegiance)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
         return report
 
