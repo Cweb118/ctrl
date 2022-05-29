@@ -1,4 +1,5 @@
-from unicodedata import name
+import operator
+
 from _02_global_dicts import theJar
 import nextcord
 import time, asyncio
@@ -14,6 +15,7 @@ class Region():
         self.guild = guild
         self.guildID = guildID
         self.channel = None
+
 
         if guild:
             self.createChannel.start()
@@ -70,6 +72,7 @@ class District():
         self.inventory = None
         self.guild = guild
         self.size = size
+        self.civics = Civics(self)
 
         if guild:
             self.guildID = guild.id
@@ -112,6 +115,8 @@ class District():
 
         theJar['regions'][region_name].addDistrict(self)
         theJar['districts'][name] = self
+        for allegiance in theJar['allegiances'].keys():
+            theJar['squads'][self][allegiance] = {}
     
     def __reduce__(self):
         return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
@@ -199,6 +204,7 @@ class District():
             if can_move:
                 player.location.players.remove(player)
                 player.location.updateInterface()
+                player.location.civics.delPlayer(player)
         else:
             can_move = True
 
@@ -222,6 +228,7 @@ class District():
         player.location = self
         self.players.append(player)
         self.updateInterface()
+        self.civics.players.addPlayer(player)
         await self.channel.set_permissions(player.member, read_messages=True)
 
 
@@ -257,3 +264,79 @@ class District():
 
         fields += inv_fields
         return report, title, fields
+
+class Civics():
+    def __init__(self, location):
+        self.location = location
+        self.players = location.players
+        self.squads = {}
+        self.allegiances = []
+        self.commanders = []
+        self.allegiance_stances = {}
+        self.conflicts = []
+        self.retreats = {}
+
+    def addPlayer(self, player):
+        if player not in self.players:
+            self.players.append(player)
+            self.getCommander(player.allegiance)
+
+    def delPlayer(self, player):
+        if player in self.players:
+            self.players.remove(player)
+            self.getCommander(player.allegiance)
+
+    def getCommander(self, allegiance):
+        candidates = []
+        for player in self.players:
+            if player.allegiance == allegiance:
+                candidates.append(player)
+        metrics = []
+        squad_count = 0
+        for cand in candidates:
+            inf = cand._statcaps[theJar['resource']['Influence']]
+            squads = [x for x in cand.squads if x.location == self.location]
+            metric = {'cmd':cand, 'inf': inf, 'squads': len(squads)}
+            metrics.append(metric)
+            squad_count += len(squads)
+        metrics.sort(key=operator.itemgetter('inf','squads'))
+        cmdr = metrics[0]
+        self.commanders.append({"cmdr":cmdr['cmd'], 'allegiance':allegiance, 'inf':cmdr['inf'], 'squads':squad_count})
+        self.setCommanderRankings()
+
+    def setCommanderRankings(self):
+        self.commanders.sort(key=operator.itemgetter('squads','inf'))
+
+    def conflictInit(self, attacker, defender):
+        can_init = True
+        for conflict in self.conflicts:
+            if conflict['attacker'] == attacker:
+                can_init = False
+            if conflict['defender'] == defender:
+                can_init = False
+        if can_init:
+            conflict = {'attacker':attacker, 'defender':defender, 'attack_allies':[], 'defence_allies':[]}
+            self.conflicts.append(conflict)
+
+    def addConflictAlly(self, conflict_id, ally_target, ally):
+        self.conflicts[conflict_id][ally_target+"allies"].append(ally)
+
+    def delConflictAlly(self, conflict_id, ally_target, ally):
+        self.conflicts[conflict_id][ally_target+"allies"].remove(ally)
+
+    def setStance(self, player, stance):
+        #TODO: this is broke now
+        if player in self.commanders.keys():
+            allegiance = self.commanders[player]
+            self.allegiance_stances[allegiance] = stance
+        else:
+            print('Error: Player is not a commander!')
+
+    def setRetreat(self, allegiance, alt_location):
+        if alt_location != self.location:
+            self.retreats[allegiance] = alt_location
+
+    def refresh(self):
+        self.allegiance_stances = {}
+        self.conflicts = []
+        self.retreats = {}
