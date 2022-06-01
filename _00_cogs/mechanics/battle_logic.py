@@ -8,6 +8,18 @@ from _02_global_dicts import theJar
 #Get squad ranks, shuffle between multiple allegiances in a side
 
 async def battle(ctx, location_obj):
+    civics = location_obj.civics
+    loc_inv = location_obj.inventory
+    #need a mode for if its in the wild and two hostile forces meet (using occupance)
+    gov = civics.governance
+    gov_buildings = [x for x in loc_inv.slots['building'] if x.owner.allegiance == gov]
+    attacking_algs = [x for x in civics.allegiance_stances.keys()
+                      if civics.allegiance_stances[x]['stance']=='Attack']
+    defending_algs = [x for x in civics.allegiance_stances.keys()
+                      if civics.allegiance_stances[x]['stance']=='Defend']
+
+
+    #------
     defense_buildings = location_obj.inventory.slots['building']
     attack_units = location_obj.inventory.slots['unit']
 
@@ -16,7 +28,11 @@ async def battle(ctx, location_obj):
         if 'Defense' in building.trait_list:
             for unit in building.inventory.slots['unit']:
                 defense_units.append(unit)
+    #------
 
+    #sort squads here
+
+    #will need to do the below for each squad (mostly)
     attack_units = sort_targets(attack_units)
     defense_units = sort_targets(defense_units)
     attack_units, defense_units = attack_check(attack_units, defense_units)
@@ -37,12 +53,12 @@ async def battle(ctx, location_obj):
         if final_strike:
             await say(ctx, "-----Final Strike-----")
             for attack_wave in attack_units_waves:
-                await wave(ctx, attack_wave, defense_buildings)
+                await wave(ctx, attack_wave, gov_buildings)
         await say(ctx, "----End of Battle----")
     else:
         await say(ctx, "----No Attacking Units----")
 
-
+    #------
 def attack_check(attack_units_og, defense_units_og):
     attack_units = []
     for attacker in attack_units_og:
@@ -56,7 +72,7 @@ def attack_check(attack_units_og, defense_units_og):
         if 0 < hostiles < len(defense_units_og)/2:
             attack_units.remove(attacker)
     return attack_units, defense_units_og
-
+    #------
 
 async def round(ctx, rn, attack_units_waves, defense_units_waves, attack_units_targets, defense_units_targets):
     i = 0

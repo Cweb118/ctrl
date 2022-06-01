@@ -183,8 +183,8 @@ class Building(Card):
         if location == 'None':
             location = 'Hand'
 
-        rep = self.title+" ("+location+")\n"
-        rep += "  Workers: x/x, Input: xy/xy, Output: xy/xy, Catalyst: xy"
+        rep = self.title+"("+self.location+")\n"
+        rep += "Workers: "+str(self.inventory.slots['unit'])+"/"+str(self.inventory.slotcap['unit'])
         return rep
 
     def report(self):
