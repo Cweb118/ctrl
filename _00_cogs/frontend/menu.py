@@ -5,6 +5,7 @@ from discord import TextChannel
 from nextcord import Interaction
 import nextcord
 from _00_cogs.frontend.elements import Button
+from _00_cogs.frontend.state_error import StateError
 from _02_global_dicts import theJar
 
 menus = {}
@@ -34,15 +35,19 @@ class Menu:
             if newState != None:
                 state = newState
 
-            (content, embeds) = self.render(state)
+            try:
+                content, embeds = self.render(state)
+                view = MenuView()
 
-            view = MenuView()
+                for name, element in self.elements.items():
+                    item = element.render(element, state)
 
-            for name, element in self.elements.items():
-                item = element.render(element, state)
-                item.custom_id = self.id + ':' + item.custom_id
-
-                view.add_item(item)
+                    if item != None:
+                        item.custom_id = self.id + ':' + item.custom_id
+                        view.add_item(item)
+            except StateError:
+                content, embeds = (':warning: State Error :warning:', [])
+                view = MenuView()
 
             if (interaction.response.is_done()):
                 newMessage = await interaction.followup.send(content=content, embeds=embeds, ephemeral=ephemeral, view=view)
@@ -61,28 +66,36 @@ class Menu:
                     state = newState
                 theJar['states'][messagid] = state
 
-            (content, embeds) = self.render(state)
+            try:
+                content, embeds = self.render(state)
+                view = MenuView()
 
-            view = MenuView()
+                for name, element in self.elements.items():
+                    item = element.render(element, state)
 
-            for name, element in self.elements.items():
-                item = element.render(element, state)
-                item.custom_id = self.id + ':' + item.custom_id
-
-                view.add_item(item)
+                    if item != None:
+                        item.custom_id = self.id + ':' + item.custom_id
+                        view.add_item(item)
+            except StateError:
+                content, embeds = (':warning: State Error :warning:', [])
+                view = MenuView()
 
             await interaction.edit_original_message(content=content, embeds=embeds, view=view)
 
     async def send(self, channel: TextChannel, state={}):
-        (content, embeds) = self.render(state)
+        try:
+            content, embeds = self.render(state)
+            view = MenuView()
 
-        view = MenuView()
+            for name, element in self.elements.items():
+                item = element.render(element, state)
 
-        for name, element in self.elements.items():
-            item = element.render(element, state)
-            item.custom_id = self.id + ':' + item.custom_id
-
-            view.add_item(item)
+                if item != None:
+                    item.custom_id = self.id + ':' + item.custom_id
+                    view.add_item(item)
+        except StateError:
+            content, embeds = (':warning: State Error :warning:', [])
+            view = MenuView()       
 
         message = await channel.send(content=content, embeds=embeds, view=view)
         theJar['states'][message.id] = state
@@ -100,15 +113,19 @@ class Menu:
                 state = newState
             theJar['states'][messageid] = state
 
-        (content, embeds) = self.render(state)
+        try:
+            content, embeds = self.render(state)
+            view = MenuView()
 
-        view = MenuView()
+            for name, element in self.elements.items():
+                item = element.render(element, state)
 
-        for name, element in self.elements.items():
-            item = element.render(element, state)
-            item.custom_id = self.id + ':' + item.custom_id
-
-            view.add_item(item)
+                if item != None:
+                    item.custom_id = self.id + ':' + item.custom_id
+                    view.add_item(item)
+        except StateError:
+            content, embeds = (':warning: State Error :warning:', [])
+            view = MenuView()        
 
         await message.edit(content=content, embeds=embeds, view=view)
 
@@ -123,6 +140,14 @@ class Menu:
             else:
                 theJar['states'][messageid] = state
 
-            refresh = await method(self, state, interaction)
+            try:
+                refresh = await method(self, state, interaction)
+            except StateError:
+                refresh = False
+                content, embeds = (':warning: State Error :warning:', [])
+                view = MenuView()
+
+                await interaction.edit_original_message(content=content, embeds=embeds, view=view)
+
             if (refresh):
                 await self.show(interaction)

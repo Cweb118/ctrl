@@ -179,9 +179,13 @@ class Building(Card):
         return self.title
 
     def drop_rep(self):
-        str = self.title+"("+self.location+")\n"
-        str += "Workers: x/x, Input: xy/xy, Output: xy/xy, Catalyst: xy"
-        return str
+        location = str(self.location)
+        if location == 'None':
+            location = 'Hand'
+
+        rep = self.title+" ("+location+")\n"
+        rep += "  Workers: x/x, Input: xy/xy, Output: xy/xy, Catalyst: xy"
+        return rep
 
     def report(self):
         title = "-----"+self.title+"-----"

@@ -1,3 +1,4 @@
+from discord import Interaction
 from nextcord import slash_command
 from nextcord.ext import commands
 
@@ -56,9 +57,12 @@ class Commands(commands.Cog):
         report, title, fields = district.report()
         await say(ctx, report, title=title, fields=fields)
 
-    @commands.command(name="move", guild_ids=guilds)
-    async def move_c(self, ctx, name):
-        player = theJar['players'][ctx.author.id]
+    @slash_command(name="move", guild_ids=guilds)
+    async def move_c(self, ctx: Interaction, name):
+        await self._move_c(ctx, name)
+
+    async def _move_c(self, ctx, name):
+        player = theJar['players'][ctx.user.id]
         district = theJar['districts'][name]
         report = district.movePlayer(player)
         await say(ctx,report)
@@ -94,9 +98,12 @@ class Commands(commands.Cog):
         building_parent = player.inventory.getCard('building', int(building_parent_number))
         building_parent.addLink(building_child)
 
-    @commands.command(name="playcard", guild_ids=guilds)
-    async def playcard_c(self, ctx, card_type, card_number, target_type, target):
-        player = theJar['players'][ctx.author.id]
+    @slash_command(name="playcard", guild_ids=guilds)
+    async def playcard_c(self, ctx: Interaction, card_type, card_number, target_type, target):
+        await self._playcard_c(ctx, card_type, card_number, target_type, target)
+
+    async def _playcard_c(self, ctx: Interaction, card_type, card_number, target_type, target):
+        player = theJar['players'][ctx.user.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         targ = None
         if target_type == 'district':
@@ -106,7 +113,7 @@ class Commands(commands.Cog):
         elif target_type == 'building':
             targ = player.inventory.cards[target_type][int(target)-1]
         if targ:
-            report = card.playCard(player, targ)
+            can_play, report = card.playCard(player, targ)
         else:
             report = 'Error: Invalid location.'
         await say(ctx,report)
@@ -190,26 +197,26 @@ class Commands(commands.Cog):
 
 
 #----------testing/control----------
-    @commands.command(name="play", guild_ids=guilds)
-    async def play_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
+    @slash_command(name="play", guild_ids=guilds)
+    async def play_c(self, ctx: Interaction):
+        player = theJar['players'][ctx.user.id]
         player.inventory.addCard(Building(*building_kits_dict['wooden_wall']), 'building')
         player.inventory.addCard(Building(*building_kits_dict['mother_tree']), 'building')
         player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
         #player.addCard(building_kits_dict['mother_tree'], 'building')
         #player.addCard(building_kits_dict['bountiful_field'], 'building')
-        await self.makecard_c(ctx, 'Warrior', 'Aratori')
-        await self.makecard_c(ctx, 'Ranger', 'Aratori')
-        await self.makecard_c(ctx, 'Guardian', 'Aratori')
-        await self.makecard_c(ctx, 'Alchemist', 'Otavan')
-        await self.makecard_c(ctx, 'Worker', 'Automata')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Otavan')
+        await self._makecard_c(ctx, 'Worker', 'Automata')
 
         #await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
-        await self.move_c(ctx, 'Home')
+        await self._move_c(ctx, 'Home')
 
-        await self.playcard_c(ctx, 'building', 1, 'district', 'Home')
-        await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
-        await self.playcard_c(ctx, 'building', 3, 'district', 'Home')
+        await self._playcard_c(ctx, 'building', 1, 'district', 'Home')
+        await self._playcard_c(ctx, 'building', 2, 'district', 'Home')
+        await self._playcard_c(ctx, 'building', 3, 'district', 'Home')
         #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
         #await self.link_c(ctx, 2, 1)
         #await self.playcard_c(ctx, 'unit', 1, 'building', 1)
@@ -249,7 +256,7 @@ class Commands(commands.Cog):
         elif target_type == 'building':
             targ = fab.inventory.cards[target_type][int(target)-1]
         if targ:
-            report = card.playCard(fab, targ)
+            can_play, report = card.playCard(fab, targ)
         else:
             report = 'Error: Invalid location.'
         await say(ctx,report)
@@ -286,9 +293,12 @@ class Commands(commands.Cog):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
 
-    @commands.command(name="makecard", guild_ids=guilds)
-    async def makecard_c(self, ctx, unit_class, race):
-        player = theJar['players'][ctx.author.id]
+    @slash_command(name="makecard", guild_ids=guilds)
+    async def makecard_c(self, ctx: Interaction, unit_class, race):
+        await self._makecard_c(ctx, unit_class, race)
+
+    async def _makecard_c(self, ctx: Interaction, unit_class, race):
+        player = theJar['players'][ctx.user.id]
         status, man = player.inventory.addCard(Unit(*unit_kits_dict[unit_class]), 'unit')
         print(man)
         man.addTrait(race)

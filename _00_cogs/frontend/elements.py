@@ -4,9 +4,12 @@ from nextcord import ButtonStyle
 import nextcord
 
 
-def Button(id: str, label: str, style: ButtonStyle = ButtonStyle.secondary):
+def Button(id: str, label: str, style: ButtonStyle = ButtonStyle.secondary, includeFun = lambda state: True, disabledFun = lambda state: False):
     def render(fun, state):
-        return nextcord.ui.Button(custom_id=fun.id, label=label, style=style)
+        if includeFun(state):
+            return nextcord.ui.Button(custom_id=fun.id, label=label, style=style, disabled=disabledFun(state))
+        else:
+            return None
 
     def wrapper(fun):
         fun.id = id
@@ -63,7 +66,7 @@ def UnlimitedSelect(id: str, optionsFun):
                 state['page'] = page + 1
                 return True
             else:
-                await fun(self, state, interaction)
+                return await fun(self, state, interaction)
 
         wrapper2.id = id
         wrapper2.is_element = True

@@ -1,9 +1,10 @@
 from nextcord import Interaction, ButtonStyle
 from _00_cogs.frontend.elements import Button
 from _00_cogs.frontend.menu import Menu
-from _00_cogs.frontend.travel_menu import travelMenu
+from _00_cogs.frontend.state_error import StateError
 from _02_global_dicts import theJar
 from _01_functions import *
+import _00_cogs.frontend.menus.menus as Menus
 
 
 class DistrictMenu(Menu):
@@ -12,7 +13,7 @@ class DistrictMenu(Menu):
 
     def render(self, state):
         if 'district' not in state or state['district'] not in theJar['districts']:
-            return
+            raise StateError
 
         district = theJar['districts'][state['district']]
         report, title, fields = district.report()
@@ -22,13 +23,12 @@ class DistrictMenu(Menu):
     @Button(id='travel', label='Travel', style=ButtonStyle.success)
     async def travel(self, state, interaction: Interaction):
         if 'district' not in state:
-            return False
+            raise StateError
 
-        await travelMenu.show(interaction, reply=True, newState={'district': state['district']})
+        await Menus.travelMenu.show(interaction, reply=True, newState={'district': state['district']})
         return False
 
     @Button(id='interact', label='Interact', style=ButtonStyle.success)
     async def interact(self, state, interaction: Interaction):
         return False
 
-districtMenu = DistrictMenu()

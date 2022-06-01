@@ -15,6 +15,11 @@ class Card():
         if inv_args:
             self.inventory = Inventory(*inv_args)
 
+        self.uniqueID = str(theJar['nextUniqueID'])
+        theJar['nextUniqueID'] += 1
+
+    def updateInterface(self):
+        pass
 
     def toggleStatus(self):
         if self.status == "Held":
@@ -123,7 +128,7 @@ class Card():
             self.location = target_obj
             theJar['played_cards'][card_type].append(self)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
-        return report
+        return can_play, report
 
     def unplayCard(self, player):
         card_type = type(self).__name__.lower()
@@ -137,7 +142,7 @@ class Card():
             if card_type == 'unit':
                 if player_type == 'player':
                     player.modStat(theJar['resources']['Influence'], 1)
-            self.location.inventory.slots[card_type].remove(self)
+            self.location.inventory.removeCardFromSlot(self, card_type)
             self.location = None
             theJar['played_cards'][card_type].append(self)
             report = str(self)+' has been unplayed from '+str(target_obj)

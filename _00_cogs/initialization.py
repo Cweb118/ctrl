@@ -1,3 +1,4 @@
+from discord import Interaction
 import nextcord
 from nextcord import guild
 from _00_cogs.architecture.player_class import Player
@@ -63,8 +64,8 @@ class PlayerCog(commands.Cog):
             case _:
                 await ctx.send("invalid input")
 
-    @commands.command(name="init", guild_ids=guilds)
-    async def init_c(self, ctx):
+    @slash_command(name="init", guild_ids=guilds)
+    async def init_c(self, ctx: Interaction):
 
         for key in theJar['players'].keys():
             player = theJar['players'][key]

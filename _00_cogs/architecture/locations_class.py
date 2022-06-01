@@ -5,7 +5,7 @@ import nextcord
 import time, asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
-from _00_cogs.frontend.district_menu import districtMenu
+import _00_cogs.frontend.menus.menus as Menus
 
 class Region():
     def __init__(self, name, guild = None, guildID = None, districts = []):
@@ -116,7 +116,10 @@ class District():
         theJar['regions'][region_name].addDistrict(self)
         theJar['districts'][name] = self
         for allegiance in theJar['allegiances'].keys():
-            theJar['squads'][self][allegiance] = {}
+            pass
+            #theJar['squads'][self][allegiance] = {}
+
+        self.interfaceDirty = False
     
     def __reduce__(self):
         return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
@@ -142,7 +145,7 @@ class District():
                 overwrites = {
                     self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
                     playerRole: nextcord.PermissionOverwrite(read_messages=True)
-                }.replace(' ', '-')
+                }
 
                 foundInterface = False
                 foundChannel = False
@@ -165,18 +168,24 @@ class District():
 
                 interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
                 if (len(interfaceMessages) == 0):
-                    self.interfaceMessage = await districtMenu.send(self.interfaceChannel, state={'district': self.name})
+                    self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel, state={'district': self.name})
                 else:
                     self.interfaceMessage = interfaceMessages[0]
-                    await districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+
+                self.interfaceDirty = False
                 
                 return
         print("Error: Category not found. This may be due to the delay not long enough after the category is created.")
 
     # Ginger: Updates the interface message
     def updateInterface(self):
+        self.interfaceDirty = True
+
+    async def doInterfaceUpdate(self):
+        self.interfaceDirty = False
+
         if hasattr(self, 'interfaceMessage'):
-            asyncio.create_task(districtMenu.update(self.interfaceMessage, newState={'district': self.name}))
+            await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
     def setPath(self, target):
         can_path = True
@@ -228,7 +237,7 @@ class District():
         player.location = self
         self.players.append(player)
         self.updateInterface()
-        self.civics.players.addPlayer(player)
+        self.civics.addPlayer(player)
         await self.channel.set_permissions(player.member, read_messages=True)
 
 

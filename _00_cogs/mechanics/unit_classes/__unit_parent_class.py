@@ -298,14 +298,24 @@ class Unit(Card):
         return self.title
 
     def drop_rep(self):
-        str = self.title+"("+self.location+")\n"
+        location = str(self.location)
+        if location == 'None':
+            location = 'Hand'
+
+        rep = self.title+" ("+location+")\n"
+        rep += '  '
+
+        first = True
 
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            str += str(key)+" "+str(value)+"/"+str(cap)+", "
+            if not first:
+                rep += ', '
+            rep += str(key)+" "+str(value)+"/"+str(cap)
+            first = False
 
-        return str
+        return rep
 
 
     def report(self):
@@ -362,6 +372,9 @@ class Squad():
             self.allegiance = self.owner.allegiance
 
             self.nick = self.units[0].title +"'s Squad"
+
+            self.uniqueID = str(theJar['nextUniqueID'])
+            theJar['nextUniqueID'] += 1
         else:
             print('Units list too long!')
 

@@ -1,11 +1,10 @@
+import asyncio
 import nextcord
 from nextcord import guild
 from nextcord.ext import tasks
 from _02_global_dicts import theJar
 from _00_cogs.architecture.inventory_class import Inventory
-from _00_cogs.frontend.squads_menu import squadsMenu
-from _00_cogs.frontend.units_menu import unitsMenu
-from _00_cogs.frontend.buildings_menu import buildingsMenu
+import _00_cogs.frontend.menus.menus as Menus
 
 class StateError(Exception):
     pass
@@ -48,6 +47,8 @@ class Player():
         }
         self.allegiance = allegiance
         self.squads = []
+
+        self.interfaceDirty = False
 
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
@@ -96,26 +97,42 @@ class Player():
             self._channel = await self._guild.create_text_channel(name=self._member.replace(' ', '-').name, topic=topic, overwrites=overwrites, category=category)
 
         interfaceMessages = await self.interfaceChannel.history(limit=3).flatten()
+        interfaceMessages.reverse()
         if (len(interfaceMessages) < 1):
-            self.squadsMessage = await squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
+            self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
         else:
             self.squadsMessage = interfaceMessages[0]
-            await squadsMenu.update(self.squadsMessage, newState={'player': self._member.id})
         
         if (len(interfaceMessages) < 2):
-            self.unitsMessage = await unitsMenu.send(self.interfaceChannel, state={'player': self._member.id})
+            self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self._member.id, 'card_type': 'unit'})
         else:
             self.unitsMessage = interfaceMessages[1]
-            await unitsMenu.update(self.unitsMessage, newState={'player': self.member.id})
         
         if (len(interfaceMessages) < 3):
-            self.buildingsMessage = await buildingsMenu.send(self.interfaceChannel, state={'player': self.member.id})
+            self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self.member.id, 'card_type': 'building'})
         else:
             self.buildingsMessage = interfaceMessages[2]
-            await buildingsMenu.update(self.buildingsMessage, newState={'player': self.member.id})
+
+        self.interfaceDirty = False
 
     def updateInterface(self):
-        pass
+        self.interfaceDirty = True
+    
+    async def doInterfaceUpdate(self):
+        self.interfaceDirty = False
+
+        allUpdates = []
+
+        if hasattr(self, 'squadsMessage'):
+            allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
+
+        if hasattr(self, 'unitsMessage'):
+            allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
+
+        if hasattr(self, 'buildingsMessage'):
+            allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
+
+        await asyncio.gather(*allUpdates)  
 
     def modStat(self, stat, quantity): #stat here is an INSTANCE (of resouce!)
         new_val = self._stats[stat] + quantity

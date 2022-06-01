@@ -1,3 +1,4 @@
+from email.headerregistry import UniqueDateHeader
 from _02_global_dicts import theJar
 
 
@@ -44,11 +45,13 @@ class Inventory():
         self.slots[card_type].append(card)
         # Ginger: Make sure it gets displayed visually
         self.inv_owner.updateInterface()
+        card.owner.updateInterface()
 
     def removeCardFromSlot(self, card, card_type):
         self.slots[card_type].remove(card)
         # Ginger: Make sure it gets displayed visually
         self.inv_owner.updateInterface()
+        card.owner.updateInterface()
 
     def addCard(self, card, card_type):
         can_add = self.capMathCard(card_type)
@@ -75,6 +78,19 @@ class Inventory():
             report = "Error: Recipient lacks capacity for this item."
         return report
 
+    def getCardByUniqueID(self, card_type, uniqueID):
+        for card in self.cards[card_type]:
+            if card.uniqueID == uniqueID:
+                return card
+        
+        return None
+
+    def getSlotCardByUniqueID(self, card_type, uniqueID):
+        for card in self.slots[card_type]:
+            if card.uniqueID == uniqueID:
+                return card
+        
+        return None
 
     def capMathRes(self):
         i = 0

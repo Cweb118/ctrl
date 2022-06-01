@@ -1,3 +1,4 @@
+import asyncio
 from code import interact
 from nextcord import Interaction, InteractionType
 from watchdog.events import FileSystemEventHandler
@@ -6,9 +7,11 @@ import os
 import nextcord
 import time
 import datetime
+from _00_cogs.architecture.player_class import Player
 from keys import prime_token, prefix
 from nextcord.ext import commands
 from _00_cogs.frontend.menu import menus
+from _02_global_dicts import theJar
 
 intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
@@ -98,6 +101,18 @@ async def on_interaction(interaction: Interaction):
             await menu.onInteraction(elementid, interaction)
     else:
         await bot.process_application_commands(interaction) 
+
+    allInterfaceUpdates = []
+
+    for id, player in theJar['players'].items():
+        if player.interfaceDirty:
+            allInterfaceUpdates.append(player.doInterfaceUpdate())
+
+    for id, district in theJar['districts'].items():
+        if district.interfaceDirty:
+            allInterfaceUpdates.append(district.doInterfaceUpdate())
+
+    await asyncio.gather(*allInterfaceUpdates)
 
 handler = FileWatch()
 observer = Observer()
