@@ -94,6 +94,10 @@ class Unit(Card):
             health_rep = self.setHealth(-attack_value)
         return health_rep
 
+#Make all unit kits traits
+#To transpose, remove old then add new
+#Init all traits and add into the Jar
+#To add/remove a trait, reference the jar (dont add entire trait to trigger anymore)
     def addTrait(self, trait_name):
         if not self.hasTrait(trait_name):
             trait = Trait(*trait_kits_dict[trait_name])
@@ -108,7 +112,7 @@ class Unit(Card):
                 value = trait.trait_stats_dict[mod_stat]
                 self.stats[mod_stat] += value
                 self.statcaps[mod_stat] += value
-                if self.stats[mod_stat] < 0:
+                if self.statcaps[mod_stat] < 0:
                     self.stats[mod_stat] = 0
                     self.statcaps[mod_stat] = 0
         if trait.trait_play_cost:
@@ -164,6 +168,10 @@ class Unit(Card):
             self.die_set = Dice(new_set)
         for trig in trait.trigger:
             self.traits[trig].append(trait)
+
+    def delTrait(self, trait_name):
+        #go into the trigger(s) which have added the trait to get the trait's info, then remove
+        print('delet')
 
     def hasTrait(self, trait_name):
         trait = Trait(*trait_kits_dict[trait_name])
@@ -240,21 +248,29 @@ class Unit(Card):
         return can_move, report
 
     def moveUnit(self, dest_type, destination):
+        move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
         if can_move:
             slot_count = len(destination.inventory.slots['unit'])
             slotcap = destination.inventory.slotcap['unit']
             if slot_count < slotcap:
+                if self.traits:
+                    if len(self.traits['on_move']) > 0:
+                        for trait in self.traits['on_move']:
+                            move_report = trait.action.move(self, self.location, destination)
+
                 destination.inventory.addCardToSlot(self, 'unit')
                 self.location.inventory.removeCardFromSlot(self, 'unit')
                 self.location = destination
                 self.setStat('Endurance', -1)
+
                 report = "Unit moved successfully."
             else:
                 report = "Error: This destination does not have the required space."
         else:
             report = "Error: This destination is too far."
-
+        if move_report:
+            report += +"\n"+move_report
         return report
 
     def harvest(self):

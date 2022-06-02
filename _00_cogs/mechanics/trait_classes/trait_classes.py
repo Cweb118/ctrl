@@ -95,18 +95,19 @@ class Ranger():
 class Scout():
     #TODO: TEST
     def __init__(self):
-        #self.loot = theJar['resources']['food']
-        print('oop')
+        self.loot = theJar['resources']['Food']
+        #print('oop')
 
     def act(self, sender, receiver, operation):
-        #toggles savenging loot
-        if self.loot == theJar['resources']['food']:
-            self.loot = theJar['resources']['water']
+        #toggles salvanging loot
+        if self.loot == theJar['resources']['Food']:
+            self.loot = theJar['resources']['Water']
         else:
-            self.loot = theJar['resources']['food']
+            self.loot = theJar['resources']['Food']
 
     def move(self, self_unit, from_location, to_location):
-        res = self.loot
+        #self_unit.owner.updatePerms(from_location, to_location
+
         loc_size_pass_bars = {
             'tiny': 1,
             'small': 2,
@@ -116,15 +117,24 @@ class Scout():
         }
 
         res_per_hit = {
+            0:0,
             1:2,
             2:5,
             3:8,
             4:11,
             5:14,
         }
-        #get the to_location's size
-        #roll unit's dice
-        #if under the bar, find res per hit
+        to_loc_bar = loc_size_pass_bars[to_location.size]
+        s, report = self_unit.dice.roll_math(to_loc_bar)
+        hits = report['hit_count']
+        if hits > 5:
+            hits = 5
+        res_yield = res_per_hit[hits]
+        self_unit.inventory.addResource(self.loot,res_yield)
+
+        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
+        return report
+
 
 
 class Knight():
@@ -278,10 +288,9 @@ class Eelaki():
         print('action!')
 
 class Loyavasi():
-    #PASSIVE: +2 Endurance
-    #SCAVANGE: On move, roll dice to try and pick up food or water (maybe set in act? or random)
-    def action(self):
-        print('action!')
+    #HARVEST: +2 Endurance over cap
+    def harvest(self, self_unit, def_lost, hit_status):
+        self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']+2
 
 class Otavan():
     #PASSIVE: Stealth (-2 Taunt)

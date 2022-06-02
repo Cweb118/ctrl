@@ -32,8 +32,6 @@ class Card():
             self.status = "Held"
 
     def playerPlayCheck(self, player, target_obj):
-        #TODO: Check and make sure the alleigences are the Friendly
-        #^What ????
         report = '...'
         can_play = False
         card_type = type(self).__name__.lower()
@@ -54,6 +52,38 @@ class Card():
                     if player._stats[theJar['resources']['Influence']] == 0:
                         report = "Error: You lack the required influence."
                         can_play = False
+                if card_type == 'building':
+                    loc_gov_allegiance = None
+                    loc_occ_allegiance = None
+                    if target_type == 'district':
+                        loc_civics = target_obj.civics
+                    else:
+                        loc_civics = target_obj.location.civics
+
+                    if loc_civics.governance:
+                        loc_gov_allegiance = loc_civics.governance
+                    if loc_civics.occupance:
+                        loc_occ_allegiance = loc_civics.occupance
+
+                    for alleg in loc_civics.alleigances:
+                        if self.owner.relationCheck(alleg) == 'Hostile':
+                            report = "Error: There is a Hostile party at present at this location."
+                            can_play = False
+                    if can_play:
+                        if not loc_occ_allegiance or loc_occ_allegiance == loc_gov_allegiance != None:
+                            #Gov in charge
+                            if self.owner.relationCheck(loc_gov_allegiance) != 'Friendly':
+                                #Player is neutral or hostile to local government
+                                report = "Error: You are not Friendly with the ruling governance."
+                                can_play = False
+                        elif loc_occ_allegiance and loc_occ_allegiance != loc_gov_allegiance:
+                            #There is an occupation which is not the local government
+                            if self.owner.relationCheck(loc_gov_allegiance) != 'Friendly':
+                                #Player is neutral or hostile to local occupance
+                                report = "Error: You are not Friendly with the ruling occupance."
+                                can_play = False
+
+
                 if target_type == 'district':
                     if player.location != target_obj:
                         report = "Error: You are not currently present at the designated location."
@@ -71,6 +101,8 @@ class Card():
                                 can_play = False
             else:
                 report = "Error: This destination lacks the required number of slots available."
+        else:
+            report = "Error: This card is not in your hand."
         return can_play, report
 
     def playerUnplayCheck(self, player):

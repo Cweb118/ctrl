@@ -1,4 +1,6 @@
 import asyncio
+import operator
+
 from _01_functions import say
 from _02_global_dicts import theJar
 
@@ -10,69 +12,59 @@ from _02_global_dicts import theJar
 async def battle(ctx, location_obj):
     civics = location_obj.civics
     loc_inv = location_obj.inventory
-    #need a mode for if its in the wild and two hostile forces meet (using occupance)
-    gov = civics.governance
-    gov_buildings = [x for x in loc_inv.slots['building'] if x.owner.allegiance == gov]
-    attacking_algs = [x for x in civics.allegiance_stances.keys()
-                      if civics.allegiance_stances[x]['stance']=='Attack']
-    defending_algs = [x for x in civics.allegiance_stances.keys()
-                      if civics.allegiance_stances[x]['stance']=='Defend']
+    #Intention: If attacking, gov is always defence. If no gov, occ is defence.
+    defense = None
+    if civics.governance:
+        defense = civics.governance
+    elif civics.occupance:
+        defense = civics.occupance
 
+    if defense:
+        attacking_algs = [x for x in civics.allegiance_stances.keys()
+                          if civics.allegiance_stances[x]['stance']=='Attack']
+        defending_algs = [x for x in civics.allegiance_stances.keys()
+                          if civics.allegiance_stances[x]['stance']=='Defend']
+        defending_algs += [defense]
+        if defense in attacking_algs:
+            attacking_algs.remove(defense)
 
-    #------
-    defense_buildings = location_obj.inventory.slots['building']
-    attack_units = location_obj.inventory.slots['unit']
+        defense_buildings = [x for x in loc_inv.slots['building'] if x.allegience == defense]
+        defense_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.allegience in defending_algs]
+        attack_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.allegience in attacking_algs]
+        defense_units = sort_targets(defense_units)
+        attack_units = sort_targets(attack_units)
 
-    defense_units = []
-    for building in defense_buildings:
-        if 'Defense' in building.trait_list:
-            for unit in building.inventory.slots['unit']:
-                defense_units.append(unit)
-    #------
+        defense_squads = sort_squads(defending_algs)
+        attack_squads = sort_squads(attacking_algs)
 
-    #sort squads here
+        while len(attack_squads) > 0 and len(defense_squads) > 0:
 
-    #will need to do the below for each squad (mostly)
-    attack_units = sort_targets(attack_units)
-    defense_units = sort_targets(defense_units)
-    attack_units, defense_units = attack_check(attack_units, defense_units)
+            sq = 0
+            while sq < len(attack_squads) and sq < len(defense_squads):
+                attacking_squad = attack_squads[sq]
+                defending_squad = defense_squads[sq]
+                squad_attack_units = sort_targets(attacking_squad.units)
+                squad_defense_units = sort_targets(defending_squad.units)
 
-    if len(attack_units) > 0:
-        wave_ints = sort_inititative(attack_units+defense_units)
-        attack_units_waves = sort_waves(attack_units, wave_ints)
-        defense_units_waves = sort_waves(defense_units, wave_ints)
+                if len(squad_attack_units) > 0:
+                    wave_ints = sort_inititative(squad_attack_units+squad_defense_units)
+                    attack_units_waves = sort_waves(squad_attack_units, wave_ints)
+                    defense_units_waves = sort_waves(squad_defense_units, wave_ints)
 
-        i = 1
-        cont = True
-        while cont:
-            cont, final_strike = await round(ctx, i, attack_units_waves, defense_units_waves, attack_units, defense_units)
-            await battle_report(ctx, attack_units, defense_units)
-            await asyncio.sleep(10)
-            i += 1
-
-        if final_strike:
-            await say(ctx, "-----Final Strike-----")
-            for attack_wave in attack_units_waves:
-                await wave(ctx, attack_wave, gov_buildings)
-        await say(ctx, "----End of Battle----")
-    else:
-        await say(ctx, "----No Attacking Units----")
-
-    #------
-def attack_check(attack_units_og, defense_units_og):
-    attack_units = []
-    for attacker in attack_units_og:
-        att_alg = attacker.owner._allegiance
-        hostiles = 0
-        for defender in defense_units_og:
-            def_alg = defender.owner._allegiance
-            if theJar['alleigances'][att_alg][def_alg] == 'Hostile':
-                hostiles += 1
-                attack_units.append(attacker)
-        if 0 < hostiles < len(defense_units_og)/2:
-            attack_units.remove(attacker)
-    return attack_units, defense_units_og
-    #------
+                    i = 1
+                    cont = True
+                    while cont:
+                        cont = await round(ctx, i, attack_units_waves, defense_units_waves, squad_attack_units, squad_defense_units)
+                        await battle_report(ctx, attack_units, defense_units)
+                        await asyncio.sleep(10)
+                        i += 1
+                    await say(ctx, "----End of Skirmish, Attack Stands----")
+                    defense_squads.remove(defending_squad)
+                else:
+                    await say(ctx, "----End of Skirmish, Defense Stands----")
+                    attack_squads.remove(attacking_squad)
+        if len(attack_squads) > 0:
+            await final_strike(ctx, attack_squads, defense_buildings, defense_units)
 
 async def round(ctx, rn, attack_units_waves, defense_units_waves, attack_units_targets, defense_units_targets):
     i = 0
@@ -137,6 +129,44 @@ async def fight(ctx, attack_unit, defense_unit):
                 report += action_report
     await say(ctx, report)
 
+async def final_strike(ctx, attack_squads, defense_buildings, defense_units):
+    #TODO: Needs work. Can add the ability for units inside def buildings to attack back.
+    attack_units = []
+    for squad in attack_squads:
+        attack_units += squad.units
+
+    #might cause an issue if no defense units
+    wave_ints = sort_inititative(attack_units+defense_units)
+    attack_units_waves = sort_waves(attack_units, wave_ints)
+
+    await say(ctx, "-----Final Strike-----")
+    for attack_wave in attack_units_waves:
+        #switch these around maybe? could allow for a final stand among remaining unsquaded units. could also be worker massacre
+        if defense_buildings or len(defense_buildings) > 0:
+            await wave(ctx, attack_wave, defense_buildings)
+        elif defense_units or len(defense_units) > 0:
+            await wave(ctx, attack_wave, defense_units)
+
+
+def sort_squads(side_algs):
+    squad_queue = []
+    i = 0
+    for alg in side_algs:
+        i += 1
+        alg_queue = []
+        alg_squads = []
+        for prio in alg.keys():
+            alg_squads+=alg[prio]
+        for sq in alg_squads:
+            sq_placement = {'squad':sq, 'rank':alg_squads.index(sq), 'alg':i}
+            alg_queue.append(sq_placement)
+        squad_queue += alg_queue
+
+    squad_queue.sort(key=operator.itemgetter('rank','alg'))
+    squad_order = [x['squad'] for x in squad_queue]
+    print(squad_order)
+    return squad_order
+
 def sort_inititative(all_units):
     wave_ints = []
     for unit in all_units:
@@ -198,3 +228,18 @@ async def battle_report(ctx, attackers, defenders):
 
     await say(ctx, report)
 
+    #------
+def attack_check(attack_units_og, defense_units_og):
+    attack_units = []
+    for attacker in attack_units_og:
+        att_alg = attacker.owner._allegiance
+        hostiles = 0
+        for defender in defense_units_og:
+            def_alg = defender.owner._allegiance
+            if theJar['alleigances'][att_alg][def_alg] == 'Hostile':
+                hostiles += 1
+                attack_units.append(attacker)
+        if 0 < hostiles < len(defense_units_og)/2:
+            attack_units.remove(attacker)
+    return attack_units, defense_units_og
+    #------

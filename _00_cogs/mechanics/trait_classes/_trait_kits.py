@@ -27,9 +27,9 @@ trait_kits_dict = {
               None, None, {'Endurance':-1}, -2, -1, None, ['2d3']],
 
     'Loyavasi':['Loyavasi', "A mighty race of great strength, the Loyavasi have built an empire to last the test of time.",
-                'race', None, ['on_move'], Loyavasi(),
+                'race', None, ['on_harvest'], Loyavasi(),
                 {'cap':{'resource':2}}, None,
-                {'Endurance':2}, -1, None, None, ['1d6', '1d2']],
+                None, -1, None, None, ['1d6', '1d2']],
 
     'Otavan':['Otavan', 'A mighty race of great strength, the Otavan have survived through thick and thin.',
               'race', None, ['on_play'], Otavan(),
@@ -51,7 +51,7 @@ trait_kits_dict = {
              {'Health':2,'Fortitude':-1}, 1, 1,
              {'Water':3}, ['1d3']],
 
-    'Xinn':['Xinn', 'An intimidating race of brutal bipedal bovines, what the Xinn lack in intellect they more than make up for in raw strength.',
+    'Xinn':['Xinn', 'An brutal race of bipedal bovines, what the Xinn lack in intellect they more than make up for in raw strength.',
               'race', ['Harvest'], ['on_play'], Xinn(),
              {'cap':{'resource':4}, 'cont':2}, None,
              {'Attack':3,'Health':1,'Fortitude':3}, None, 2,
@@ -63,12 +63,12 @@ trait_kits_dict = {
 
 
 
-    #name, description, trigger, type, certs, action, mod_inv_args, mod_play_cost, mod_stats_dict, initiative, taunt, mod_upkeep_dict, new_dice_stats
+    #name, description, type, certs, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, initiative, taunt, mod_upkeep_dict, new_dice_stats
     'Worker':['Worker', 'The mark of a Worker', 'class', ['Novice', 'Harvest', 'Production'], ['on_play'], Worker(), None, None, None, None, None, None, None],
     'Warrior':['Warrior', 'The mark of a Warrior', 'class', ['Combat'], ['on_attack'], Warrior(), None, None, None, None, None, None, None],
     'Guardian':['Guardian', 'The mark of a Guardian', 'class', ['Combat'], ['on_defend', 'on_attack'], Guardian(), None, None, None, None, None, None, None],
     'Ranger':['Ranger', 'The mark of a Ranger', 'class', ['Combat'], ['on_attack'], Ranger(), None, None, None, None, None, None, None],
-    'Scout':['Scout', 'The mark of a Worker', 'class', ['Combat'], ['on_play'], Scout(), None, None, None, None, None, None, None],
+    'Scout':['Scout', 'The mark of a Scout', 'class', ['Combat'], ['on_play'], Scout(), None, None, None, None, None, None, None],
     'Knight':['Knight', 'The mark of a Knight', 'class', ['Combat'], ['on_attack', 'on_defend'], Knight(), None, None, None, None, None, None, None],
     'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Engineer'], ['on_attack'], Alchemist(), None, None, None, None, None, None, None],
     'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack'], Technophant(), None, None, None, None, None, None, None],

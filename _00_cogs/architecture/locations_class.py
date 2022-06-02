@@ -69,6 +69,7 @@ class District():
         self.paths = pathsRebuild
         self.players = []
         self.channel = None
+        self.interfaceChannel
         self.inventory = None
         self.guild = guild
         self.size = size
@@ -202,6 +203,8 @@ class District():
             can_move = player.modStat(theJar['resources']['Influence'], -1)
         return can_move
 
+    #TODO: Need a function specifically for granting/removing channel permissions
+
     def movePlayer(self, player):
         #If player is already in a location, check if they can move. Otherwise, set it to true.
         if player.location:
@@ -236,9 +239,6 @@ class District():
         self.updateInterface()
         self.civics.addPlayer(player)
         await self.channel.set_permissions(player.member, read_messages=True)
-
-
-
 
     def __str__(self):
         return self.name
@@ -291,7 +291,7 @@ class Civics():
         if squad not in self.squad_list:
             self.squad_list.append(squad)
             squad.setPriority(squad.priority)
-            self.getCommander(squad.allegiance)
+            #^Runs squad.getRank which runs self.getCommander
 
     def delSquad(self, squad):
         if squad in self.squad_list:

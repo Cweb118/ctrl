@@ -12,7 +12,7 @@ class Dice():
     def addDice(self, dice):
         self.set.append(dice)
 
-    def roll_math(self, success):
+    def roll_math(self, success_bar):
         rolls = []
         for dice in self.set:
             split_list = dice.split('d')
@@ -24,7 +24,7 @@ class Dice():
                 rolls.append(roll)
                 i+=1
 
-        hits = [e for e in rolls if e >= success]
+        hits = [e for e in rolls if e >= success_bar]
         hit_count = len(hits)
         if hit_count > 0:
             s = True
@@ -35,7 +35,7 @@ class Dice():
 
         report = {
             'rolls':rolls,
-            'threshold':success,
+            'threshold':success_bar,
             'hits':hits,
             'hit_count':hit_count,
             'result':r
@@ -43,8 +43,8 @@ class Dice():
         return s, report
 
 
-    async def roll(self, success_int):
-        result, report_dict = self.roll_math(int(success_int))
+    async def roll(self, success_bar):
+        result, report_dict = self.roll_math(int(success_bar))
         if report_dict['result']:
             status = "-------HIT-------"
         else:

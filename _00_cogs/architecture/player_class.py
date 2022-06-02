@@ -134,7 +134,7 @@ class Player():
 
         await asyncio.gather(*allUpdates)  
 
-    def modStat(self, stat, quantity): #stat here is an INSTANCE (of resouce!)
+    def modStat(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
         new_val = self._stats[stat] + quantity
         can_add = False
         if self._statcaps[stat]:
@@ -144,6 +144,10 @@ class Player():
         if can_add == True:
             self._stats[stat] = new_val
         return can_add
+
+    def relationCheck(self, other_allegiance):
+        status = theJar['allegiances'][self.allegiance][other_allegiance]
+        return status
 
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
