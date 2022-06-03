@@ -232,6 +232,72 @@ class Commands(commands.Cog):
         #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
         #await self.cardnick_c(ctx, 'unit', 5, 'B0b')
 
+    @slash_command(name="pairplay", guild_ids=guilds)
+    async def pairplay_c(self, ctx: Interaction):
+        player = theJar['players'][ctx.user.id]
+        player.allegiance = 'Cow'
+        await self._move_c(ctx, 'Home')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        i = 1
+        while i < 21:
+            await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
+            i += 1
+        await self.joinsquad_c(ctx, 5, 1)
+        await self.joinsquad_c(ctx, 10, 1)
+        await self.joinsquad_c(ctx, 15, 1)
+
+    @slash_command(name="cartplay", guild_ids=guilds)
+    async def cartplay_c(self, ctx: Interaction):
+        player = theJar['players'][ctx.user.id]
+        player.allegiance = 'Bandit'
+        await self._move_c(ctx, 'Home')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Warrior', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Ranger', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Guardian', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Knight', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        i = 1
+        while i < 21:
+            await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
+            i += 1
+        await self.joinsquad_c(ctx, 5, 1)
+        await self.joinsquad_c(ctx, 10, 1)
+        await self.joinsquad_c(ctx, 15, 1)
+
     @commands.command(name="makefab", guild_ids=guilds)
     async def makefab_c(self, ctx, name, region, alg):
         player = theJar['players'][ctx.author.id]
@@ -389,7 +455,10 @@ class Commands(commands.Cog):
 #-----Squads-----
     @commands.command(name="joinsquad", guild_ids=guilds)
     async def joinsquad_c(self, ctx, unit_number, join_unit_number):
-        player = theJar['players'][ctx.author.id]
+        try:
+            player = theJar['players'][ctx.author.id]
+        except:
+            player = theJar['players'][ctx.user.id]
         joiner = player.inventory.getCard('unit', int(unit_number))
         joinee = player.inventory.getCard('unit', int(join_unit_number))
         if joiner.location == joinee.location:
@@ -426,6 +495,14 @@ class Commands(commands.Cog):
         await say(ctx, report, title=title, fields=fields)
 
 
+    @commands.command(name="stance", guild_ids=guilds)
+    async def stance_c(self, ctx, location, stance):
+        player = theJar['players'][ctx.author.id]
+        location = theJar['districts'][location]
+        civ = location.civics
+        civ.setStance(player, stance)
+        report, title, fields = civ.report()
+        await say(ctx, report, title=title, fields=fields)
 
 def setup(bot):
     bot.add_cog(Commands(bot))

@@ -33,7 +33,7 @@ class Player():
 
         self.createPrivateChannel.start()
         if inventory == None:
-            self._inventory = Inventory(self, r_cap=100, u_cap=10, b_cap=10) #Inventory Instance
+            self._inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
         else:
             self._inventory = inventory
         self.location = starter_location #Location Instance (needs to lack _!)
@@ -91,10 +91,10 @@ class Player():
                 foundChannel = True
                 
         if not foundInterface:
-            self.interfaceChannel = await self._guild.create_text_channel(name=self._member.replace(' ', '-').name + '_interface', overwrites=interfaceOverwrites, category=interfaceCategory)            
+            self.interfaceChannel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower() + '_interface', overwrites=interfaceOverwrites, category=interfaceCategory)
 
         if not foundChannel:
-            self._channel = await self._guild.create_text_channel(name=self._member.replace(' ', '-').name, topic=topic, overwrites=overwrites, category=category)
+            self._channel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower(), topic=topic, overwrites=overwrites, category=category)
 
         interfaceMessages = await self.interfaceChannel.history(limit=3).flatten()
         interfaceMessages.reverse()

@@ -69,7 +69,7 @@ class District():
         self.paths = pathsRebuild
         self.players = []
         self.channel = None
-        self.interfaceChannel
+        self.interfaceChannel = None
         self.inventory = None
         self.guild = guild
         self.size = size
@@ -85,11 +85,11 @@ class District():
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
-            'tiny': [self, 100, None, 10, 10, 2, 0],
-            'small': [self, 100, None, 10, 10, 5, 2],
-            'medium': [self, 100, None, 10, 10, 8, 4],
-            'large': [self, 100, None, 10, 10, 13, 8],
-            'huge': [self, 100, None, 10, 10, 20, 14],
+            'tiny': [self, 100, None, 10, 10, 4, 1],
+            'small': [self, 100, None, 10, 10, 8, 2],
+            'medium': [self, 100, None, 10, 10, 16, 4],
+            'large': [self, 100, None, 10, 10, 24, 8],
+            'huge': [self, 100, None, 10, 10, 40, 14],
         }
         if inventory:
             self.inventory = inventory
@@ -108,8 +108,6 @@ class District():
         self.pathcap = pathcaps[size]
 
         if paths:
-            paths = paths.split(',')
-            paths = [i for i in paths if i != '']
             for path in paths:
                 district = theJar['districts'][path]
                 self.setPath(district)
@@ -138,11 +136,11 @@ class District():
                 # Ginger: Added interface channel
                 interfaceOverwrites = {
                     self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
-                    playerRole: nextcord.PermissionOverwrite(read_messages=True)
+                    #playerRole: nextcord.PermissionOverwrite(read_messages=True)
                 }
                 overwrites = {
                     self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-                    playerRole: nextcord.PermissionOverwrite(read_messages=True)
+                    #playerRole: nextcord.PermissionOverwrite(read_messages=True)
                 }
 
                 foundInterface = False
@@ -164,11 +162,11 @@ class District():
                 if not foundChannel:
                     self.channel = await category.create_text_channel(self.name.replace(' ', '-'), overwrites=overwrites)
 
-                interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
-                if (len(interfaceMessages) == 0):
-                    self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel, state={'district': self.name})
-                else:
-                    self.interfaceMessage = interfaceMessages[0]
+                #interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
+                #if (len(interfaceMessages) == 0):
+                #    self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel, state={'district': self.name})
+                #else:
+                #    self.interfaceMessage = interfaceMessages[0]
 
                 self.interfaceDirty = False
                 
@@ -422,7 +420,7 @@ class Civics():
         info_rep['title'] = '-- Info:'
         info_rep['value'] =  "\n- Location: "+str(self.location)+\
                              "\n- Players: "+str([str(x) for x in self.players])+\
-                             "\n- Squads: "+str(self.squad_list)+\
+                             "\n- Squads: "+str(self.squads_ranked)+\
                              "\n- Allegiances: "+str(self.allegiances)+\
                              "\n- Commanders: "+str([str(x['cmdr']) for x in self.commanders])+\
                              "\n- Occupance: "+str(self.occupance)+\

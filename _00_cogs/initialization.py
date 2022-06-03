@@ -17,9 +17,8 @@ guilds = [588095612436742173, 778448646642728991]
 class PlayerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
-    @slash_command(name="initplayers", guild_ids=guilds)
-    async def initPlayers(self, ctx):
+
+    async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
             theJar['players'][member.id]=(Player(member, allegiance='Camp'))
@@ -43,6 +42,7 @@ class PlayerCog(commands.Cog):
     @slash_command(name="deletechannels", guild_ids=guilds)
     async def deletechannels(self, ctx):
         for channel in ctx.guild.channels:
+            #What is happening here lol
             if channel.name == "jamsspinle" or channel.name == "the-cartographer":
                 print("Match:", channel)
                 await channel.delete()
@@ -66,6 +66,7 @@ class PlayerCog(commands.Cog):
 
     @slash_command(name="init", guild_ids=guilds)
     async def init_c(self, ctx: Interaction):
+        await self.playerInit(ctx)
 
         for key in theJar['players'].keys():
             player = theJar['players'][key]
@@ -74,20 +75,13 @@ class PlayerCog(commands.Cog):
             player.inventory.addResource(theJar['resources']['Metal'], 10)
             player.inventory.addResource(theJar['resources']['Wood'], 10)
 
-            #player.addCard(building_kits_dict['wooden_wall'], 'building')
-            #for unit_kit in ['Knight', 'Scout', 'Ranger', 'Warrior']:
-                #player.addCard(unit_kits_dict[unit_kit], 'unit')
-
         Region("Range", guild=ctx.guild)
         #name, region_name, size, paths=None
-        District('Home', 'Range', 'medium', guild=ctx.guild)
-        shooting = District('Shooting', 'Range', 'small', 'Home,', guild=ctx.guild)
-        cattle = District('Cattle', 'Range', 'large', 'Home,', guild=ctx.guild)
+        District('Home', 'Range', 'huge', guild=ctx.guild)
+        District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild)
+        District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
+        District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
 
-        cattle.inventory.addResource(theJar['resources']['Food'], 50)
-        cattle.inventory.addCard(Unit(*unit_kits_dict['Worker']), 'unit')
-        cattle.inventory.addCard(Unit(*unit_kits_dict['Worker']), 'unit')
-        shooting.inventory.addCard(Unit(*unit_kits_dict['Warrior']), 'unit')
 
         report = "Initilization Complete."
         await say(ctx,report)
