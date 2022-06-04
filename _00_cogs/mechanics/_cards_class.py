@@ -83,7 +83,6 @@ class Card():
                                 report = "Error: You are not Friendly with the ruling occupance."
                                 can_play = False
 
-
                 if target_type == 'district':
                     if player.location != target_obj:
                         report = "Error: You are not currently present at the designated location."
@@ -164,7 +163,14 @@ class Card():
             theJar['played_cards'][card_type].append(self)
             if card_type == 'building':
                 self.location.civics.getGovernor(player.allegiance)
+            play_report = None
+            if self.traits:
+                if len(self.traits['on_play']) > 0:
+                    for trait in self.traits['on_play']:
+                        play_report = trait.action.play(self, target_obj)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
+            if play_report:
+                report += "\n"+play_report
         return can_play, report
 
     def unplayCard(self, player):

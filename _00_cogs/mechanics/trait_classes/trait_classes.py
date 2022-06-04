@@ -255,6 +255,7 @@ class Vehicle():
 #----------races----------
 
 class Aratori():
+    #DONE
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         att_att = attack_unit.stats['Attack']
@@ -273,31 +274,51 @@ class Aratori():
         return report
 
 class Automata():
+    #DONE
     #NOTE: PASSIVE (no upkeep)
     def action(self):
         print('action!')
 
 class Barheim():
-    #NOTE: On work, reduce unit cap
-    def action(self):
-        print('action!')
+    #NOTE: On work, reduce unit cap by 1
+    def reduce(self, building):
+        if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
+            building.inventory.slotcap['unit'] += -1
+
+    def unreduce(self, building):
+        building.inventory.slotcap['unit'] += 1
+
+    def play(self, self_unit, location):
+        if type(location).__name__.lower() == 'building':
+            self.reduce(location)
+
+    def move(self, self_unit, from_location, to_location):
+        if type(to_location).__name__.lower() == 'building':
+            self.reduce(to_location)
+        if type(from_location).__name__.lower() == 'building':
+            self.unreduce(from_location)
+
 
 class Eelaki():
+    #PASS
     #Somehow decide a target; they get a big buff (defence or dodge idk)
     def action(self):
         print('action!')
 
 class Loyavasi():
+    #Might need to do it on a unit refresh stage and not harvest
     #HARVEST: +2 Endurance over cap
     def harvest(self, self_unit, def_lost, hit_status):
         self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']+2
 
 class Otavan():
+    #DONE
     #PASSIVE: Stealth (-2 Taunt)
     def action(self):
         print('action!')
 
 class Prismari():
+    #DONE
     def defend(self, defense_unit, attack_unit, dmg):
         if attack_unit.threat >= 0:
             att_def = attack_unit.stats['Defense']
@@ -321,29 +342,32 @@ class Rivenborne():
         print('action!')
 
 class Tevaru():
+    #PASS
     #NOTE: PASSIVE (can have a 'partner' played to them)
     def action(self):
         print('action!')
 
 class Xinn():
+    #DONE
     #PASSIVE: Has the Harvest cert by default
     def action(self):
         print('action!')
 
 class Yavari():
-    #TODO: Add influence cost (1)
     #TODO: TEST
     def act(self, self_unit, target_unit):
         effect_trait_names = None
         if self_unit.hasTraitType('effect'):
             effect_trait_names = self_unit.getTraitbyType('effect')
         if effect_trait_names:
-            for effect_trait in effect_trait_names:
-                if not target_unit.hasTrait(effect_trait):
-                    target_unit.addTrait(effect_trait)
-                    print('Target was given '+effect_trait+' successfully.')
-                else:
-                    print('Target already has '+effect_trait+'!')
+            if self_unit.owner._stats[theJar['resources']['Influence']] > 0:
+                self_unit.owner.modStat(theJar['resources']['Influence'], -1)
+                for effect_trait in effect_trait_names:
+                    if not target_unit.hasTrait(effect_trait):
+                        target_unit.addTrait(effect_trait)
+                        print('Target was given '+effect_trait+' successfully.')
+                    else:
+                        print('Target already has '+effect_trait+'!')
         else:
             print('User unit does not possess any effect traits!')
 
@@ -394,6 +418,7 @@ class Carry():
         self.link_slots = 3
         self.links = []
 
+    #Designates the buildings to link up (or unlink)
     def act(self, sender, receiver, operation):
         if operation == 'add':
             pair = (sender, receiver)
@@ -404,6 +429,7 @@ class Carry():
             if pair in self.links:
                 self.links.remove(pair)
 
+    #This does... something
     def work(self, self_building, subject_units):
         i = 0
         while i < len(subject_units)/2:
@@ -412,6 +438,7 @@ class Carry():
             sender.dellink(receiver)
             i += 1
 
+    #This re-engages the links (probably)
     def harvest(self):
         for link in self.links:
             sender = link[0]
