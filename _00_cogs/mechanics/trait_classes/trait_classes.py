@@ -354,7 +354,7 @@ class Xinn():
         print('action!')
 
 class Yavari():
-    #TODO: TEST
+    #TODO: TEST!
     def act(self, self_unit, target_unit):
         effect_trait_names = None
         if self_unit.hasTraitType('effect'):
