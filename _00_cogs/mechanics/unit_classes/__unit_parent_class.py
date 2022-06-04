@@ -463,8 +463,8 @@ class Squad():
         return self.nick
 
     def drop_rep(self):
-        str = self.nick+"("+str(len(self.units))+"/4)"
-        return str
+        strng = self.nick+"("+str(len(self.units))+"/4)"
+        return strng
 
     def report(self):
         fields = []

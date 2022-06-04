@@ -28,14 +28,15 @@ async def battle(ctx, location_obj):
         if defense in attacking_algs:
             attacking_algs.remove(defense)
 
-        defense_buildings = [x for x in loc_inv.slots['building'] if x.allegience == defense]
-        defense_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.allegience in defending_algs]
-        attack_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.allegience in attacking_algs]
+        defense_buildings = [x for x in loc_inv.slots['building'] if x.owner.allegiance == defense]
+        defense_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.owner.allegiance in defending_algs]
+        attack_units = [x for x in loc_inv.slots['unit'] if x.squad == None and x.owner.allegiance in attacking_algs]
         defense_units = sort_targets(defense_units)
         attack_units = sort_targets(attack_units)
 
-        defense_squads = sort_squads(defending_algs)
-        attack_squads = sort_squads(attacking_algs)
+        defense_squads = sort_squads(civics, defending_algs)
+        attack_squads = sort_squads(civics, attacking_algs)
+        print(attack_squads)
 
         while len(attack_squads) > 0 and len(defense_squads) > 0:
 
@@ -55,13 +56,14 @@ async def battle(ctx, location_obj):
                     cont = True
                     while cont:
                         cont = await round(ctx, i, attack_units_waves, defense_units_waves, squad_attack_units, squad_defense_units)
-                        await battle_report(ctx, attack_units, defense_units)
+                        await battle_report(ctx, squad_attack_units, squad_defense_units)
                         await asyncio.sleep(10)
                         i += 1
                     await say(ctx, "----End of Skirmish, Attack Stands----")
                     defense_squads.remove(defending_squad)
                 else:
                     await say(ctx, "----End of Skirmish, Defense Stands----")
+                    #TODO: Didn't activate, defence kept attacking nothingness
                     attack_squads.remove(attacking_squad)
         if len(attack_squads) > 0:
             await final_strike(ctx, attack_squads, defense_buildings, defense_units)
@@ -72,12 +74,20 @@ async def round(ctx, rn, attack_units_waves, defense_units_waves, attack_units_t
         await say(ctx, "--------Round "+str(rn)+" | Wave "+str(i+1)+"--------")
         if len(attack_units_waves[i]) > 0:
             if alive_check(attack_units_waves[i]):
-                await say(ctx, "--------Attackers--------")
+                header = "--------Attackers--------\n"
+                for man in attack_units_waves[i]:
+                    header += str(man)+", "
+                header = header[0:-2]
+                await say(ctx, header)
                 await wave(ctx, attack_units_waves[i], defense_units_targets)
 
         if len(defense_units_waves[i]) > 0:
             if alive_check(defense_units_waves[i]):
-                await say(ctx, "--------Defenders--------")
+                header = "--------Defenders--------\n"
+                for man in defense_units_waves[i]:
+                    header += str(man)+", "
+                header = header[0:-2]
+                await say(ctx, header)
                 await wave(ctx, defense_units_waves[i], attack_units_targets)
         i += 1
     if alive_check(attack_units_targets) and alive_check(defense_units_targets):
@@ -148,16 +158,18 @@ async def final_strike(ctx, attack_squads, defense_buildings, defense_units):
             await wave(ctx, attack_wave, defense_units)
 
 
-def sort_squads(side_algs):
+def sort_squads(civics, side_algs):
     squad_queue = []
     i = 0
     for alg in side_algs:
+        print(alg)
         i += 1
         alg_queue = []
         alg_squads = []
-        for prio in alg.keys():
-            alg_squads+=alg[prio]
+        for prio in civics.squads_ranked[alg].keys():
+            alg_squads+=civics.squads_ranked[alg][prio]
         for sq in alg_squads:
+            print(sq)
             sq_placement = {'squad':sq, 'rank':alg_squads.index(sq), 'alg':i}
             alg_queue.append(sq_placement)
         squad_queue += alg_queue

@@ -163,6 +163,7 @@ class Card():
             theJar['played_cards'][card_type].append(self)
             if card_type == 'building':
                 self.location.civics.getGovernor(player.allegiance)
+            self.title += " ("+str(self.owner)+")"
             play_report = None
             if self.traits:
                 if len(self.traits['on_play']) > 0:
