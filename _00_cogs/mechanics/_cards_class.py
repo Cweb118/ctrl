@@ -167,8 +167,8 @@ class Card():
             play_report = None
             if self.traits:
                 if len(self.traits['on_play']) > 0:
-                    for trait in self.traits['on_play']:
-                        play_report = trait.action.play(self, target_obj)
+                    for action in self.traits['on_play']:
+                        play_report = action.play(self, target_obj)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
             if play_report:
                 report += "\n"+play_report

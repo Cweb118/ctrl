@@ -5,11 +5,12 @@ from _01_functions import say
 from _02_global_dicts import theJar
 
 
-#At start: Get main players
-#Detrmine stance of other groups (aligned with attacker, defender, or neutral)
-#Get squad ranks, shuffle between multiple allegiances in a side
+
 
 async def battle(ctx, location_obj):
+    #TODO: Add halt mechanism at some point. Perhaps between squad battles?
+    #TODO: Also, does it re-align squad pairings after the first pass through? This would also be a good place to put a halt switch (but also might be too late by then)
+
     civics = location_obj.civics
     loc_inv = location_obj.inventory
     #Intention: If attacking, gov is always defence. If no gov, occ is defence.
@@ -46,7 +47,14 @@ async def battle(ctx, location_obj):
                 defending_squad = defense_squads[sq]
                 squad_attack_units = sort_targets(attacking_squad.units)
                 squad_defense_units = sort_targets(defending_squad.units)
-
+                for unit in squad_attack_units+squad_defense_units:
+                    action_report = None
+                    if unit.traits:
+                        if len(unit.traits['on_defend']) > 0:
+                            for action in unit.traits['on_battle']:
+                                action_report = action.battle(unit, squad_attack_units, squad_defense_units)
+                    if action_report:
+                        await say(ctx, action_report)
                 if len(squad_attack_units) > 0:
                     wave_ints = sort_inititative(squad_attack_units+squad_defense_units)
                     attack_units_waves = sort_waves(squad_attack_units, wave_ints)
@@ -65,6 +73,7 @@ async def battle(ctx, location_obj):
                     await say(ctx, "----End of Skirmish, Defense Stands----")
                     #TODO: Didn't activate, defence kept attacking nothingness
                     attack_squads.remove(attacking_squad)
+                sq += 1
         if len(attack_squads) > 0:
             await final_strike(ctx, attack_squads, defense_buildings, defense_units)
 
@@ -124,8 +133,8 @@ async def fight(ctx, attack_unit, defense_unit):
 
     if defense_unit.traits:
         if len(defense_unit.traits['on_defend']) > 0:
-            for trait in defense_unit.traits['on_defend']:
-                action_report = trait.action.defend(defense_unit, attack_unit, att_att)
+            for action in defense_unit.traits['on_defend']:
+                action_report = action.defend(defense_unit, attack_unit, att_att)
                 if action_report:
                     report += action_report
 
@@ -133,8 +142,8 @@ async def fight(ctx, attack_unit, defense_unit):
     report += "\n"+health_rep
 
     if len(attack_unit.traits['on_attack']) > 0:
-        for trait in attack_unit.traits['on_attack']:
-            action_report = trait.action.attack(attack_unit, defense_unit)
+        for action in attack_unit.traits['on_attack']:
+            action_report = action.attack(attack_unit, defense_unit)
             if action_report:
                 report += action_report
     await say(ctx, report)

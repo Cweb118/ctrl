@@ -4,7 +4,6 @@ from nextcord import guild
 from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from nextcord import slash_command
 from nextcord.ext import commands

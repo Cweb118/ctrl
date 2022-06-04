@@ -10,7 +10,6 @@ from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.resource_class import Resource
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit, Squad
-from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.battle_logic import battle
@@ -69,13 +68,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="inv", guild_ids=guilds)
     async def inv_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         report, title, fields = player.inventory.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="stats", guild_ids=guilds)
     async def stats_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         report, title, fields = player.report()
         await say(ctx, report, title=title, fields=fields)
 
@@ -87,13 +86,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="cardrep", guild_ids=guilds)
     async def cardrep_c(self, ctx, card_type, card_number):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         report, title, fields = player.inventory.cardReport(card_type, int(card_number))
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="link", guild_ids=guilds)
     async def link_c(self, ctx, building_child_number, building_parent_number):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         building_child = player.inventory.getCard('building', int(building_child_number))
         building_parent = player.inventory.getCard('building', int(building_parent_number))
         building_parent.addLink(building_child)
@@ -120,14 +119,14 @@ class Commands(commands.Cog):
 
     @commands.command(name="unplaycard", guild_ids=guilds)
     async def unplaycard_c(self, ctx, card_type, card_number):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         report = card.unplayCard(player)
         await say(ctx,report)
 
     @commands.command(name="unitmove", guild_ids=guilds)
     async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         card = player.inventory.getCard(card_type, int(card_number))
         if target_type == 'district':
             destination = theJar['districts'][target]
@@ -138,7 +137,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="cardnick", guild_ids=guilds)
     async def cardnick_c(self, ctx, card_type, card_number, nick):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         report = card.setNick(nick)
         report = player.inventory.cardReport(card_type, int(card_number))
@@ -146,7 +145,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="givecard", guild_ids=guilds)
     async def givecard_c(self, ctx, card_type, card_number, user: nextcord.Member):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         report = player.inventory.moveCard(card_type, int(card_number), user)
         await say(ctx,report)
 
@@ -154,7 +153,7 @@ class Commands(commands.Cog):
     #player gives resource to another player
     async def giveres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
         resource = theJar['resources'][resource_name]
-        giver = theJar['players'][ctx.author.id]
+        giver = theJar['players'][ctx.user.id]
         taker = theJar['players'][user.id]
         report = giver.inventory.giveResource(resource, quantity, giver, taker)
         await say(ctx,report)
@@ -163,7 +162,7 @@ class Commands(commands.Cog):
     #player drops a resource into a target destination (location, unit, building)
     async def dropres_c(self, ctx, resource_name, quantity: int, target_type, target):
         resource = theJar['resources'][resource_name]
-        giver = theJar['players'][ctx.author.id]
+        giver = theJar['players'][ctx.user.id]
         report = giver.inventory.dropres(resource, quantity, target_type, target)
         await say(ctx,report)
 
@@ -171,7 +170,7 @@ class Commands(commands.Cog):
     #a unit drops a unit to a target destination (location, unit, building) as directed by a player
     async def unitdropres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
         resource = theJar['resources'][resource_name]
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         giver = player.inventory.getCard(unit_type, unit_number)
         report = giver.inventory.dropres(resource, quantity, target_type, target)
         await say(ctx,report)
@@ -180,7 +179,7 @@ class Commands(commands.Cog):
     #a player takes a resource from a public storage (location, unit, building)
     async def takeres_c(self, ctx, resource_name, quantity: int, target_type, target):
         resource = theJar['resources'][resource_name]
-        taker = theJar['players'][ctx.author.id]
+        taker = theJar['players'][ctx.user.id]
         report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
 
@@ -188,7 +187,7 @@ class Commands(commands.Cog):
     #a unit takes a resource from a public storage (location, unit, building) as directed by a player
     async def unittakeres_c(self, ctx, unit_type, unit_number, resource_name, quantity: int, target_type, target):
         resource = theJar['resources'][resource_name]
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         taker = player.inventory.getCard(unit_type, unit_number)
         report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
@@ -200,33 +199,45 @@ class Commands(commands.Cog):
     @slash_command(name="play", guild_ids=guilds)
     async def play_c(self, ctx: Interaction):
         player = theJar['players'][ctx.user.id]
-        player.inventory.addCard(Building(*building_kits_dict['wooden_wall']), 'building')
-        player.inventory.addCard(Building(*building_kits_dict['mother_tree']), 'building')
-        player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
+        #player.inventory.addCard(Building(*building_kits_dict['wooden_wall']), 'building')
+        #player.inventory.addCard(Building(*building_kits_dict['mother_tree']), 'building')
+        #player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
         #player.addCard(building_kits_dict['mother_tree'], 'building')
         #player.addCard(building_kits_dict['bountiful_field'], 'building')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Otavan')
-        await self._makecard_c(ctx, 'Worker', 'Automata')
+        await self._makeunit_c(ctx, ['Aratori'])
+        await self._makeunit_c(ctx, ['Prismari'])
+        await self._makeunit_c(ctx, ['Warrior'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self.cardrep_c(ctx, 'unit', 1)
+        await self.cardrep_c(ctx, 'unit', 2)
+        await self.cardrep_c(ctx, 'unit', 3)
+        await self.cardrep_c(ctx, 'unit', 4)
+        man = player.inventory.getCard('unit', 4)
+        man.delTrait('Aratori')
+        await self.cardrep_c(ctx, 'unit', 4)
+        man.addTrait('Prismari')
+        await self.cardrep_c(ctx, 'unit', 4)
+        #await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        #await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        #await self._makeunit_c(ctx, ['Alchemist', 'Otavan'])
+        #await self._makeunit_c(ctx, ['Worker', 'Automata'])
 
         #await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
         await self._move_c(ctx, 'Home')
 
-        await self._playcard_c(ctx, 'building', 1, 'district', 'Home')
-        await self._playcard_c(ctx, 'building', 2, 'district', 'Home')
-        await self._playcard_c(ctx, 'building', 3, 'district', 'Home')
+        #await self._playcard_c(ctx, 'building', 1, 'district', 'Home')
+        #await self._playcard_c(ctx, 'building', 2, 'district', 'Home')
+        #await self._playcard_c(ctx, 'building', 3, 'district', 'Home')
         #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
         #await self.link_c(ctx, 2, 1)
-        await self.playcard_c(ctx, 'unit', 1, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 1, 'Tim')
-        await self.playcard_c(ctx, 'unit', 2, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 2, 'Tom')
-        await self.playcard_c(ctx, 'unit', 3, 'district', 'Home')
-        await self.cardnick_c(ctx, 'unit', 3, 'Tem')
+        await self._playcard_c(ctx, 'unit', 4, 'district', 'Home')
+        await self.cardnick_c(ctx, 'unit', 4, 'Tim')
+        #await self._playcard_c(ctx, 'unit', 3, 'district', 'Home')
+        #await self.cardnick_c(ctx, 'unit', 3, 'Tom')
+        #await self.playcard_c(ctx, 'unit', 3, 'district', 'Home')
+        #await self.cardnick_c(ctx, 'unit', 3, 'Tem')
 
-        await self.joinsquad_c(ctx, 2, 1)
+        #await self.joinsquad_c(ctx, 2, 1)
         #await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
         #await self.cardnick_c(ctx, 'unit', 4, 'Bob')
         #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
@@ -237,26 +248,26 @@ class Commands(commands.Cog):
         player = theJar['players'][ctx.user.id]
         player.allegiance = 'Cow'
         await self._move_c(ctx, 'Home')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
         i = 1
         while i < 21:
             await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
@@ -270,26 +281,26 @@ class Commands(commands.Cog):
         player = theJar['players'][ctx.user.id]
         player.allegiance = 'Bandit'
         await self._move_c(ctx, 'Home')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Warrior', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Ranger', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Guardian', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Knight', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
-        await self._makecard_c(ctx, 'Alchemist', 'Aratori')
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
         i = 1
         while i < 21:
             await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
@@ -300,7 +311,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="makefab", guild_ids=guilds)
     async def makefab_c(self, ctx, name, region, alg):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         Fab(player, name, theJar['districts'][region], alg)
         report = "Fab \""+name+"\" created."
         await say(ctx,report)
@@ -360,21 +371,21 @@ class Commands(commands.Cog):
         die_set = Dice(int(quantity), int(sides))
         await die_set.roll(ctx, threshold)
 
-    @slash_command(name="makecard", guild_ids=guilds)
-    async def makecard_c(self, ctx: Interaction, unit_class, race):
-        await self._makecard_c(ctx, unit_class, race)
+    @slash_command(name="makeunit", guild_ids=guilds)
+    async def makeunitd_c(self, ctx: Interaction, traits):
+        await self._makeunit_c(ctx, traits)
 
-    async def _makecard_c(self, ctx: Interaction, unit_class, race):
+    async def _makeunit_c(self, ctx: Interaction, traits):
         player = theJar['players'][ctx.user.id]
-        status, man = player.inventory.addCard(Unit(*unit_kits_dict[unit_class]), 'unit')
-        print(man)
-        man.addTrait(race)
+        status, man = player.inventory.addCard(Unit(), 'unit')
+        for trait in traits:
+            man.addTrait(trait)
         report = str(man.report())
-        #await say(ctx,report)
+        await say(ctx,report)
 
     @commands.command(name="unitmove", guild_ids=guilds)
     async def unitmove_c(self, ctx, card_type, card_number, target_type, target):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         card = player.inventory.getCard(card_type, int(card_number))
         if target_type == 'district':
             destination = theJar['districts'][target]
@@ -385,7 +396,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="unitaction", guild_ids=guilds)
     async def unit_action_c(self, ctx, action_name, action_arg, card_type, card_number, target_type, target_id):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         actor = player.inventory.getCard(card_type, int(card_number))
         actee = None
         trait_action = None
@@ -406,7 +417,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="harvest", guild_ids=guilds)
     async def harvest_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         for card in player.inventory.cards['unit']:
             if card.status == "Played":
                 report, title = card.harvest()
@@ -415,7 +426,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="battle", guild_ids=guilds)
     async def battle_c(self, ctx):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         location = player.location
         await battle(ctx, location)
 
@@ -456,7 +467,7 @@ class Commands(commands.Cog):
     @commands.command(name="joinsquad", guild_ids=guilds)
     async def joinsquad_c(self, ctx, unit_number, join_unit_number):
         try:
-            player = theJar['players'][ctx.author.id]
+            player = theJar['players'][ctx.user.id]
         except:
             player = theJar['players'][ctx.user.id]
         joiner = player.inventory.getCard('unit', int(unit_number))
@@ -470,14 +481,14 @@ class Commands(commands.Cog):
 
     @commands.command(name="squad", guild_ids=guilds)
     async def squad_c(self, ctx, squad_id):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         squad = player.squads[int(squad_id)-1]
         report, title, fields = squad.report()
         await say(ctx, report, title=title, fields=fields)
 
     @commands.command(name="squadmove", guild_ids=guilds)
     async def squadmove_c(self, ctx, squad_id, target_type, target):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         squad = player.squads[int(squad_id)-1]
         if target_type == 'district':
             destination = theJar['districts'][target]
@@ -497,7 +508,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="stance", guild_ids=guilds)
     async def stance_c(self, ctx, location, stance):
-        player = theJar['players'][ctx.author.id]
+        player = theJar['players'][ctx.user.id]
         location = theJar['districts'][location]
         civ = location.civics
         civ.setStance(player, stance)
