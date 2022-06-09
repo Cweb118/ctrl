@@ -1,5 +1,6 @@
 import random
 from _02_global_dicts import theJar
+import _00_cogs.mechanics.resource_class
 #----------unit classes----------
 
 class Worker():

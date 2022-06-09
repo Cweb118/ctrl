@@ -11,7 +11,7 @@ from _02_global_dicts import theJar
 menus = {}
 
 class MenuView(nextcord.ui.View):
-    def __init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     async def interaction_check(self, interaction: Interaction) -> bool:

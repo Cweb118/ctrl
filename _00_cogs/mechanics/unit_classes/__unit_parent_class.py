@@ -89,7 +89,7 @@ class Unit(Card):
         if self.nick:
             name += '\"'+self.nick+'\"'
         if self.owner:
-            name += '('+self.owner+')'
+            name += '('+str(self.owner)+')'
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
