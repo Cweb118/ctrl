@@ -87,6 +87,7 @@ async def unload(ctx, extension):
 
 @bot.event
 async def on_ready():
+    theJar['client'] = bot.user.id
     print('Bot is ready at: ' + str(datetime.datetime.now()))
 
 @bot.event

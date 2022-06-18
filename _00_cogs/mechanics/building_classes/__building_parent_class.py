@@ -1,5 +1,6 @@
 from _00_cogs.mechanics._cards_class import Card
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
+from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _02_global_dicts import theJar
 
 class Building(Card):
@@ -47,6 +48,7 @@ class Building(Card):
     #TODO: ADD addTrait and delTrait
 
     def addBuilding(self, card_kit_id, inv_owner, owner_type):
+        #defunct?
         inv = theJar[owner_type][inv_owner].inventory
         can_add = inv.capMathCard('building')
         if can_add == True:
@@ -58,6 +60,11 @@ class Building(Card):
                 can_add = False
         return can_add, card
 
+    def addUnitToBuildingInv(self):
+        can_add = self.inventory.capMathCard('unit')
+        if can_add == True:
+            unit = self.inventory.cards['unit'].append(Unit())
+        return can_add, unit
 
     def checkReqs(self):
         can_run = True

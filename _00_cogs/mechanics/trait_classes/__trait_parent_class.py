@@ -4,7 +4,7 @@ class Trait():
         self.trait_title = name
         self.trait_description = description
         self.trait_type = type
-        #triggers: on_play, on_work, on_move, on_battle, on_attack, on_defend, on_death, on_act
+        #triggers: on_act, on_play, on_work, on_move, on_battle, on_attack, on_defend, on_death, on_harvest, on_refresh
         self.trigger = trigger
         self.trait_certs = certs
         #action: the class which holds the trait code (in trait_classes.py)

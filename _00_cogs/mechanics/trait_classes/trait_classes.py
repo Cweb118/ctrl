@@ -1,7 +1,6 @@
 import random
-
 from _02_global_dicts import theJar
-from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
+import _00_cogs.mechanics.resource_class
 #----------unit classes----------
 
 class Worker():
@@ -125,6 +124,7 @@ class Scout():
 
 
 class Knight():
+    #TODO: Add Charged Synergy
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         hit, report_dict = attack_unit.die_set.roll_math(def_def)
@@ -171,15 +171,69 @@ class Knight():
         self.charged = False
         return report
 
+class Witch():
+    #TODO: TEST
+    def battle(self, attack_squad, defense_squad):
+        self.allies = attack_squad
+        self.enemies = defense_squad
+        self.channeling = 0
+
+    def attack(self, attack_unit, defense_unit):
+
+        if attack_unit.hasTraitCert('Charged'):
+            self.channeling += 2
+
+        candidates = [x for x in self.allies if x.target_unit.hasTraitCert('Charged') == False or x.target_unit.hasTraitCert('Thorns') == False and x.status == 'Played']
+        if len(candidates) > 0:
+            target_unit = candidates[random.randint(0,len(candidates))]
+            threshold = target_unit.stats['Fortitude']+target_unit.stats['Defense']
+            combo = threshold - self.channeling
+            if combo < 0:
+                combo = 0
+            hit, report_dict = attack_unit.die_set.roll_math(combo)
+            succs = len(report_dict['rolls']) - int(report_dict['hit_count'])
+            if succs > 0:
+                if target_unit.hasTraitCert('Charged'):
+                    effect = 'Thorns'
+                else:
+                    effect = 'Charged'
+                act_rep = str(target_unit)+" has been empowered with the "+str(effect)+" effect."
+                rep = 'SUCCESS'
+            else:
+                act_rep = "The "+str(attack_unit)+" continues to channel their strength."
+                self.channeling += 1
+                rep = 'FAILURE'
+            report = "\n\n-------Arcanae-------\n\n"+\
+                     "Rolled: "+str(attack_unit.die_set)+"\n"+\
+                     "Rolls: "+str(report_dict['rolls'])+"\n"+\
+                     "Ally Defense+Fortitude: "+str(threshold)+"\n"+\
+                     "Casting Strength: "+str(self.channeling)+"\n\n"+\
+                     "---"+rep+"---\n"+act_rep
+
+        else:
+            act_rep = "The "+str(attack_unit)+" tears into their opponent, inflicting "+str(self.channeling)+" damage."
+            defense_unit.dmg(self.channeling)
+            self.channeling = int(self.channeling/2)
+            report = "\n\n-------Arcanae-------\n\n"+\
+             "Casting Strength: "+str(self.channeling)+"\n\n"+\
+             "---SUCCESS---\n"+act_rep
+        return report
+
 class Alchemist():
     def attack(self, attack_unit, defense_unit):
         def_att = defense_unit.stats['Attack']
         hit, report_dict = attack_unit.die_set.roll_math(def_att)
         succs = len(report_dict['rolls']) - int(report_dict['hit_count'])
         if succs > 0:
-            defense_unit.setStat('Attack', -succs)
-            act_rep = "The potion weakens "+str(defense_unit)+" by "+str(succs)+"."
-            rep = 'SUCCESS'
+            if not attack_unit.hasTraitCert('Charged'):
+                defense_unit.setStat('Attack', -succs)
+                act_rep = "The potion weakens "+str(defense_unit)+" by "+str(succs)+"."
+                rep = 'SUCCESS'
+            else:
+                succs += 1
+                defense_unit.setStat('Attack', -succs)
+                act_rep = "The potion weakens "+str(defense_unit)+" by "+str(succs)+" (+1 due to Charged)."
+                rep = 'SUCCESS'
         else:
             act_rep = "The potion has no effect on "+str(defense_unit)+"."
             rep = 'FAILURE'
@@ -327,7 +381,7 @@ class Prismari():
         return report
 
 class Rivenborne():
-    #PASSIVE: Has cert Charged
+    #PASSIVE: Has cert Charged (renews)
     def action(self):
         print('action!')
 
@@ -344,7 +398,7 @@ class Xinn():
         print('action!')
 
 class Yavari():
-    #TODO: TEST!
+    #TODO: TEST
     def act(self, self_unit, target_unit):
         effect_trait_names = None
         if self_unit.hasTraitType('effect'):
@@ -453,14 +507,15 @@ class Reproduce():
     def work(self, self_building, subject_units):
         races = [x.getTraitbyType('race') for x in subject_units]
         classes = [x.getTraitbyType('class') for x in subject_units] + ['Worker']
-        race_pick = random.randint(0,1)
-        class_pick = random.randint(0,2)
+        race_pick = random.randint(0,len(races))
+        class_pick = random.randint(0,len(classes))
 
         picked_race = races[race_pick]
         picked_class = classes[class_pick]
 
-        status, man = self_building.inventory.addCard(unit_kits_dict[picked_class], 'unit')
+        status, man = self_building.addUnitToBuildingInv()
         man.addTrait(picked_race)
+        man.addTrait(picked_class)
 
 
 

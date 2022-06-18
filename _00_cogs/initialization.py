@@ -4,7 +4,6 @@ from nextcord import guild
 from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
-from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from nextcord import slash_command
 from nextcord.ext import commands
@@ -12,7 +11,6 @@ from _01_functions import say
 from _02_global_dicts import theJar
 
 guilds = [588095612436742173, 778448646642728991]
-
 
 class PlayerCog(commands.Cog):
     def __init__(self, bot):
@@ -85,8 +83,6 @@ class PlayerCog(commands.Cog):
 
         report = "Initilization Complete."
         await say(ctx,report)
-
-
 
 def setup(bot):
     bot.add_cog(PlayerCog(bot))
