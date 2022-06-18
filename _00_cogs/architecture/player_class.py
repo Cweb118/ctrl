@@ -111,8 +111,6 @@ class Player():
                     self.buildingsMessage = interfaceMessage
                     break
 
-        
-
         if (self.squadsMessage == None):
             self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
         

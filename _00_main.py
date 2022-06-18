@@ -99,18 +99,18 @@ async def on_interaction(interaction: Interaction):
 
         if menuid in menus:
             menu = menus[menuid]
-            
+
             if menu.shouldDefer(elementid, interaction):
                 await interaction.response.defer()
 
             await menu.onInteraction(elementid, interaction)
     elif interaction.type == InteractionType.modal_submit:
-        id = interaction.date['custom_id']
+        id = interaction.data['custom_id']
+        (modalid, stateid) = id.split(':')
 
-        if id in modals:
-            modal = modals[id]
-            await interaction.response.defer()
-            await modal.onSubmit(interaction)
+        if modalid in modals:
+            modal = modals[modalid]
+            await modal.handleSubmit(stateid, interaction)
 
     else:
         await bot.process_application_commands(interaction) 

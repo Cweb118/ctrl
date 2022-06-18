@@ -27,7 +27,7 @@ class ManageMenu(Menu):
 
         return ('What do you want to do with the ' + card.title + ' card?', [])
 
-    @Button(id='nickname', label='Nickname', style=ButtonStyle.success)
+    @Button(id='nickname', label='Nickname', style=ButtonStyle.success, defer=False)
     async def nickname(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:
             raise StateError
@@ -41,7 +41,8 @@ class ManageMenu(Menu):
         if card is None:
             raise StateError
 
-        await Modals.nicknameModal.show(interaction)
+        await Modals.nicknameModal.show(interaction, state={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
 
     @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
     async def cancel(self, state, interaction: Interaction):

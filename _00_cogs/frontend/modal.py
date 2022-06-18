@@ -27,11 +27,35 @@ class Modal:
             if hasattr(method, 'is_element'):
                 self.elements[method.id] = method
 
-    async def show(self, interaction: Interaction):
+    async def show(self, interaction: Interaction, state):
         modal = MenuModal(self.name)
+        modal.custom_id = self.id + ':' + str(interaction.id)
 
         for name, element in self.elements.items():
             item = element.render(element)
-            modal.add_item(item)            
+            modal.add_item(item)
 
-        await interaction.followup.send_modal(modal)
+        theJar['modalStates'][str(interaction.id)] = state
+        await interaction.response.send_modal(modal)
+
+    async def handleSubmit(self, stateid: str, interaction: Interaction):
+        state = {}       
+
+        if stateid in theJar['modalStates']:
+            state = theJar['modalStates'][stateid]
+        else:
+            theJar['modalStates'][stateid] = state
+
+        components = interaction.data['components'][0]['components']
+        values = {}
+
+        for component in components:
+            id = component['custom_id']
+            value = component['value']
+
+            values[id] = value
+
+        try:
+            await self.onSubmit(state, values, interaction)
+        except StateError:
+            pass                
