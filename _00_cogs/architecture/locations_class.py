@@ -162,11 +162,16 @@ class District():
                 if not foundChannel:
                     self.channel = await category.create_text_channel(self.name.replace(' ', '-'), overwrites=overwrites)
 
-                #interfaceMessages = await self.interfaceChannel.history(limit=1).flatten()
-                #if (len(interfaceMessages) == 0):
-                #    self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel, state={'district': self.name})
-                #else:
-                #    self.interfaceMessage = interfaceMessages[0]
+                interfaceMessages = await self.interfaceChannel.history(limit=None, oldest_first=True).flatten()
+                self.interfaceMessage = None
+
+                for interfaceMessage in interfaceMessages:
+                    if interfaceMessage.author.id == theJar['client']:
+                        self.interfaceMessage = interfaceMessage
+                        break
+
+                if self.interfaceMessage == None:
+                     self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel, state={'district': self.name})
 
                 self.interfaceDirty = False
                 

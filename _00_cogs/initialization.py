@@ -12,7 +12,6 @@ from _02_global_dicts import theJar
 
 guilds = [588095612436742173, 778448646642728991]
 
-
 class PlayerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -84,8 +83,6 @@ class PlayerCog(commands.Cog):
 
         report = "Initilization Complete."
         await say(ctx,report)
-
-
 
 def setup(bot):
     bot.add_cog(PlayerCog(bot))

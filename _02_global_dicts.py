@@ -12,5 +12,6 @@ theJar = {
     },
     'fabs': {},
     'states': {}, # < Defunct maybe?
-    'nextUniqueID': 0
+    'nextUniqueID': 0,
+    'client': 0
 }

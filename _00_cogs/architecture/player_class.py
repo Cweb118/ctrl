@@ -96,22 +96,31 @@ class Player():
         if not foundChannel:
             self._channel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower(), topic=topic, overwrites=overwrites, category=category)
 
-        interfaceMessages = await self.interfaceChannel.history(limit=3).flatten()
-        interfaceMessages.reverse()
-        if (len(interfaceMessages) < 1):
+        interfaceMessages = await self.interfaceChannel.history(limit=None, oldest_first=True).flatten()
+        self.squadsMessage = None
+        self.unitsMessage = None
+        self.buildingsMessage = None
+
+        for interfaceMessage in interfaceMessages:
+            if interfaceMessage.author.id == theJar['client']:
+                if self.squadsMessage == None:
+                    self.squadsMessage = interfaceMessage
+                elif self.unitsMessage == None:
+                    self.unitsMessage = interfaceMessage
+                elif self.buildingsMessage == None:
+                    self.buildingsMessage = interfaceMessage
+                    break
+
+        
+
+        if (self.squadsMessage == None):
             self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
-        else:
-            self.squadsMessage = interfaceMessages[0]
         
-        if (len(interfaceMessages) < 2):
+        if (self.unitsMessage == None):
             self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self._member.id, 'card_type': 'unit'})
-        else:
-            self.unitsMessage = interfaceMessages[1]
         
-        if (len(interfaceMessages) < 3):
+        if (self.buildingsMessage == None):
             self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self.member.id, 'card_type': 'building'})
-        else:
-            self.buildingsMessage = interfaceMessages[2]
 
         self.interfaceDirty = False
 
@@ -123,14 +132,9 @@ class Player():
 
         allUpdates = []
 
-        if hasattr(self, 'squadsMessage'):
-            allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
-
-        if hasattr(self, 'unitsMessage'):
-            allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
-
-        if hasattr(self, 'buildingsMessage'):
-            allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
+        allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
+        allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
+        allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
 
         await asyncio.gather(*allUpdates)  
 
