@@ -1,5 +1,5 @@
 from typing import List
-from discord import Interaction, SelectOption
+from discord import Interaction, SelectOption, TextInputStyle
 from nextcord import ButtonStyle
 import nextcord
 
@@ -73,5 +73,18 @@ def UnlimitedSelect(id: str, optionsFun):
         wrapper2.render = render
 
         return wrapper2
+
+    return wrapper
+
+def TextInput(id: str, label: str, style: TextInputStyle = TextInputStyle.short):
+    def render(fun):
+        return nextcord.ui.TextInput(custom_id=id, label=label, style=style)
+
+    def wrapper(fun):
+        fun.id = id
+        fun.is_element = True
+        fun.render = render
+
+        return fun
 
     return wrapper

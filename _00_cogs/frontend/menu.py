@@ -151,3 +151,6 @@ class Menu:
 
             if (refresh):
                 await self.show(interaction)
+
+    def shouldDefer(self, elementid: str, interaction: Interaction):
+        return True
