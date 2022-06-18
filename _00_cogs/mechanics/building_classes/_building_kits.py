@@ -4,6 +4,11 @@ building_kits_dict = {
 
     #owner, title, description, inv_args, traits, logic_args, play_cost, stats, worker_req, input_dict, output_dict, cat_dict):
 
+
+
+    #1
+
+
     #2:
 
     # Village:
@@ -60,6 +65,38 @@ building_kits_dict = {
               [14, 2, None, None, 3, None], [], None, {'Food':4},
               {'attack':0, 'health':4, 'defense':0, 'size':2},
               ['Production', 'Harmony'], {'Water':3}, {'Wood':6}, None],
+
+
+
+    #Arcanae
+    'wayofthewarlord':['Way of the Warlord', 'An alter to the Warlord. May he bless you with strength.',
+              [5, 1, 3, None, 1, None], ['Train'], ['Knight'], {'Stone':5},
+              {'attack':0, 'health':4, 'defense':2, 'size':1},
+              ['Novice'], {'Metal':1}, None, {'Metal':1}],
+
+    'alterofthefallen':['Way of the Warlord', 'An alter to the Harbinger. May the old be cleansed that the new may be reborn.',
+              [1, 1, 3, None, 1, None], ['Sacrifice'], None, {'Wood':2,'Stone':3, 'Metal':1},
+              {'attack':0, 'health':3, 'defense':2, 'size':1},
+              None, None, {'Cell':1}, None],
+
+    'bountyofthebiologist':['Bounty of the Biologist', 'An alter to the Biologist. May the life she has given you be lived to the fullest.',
+              [20, 2, 0, None, 1, None], None, None, {'Wood':5},
+              {'attack':0, 'health':2, 'defense':2, 'size':2},
+              ['Arcanae'], {'Food':4}, {'Food':9}, {'Cell':1}],
+
+    'bountyofthematriarch':['Bounty of the Matriarch', 'An alter to the Matriarch. May her loving-kindness quench your thirst.',
+              [25, 2, 0, None, 1, None], None, None, {'Stone':5},
+              {'attack':0, 'health':2, 'defense':2, 'size':2},
+              ['Arcanae'], {'Water':5}, {'Water':12}, {'Cell':1}],
+
+    'bountyofthearchitect':['Bounty of the Architect', 'An alter to the Architect. May his wisdom and foresight tend to all your needs.',
+              [15, 2, 0, None, 1, None], None, None, {'Metal':5},
+              {'attack':0, 'health':2, 'defense':2, 'size':2},
+              ['Arcanae'], {'Metal':3}, {'Metal':5}, {'Cell':1}],
+
+
+    #inv_args: (r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None)
+    #'template': ['title', 'description', 'inv_args', 'traits', 'play_cost', 'stats', 'workers_dict', 'input_dict', 'output_dict', 'cat_dict'],
 
 
     #defensive (need 10, vary wood/stone/metal)

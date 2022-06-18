@@ -4,21 +4,8 @@ import _00_cogs.mechanics.resource_class
 #----------unit classes----------
 
 class Worker():
-    def attack(self, attack_unit, defense_unit):
-        def_def = defense_unit.stats['Defense']
-        hit, report_dict = attack_unit.die_set.roll_math(def_def)
-        if hit:
-            health_rep = defense_unit.setHealth(-int(report_dict['hit_count']))
-        else:
-            health_rep = "The "+str(defense_unit)+' has evaded taking damage.'
-
-        report = "\n\n-------CRIT-------\n\n"+\
-                 "Rolled: "+str(attack_unit.die_set)+"\n"+\
-                 "Rolls: "+str(report_dict['rolls'])+"\n"+\
-                 "Opponent Defense: "+str(report_dict['threshold'])+"\n"+\
-                 "Damage Inflicted: "+str(report_dict['hit_count'])+"\n\n"+\
-                 "---"+str(report_dict['result'])+"---\n"+health_rep
-        return report
+    def mmmm(self):
+        print('mmmm')
 
 class Warrior():
     def attack(self, attack_unit, defense_unit):
@@ -137,13 +124,15 @@ class Scout():
 
 
 class Knight():
-    #TODO: Add Charged Synergy
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         hit, report_dict = attack_unit.die_set.roll_math(def_def)
         if hit:
             dam = 1
             health_rep = defense_unit.dmg(-1)
+            if attack_unit.hasTrait('Charged'):
+                attack_unit.setStat('Defense', 1)
+                health_rep = "The "+str(attack_unit)+' has regained some strength.'
         else:
             dam = 0
             health_rep = "The "+str(defense_unit)+' has evaded taking damage.'
@@ -158,6 +147,7 @@ class Knight():
 
     def defend(self, defense_unit, attack_unit, dmg):
         def_def = defense_unit.stats['Defense']
+        #Rolls against own defence, success for each non-hit
         hit, report_dict = defense_unit.die_set.roll_math(def_def)
         succs = len(report_dict['rolls'])-int(report_dict['hit_count'])
         if succs > 0:
@@ -175,7 +165,7 @@ class Knight():
             blocked = 0
             health_rep = "The "+str(defense_unit)+' has failed to block any damage.'
 
-        report = "\n\n-------BLOCK-------\n\n"+\
+        report = "\n\n-------MINOR BLOCK-------\n\n"+\
                  "Rolled: "+str(defense_unit.die_set)+"\n"+\
                  "Rolls: "+str(report_dict['rolls'])+"\n"+\
                  "Defense: "+str(report_dict['threshold'])+"\n"+\
@@ -193,10 +183,10 @@ class Witch():
 
     def attack(self, attack_unit, defense_unit):
 
-        if attack_unit.hasTraitCert('Charged'):
+        if attack_unit.hasTrait('Charged'):
             self.channeling += 2
 
-        candidates = [x for x in self.allies if x.target_unit.hasTraitCert('Charged') == False or x.target_unit.hasTraitCert('Thorns') == False and x.status == 'Played']
+        candidates = [x for x in self.allies if x.target_unit.hasTrait('Charged') == False or x.target_unit.hasTrait('Thorns') == False and x.status == 'Played']
         if len(candidates) > 0:
             target_unit = candidates[random.randint(0,len(candidates))]
             threshold = target_unit.stats['Fortitude']+target_unit.stats['Defense']
@@ -206,17 +196,18 @@ class Witch():
             hit, report_dict = attack_unit.die_set.roll_math(combo)
             succs = len(report_dict['rolls']) - int(report_dict['hit_count'])
             if succs > 0:
-                if target_unit.hasTraitCert('Charged'):
+                if target_unit.hasTrait('Charged'):
                     effect = 'Thorns'
                 else:
                     effect = 'Charged'
+                target_unit.addTrait(effect)
                 act_rep = str(target_unit)+" has been empowered with the "+str(effect)+" effect."
                 rep = 'SUCCESS'
             else:
                 act_rep = "The "+str(attack_unit)+" continues to channel their strength."
                 self.channeling += 1
                 rep = 'FAILURE'
-            report = "\n\n-------Arcanae-------\n\n"+\
+            report = "\n\n-------ARCANAE-------\n\n"+\
                      "Rolled: "+str(attack_unit.die_set)+"\n"+\
                      "Rolls: "+str(report_dict['rolls'])+"\n"+\
                      "Ally Defense+Fortitude: "+str(threshold)+"\n"+\
@@ -227,7 +218,7 @@ class Witch():
             act_rep = "The "+str(attack_unit)+" tears into their opponent, inflicting "+str(self.channeling)+" damage."
             defense_unit.dmg(self.channeling)
             self.channeling = int(self.channeling/2)
-            report = "\n\n-------Arcanae-------\n\n"+\
+            report = "\n\n-------ARCANAE-------\n\n"+\
              "Casting Strength: "+str(self.channeling)+"\n\n"+\
              "---SUCCESS---\n"+act_rep
         return report
@@ -238,7 +229,7 @@ class Alchemist():
         hit, report_dict = attack_unit.die_set.roll_math(def_att)
         succs = len(report_dict['rolls']) - int(report_dict['hit_count'])
         if succs > 0:
-            if not attack_unit.hasTraitCert('Charged'):
+            if not attack_unit.hasTrait('Charged'):
                 defense_unit.setStat('Attack', -succs)
                 act_rep = "The potion weakens "+str(defense_unit)+" by "+str(succs)+"."
                 rep = 'SUCCESS'
@@ -263,7 +254,7 @@ class Technophant():
     def attack(self, attack_unit, defense_unit):
         att_att = attack_unit.stats['Attack']
         hit, report_dict = attack_unit.die_set.roll_math(att_att)
-        if attack_unit.hasTraitCert('Charged'):
+        if attack_unit.hasTrait('Charged'):
             hit += 1
         if hit:
             attack_unit.setStat('Attack', int(report_dict['hit_count']))
@@ -278,6 +269,11 @@ class Technophant():
                  "Growth: "+str(report_dict['hit_count'])+"\n\n"+\
                  "---"+str(report_dict['result'])+"---\n"+act_rep
         return report
+
+    def refresh(self, self_unit):
+        self_unit.setStat('Attack', self_unit.statcaps['Attack'])
+        self_unit.setStat('Fortitude', self_unit.statcaps['Fortitude'])
+
 
 #----------vehicles----------
 class Vehicle():
@@ -360,9 +356,8 @@ class Eelaki():
         print('action!')
 
 class Loyavasi():
-    #Might need to do it on a unit refresh stage and not harvest
-    #HARVEST: +2 Endurance over cap
-    def harvest(self, self_unit, def_lost, hit_status):
+    #REFRESH: +2 Endurance over cap
+    def refresh(self, self_unit):
         self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']+2
 
 class Otavan():
@@ -388,12 +383,20 @@ class Prismari():
                      "Defense: "+str(report_dict['threshold'])+"\n"+\
                      "Damage Inflicted: "+str(1)+"\n\n"+\
                      "---"+str(report_dict['result'])+"---\n"+health_rep
-            return report
+        else:
+            report = "The "+str(attack_unit)+' was too quick and could not be parried.'
+
+        return report
 
 class Rivenborne():
-    #PASSIVE: Has cert Charged (renews)
-    def action(self):
-        print('action!')
+    #PASSIVE: Has Charged (renews)
+    def play(self, self_unit):
+        if not self_unit.hasTrait('Charged'):
+            self_unit.addTrait('Charged')
+    def refresh(self, self_unit):
+        if not self_unit.hasTrait('Charged'):
+            self_unit.addTrait('Charged')
+
 
 class Tevaru():
     #PASS
@@ -440,6 +443,11 @@ class Harmony():
 
 #TODO: Charged effect (self deletes, gives and takes Charged cert)
 
+class Charged():
+    #TODO: TEST
+    def harvest(self, self_unit, def_lost, hit_status):
+        if self_unit.hasTrait('Charged'):
+            self_unit.delTrait('Charged')
 
 #----------building_logic----------
 
@@ -450,14 +458,13 @@ class Mend():
             unit.setStat(stat, quantity)
 
 class Train():
-    #TODO: This actually wont work :( You need to make a brand new unit and transfer the stuff over (then delete old?)
     #TODO: TEST
-    def work(self, self_building, subject_units, trait):
+    def work(self, self_building, subject_units, new_trait):
         for unit in subject_units:
-            if 'Novice' in unit.getTraitCerts():
-                unit.title = unit.title.replace(' Worker', '')
-                unit.addTrait(trait)
-                unit.delTraitCert('Novice')
+            class_traits = unit.getTraitbyType('class')
+            unit.delTrait(class_traits[0])
+            unit.addTrait(new_trait)
+
 
 class Boon():
     #TODO: TEST
@@ -493,7 +500,7 @@ class Carry():
             i += 1
 
     #This re-engages the links (probably)
-    def harvest(self):
+    def refresh(self):
         for link in self.links:
             sender = link[0]
             receiver = link[1]
