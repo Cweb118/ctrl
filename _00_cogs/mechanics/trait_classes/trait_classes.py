@@ -5,21 +5,8 @@ from _00_cogs.mechanics.unit_classes._unit_kits import unit_kits_dict
 #----------unit classes----------
 
 class Worker():
-    def attack(self, attack_unit, defense_unit):
-        def_def = defense_unit.stats['Defense']
-        hit, report_dict = attack_unit.die_set.roll_math(def_def)
-        if hit:
-            health_rep = defense_unit.setHealth(-int(report_dict['hit_count']))
-        else:
-            health_rep = "The "+str(defense_unit)+' has evaded taking damage.'
-
-        report = "\n\n-------CRIT-------\n\n"+\
-                 "Rolled: "+str(attack_unit.die_set)+"\n"+\
-                 "Rolls: "+str(report_dict['rolls'])+"\n"+\
-                 "Opponent Defense: "+str(report_dict['threshold'])+"\n"+\
-                 "Damage Inflicted: "+str(report_dict['hit_count'])+"\n\n"+\
-                 "---"+str(report_dict['result'])+"---\n"+health_rep
-        return report
+    def mmmm(self):
+        print('mmmm')
 
 class Warrior():
     def attack(self, attack_unit, defense_unit):
@@ -175,7 +162,7 @@ class Knight():
             blocked = 0
             health_rep = "The "+str(defense_unit)+' has failed to block any damage.'
 
-        report = "\n\n-------BLOCK-------\n\n"+\
+        report = "\n\n-------MINOR BLOCK-------\n\n"+\
                  "Rolled: "+str(defense_unit.die_set)+"\n"+\
                  "Rolls: "+str(report_dict['rolls'])+"\n"+\
                  "Defense: "+str(report_dict['threshold'])+"\n"+\
@@ -334,7 +321,10 @@ class Prismari():
                      "Defense: "+str(report_dict['threshold'])+"\n"+\
                      "Damage Inflicted: "+str(1)+"\n\n"+\
                      "---"+str(report_dict['result'])+"---\n"+health_rep
-            return report
+        else:
+            report = "The "+str(attack_unit)+' was too quick and could not be parried.'
+
+        return report
 
 class Rivenborne():
     #PASSIVE: Has cert Charged

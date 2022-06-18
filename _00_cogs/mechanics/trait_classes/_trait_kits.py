@@ -10,13 +10,13 @@ trait_kits_dict = {
              {'Attack':1,'Fortitude':2}, None, None,
              {'Food':1}, ['1d7']],
 
-    'Barheim':['Barheim', 'A mighty race of great strength, the Barheim have built an empire to last the test of time.',
+    'Barheim':['Barheim', 'A race of Engineers, their hearts are said to be as hard and cold as their flesh.',
               'race', None, ['on_play'], Barheim(),
              {'cont':2}, None,
                None, None, -1,
                None, ['1d4']],
 
-    'Automata':['Automata', 'A creation of the Barheim.',
+    'Automata':['Automata', 'A creation of the Barheim, the Automata can brave dangers no man should face.',
               'race', None, ['on_play'], Automata(),
              {'cont':1}, None,
              {'Health':1,'Defense':2}, None, None,
@@ -26,12 +26,12 @@ trait_kits_dict = {
               'race', None, ['on_play'], Eelaki(),
               None, None, {'Endurance':-1}, -2, -1, None, ['2d3']],
 
-    'Loyavasi':['Loyavasi', "A mighty race of great strength, the Loyavasi have built an empire to last the test of time.",
+    'Loyavasi':['Loyavasi', "A hoofed people from the mountains, the Loyavasi never sit still for long.",
                 'race', None, ['on_harvest'], Loyavasi(),
                 {'cap':{'resource':2}}, None,
                 None, -1, None, None, ['1d6', '1d2']],
 
-    'Otavan':['Otavan', 'A mighty race of great strength, the Otavan have survived through thick and thin.',
+    'Otavan':['Otavan', 'Descendants of Aratori colonists, these who have made their lives in the countryside have learned to subvert strength with subterfuge.',
               'race', None, ['on_play'], Otavan(),
              None, None, None, None, -2, None, ['1d6']],
 
@@ -41,7 +41,7 @@ trait_kits_dict = {
              {'Health':1,'Endurance':1}, None, None,
              {'Water':1}, ['1d5']],
 
-    'Rivenborne':['Rivenborne', 'A mighty race of great strength, the Barheim have built an empire to last the test of time.',
+    'Rivenborne':['Rivenborne', 'A mysterious race full of intrigue, the Rivenborne seek to claim their birthright as rules of Aporia.',
               'race', ['Charged'], ['on_play'], Rivenborne(),
              None, None, {'Health':2}, None, None, None, ['1d4', '1d8']],
 
@@ -57,19 +57,20 @@ trait_kits_dict = {
              {'Attack':3,'Health':1,'Fortitude':3}, None, 2,
              {'Food':1,'Water':1}, ['1d10']],
 
-    'Yavari':['Yavari', 'A mighty race of great strength, the Yavari have survived through thick and thin.',
+    'Yavari':['Yavari', 'A race hunters in tune with nature, the Yavari fight to preserve the natural order.',
               'race', None, ['on_act'], Yavari(),
              None, None, None, None, None, None, ['1d6']],
 
 
 
     #name, description, type, certs, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, initiative, taunt, mod_upkeep_dict, new_dice_stats
-    'Worker':['Worker', 'The mark of a Worker', 'class', ['Novice', 'Harvest', 'Production'], ['on_play'], Worker(), None, None, None, None, None, None, None],
-    'Warrior':['Warrior', 'The mark of a Warrior', 'class', ['Combat'], ['on_attack'], Warrior(), None, None, None, None, None, None, None],
-    'Guardian':['Guardian', 'The mark of a Guardian', 'class', ['Combat'], ['on_defend', 'on_attack'], Guardian(), None, None, None, None, None, None, None],
-    'Ranger':['Ranger', 'The mark of a Ranger', 'class', ['Combat'], ['on_attack'], Ranger(), None, None, None, None, None, None, None],
-    'Scout':['Scout', 'The mark of a Scout', 'class', ['Combat'], ['on_play'], Scout(), None, None, None, None, None, None, None],
-    'Knight':['Knight', 'The mark of a Knight', 'class', ['Combat'], ['on_attack', 'on_defend'], Knight(), None, None, None, None, None, None, None],
+    'Worker':['Worker', '*No man\'s bounty may exceed the sweat of his brow. -The Book of The Patron 5:2*', 'class', ['Novice', 'Harvest', 'Production'], ['on_play'], Worker(), None, None, None, None, None, None, None],
+    'Warrior':['Warrior', '*None shall remain. - The Harbinger*', 'class', ['Combat'], ['on_attack'], Warrior(), None, None, None, None, None, None, None],
+    'Guardian':['Guardian', '*As I have cared for you, so ought you care for one another. - The Matriarch*', 'class', ['Combat'], ['on_defend', 'on_attack'], Guardian(), None, None, None, None, None, None, None],
+    'Ranger':['Ranger', '*A sword should never touch they who are of nimble mind. - Yavari Proverb*', 'class', ['Combat'], ['on_attack'], Ranger(), None, None, None, None, None, None, None],
+    'Scout':['Scout', '*Should you seek after Her own heart, given an eternity, you will find Her.* - Unknown Scribe' , 'class', ['Combat'], ['on_play'], Scout(), None, None, None, None, None, None, None],
+    'Knight':['Knight', '*Let the stalwart of us take up arms, that the weak may live as the brave. -Keive, Aratori Hero*', 'class', ['Combat'], ['on_attack', 'on_defend'], Knight(), None, None, None, None, None, None, None],
+    #'Witch':['Witch', 'The mark of a Witch', 'class', ['Combat', 'Arcanae'], ['on_battle','on_attack'], Witch(), None, None, None, None, None, None, None],
     'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Engineer'], ['on_attack'], Alchemist(), None, None, None, None, None, None, None],
     'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack'], Technophant(), None, None, None, None, None, None, None],
 

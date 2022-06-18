@@ -23,3 +23,34 @@ class Trait():
 
     def __str__(self):
         return self.trait_title
+
+    def report(self):
+        fields = []
+        title = "-----"+self.trait_title+"-----"
+
+        report = self.trait_description
+
+        info_rep = {'inline':True}
+        info_rep['title'] = '-- Info:'
+        info_rep['value'] =  "\n- Status: "+str(self.status)+\
+                             "\n- Location: "+str(self.location)+\
+                             "\n- Traits: "+str(self.trait_list)
+        info_rep['value'] += "\n- Die Set: "+str(self.trait_die_set)
+        info_rep['value'] += "\n- Upkeep: "
+        for key in self.trait_upkeep_dict.keys():
+            value = self.trait_upkeep_dict[key]
+            info_rep['value'] += str(value)+" "+str(key) +", "
+        info_rep['value'] = info_rep['value'][:-2]
+        fields.append(info_rep)
+
+        stats_rep = {'inline':True}
+        stats_rep['title'] = "-- Stats:"
+        stats_rep['value'] = ''
+        for key in self.trait_stats.keys():
+            value = self.trait_stats[key]
+            cap = self.trait_statcaps[key]
+            stats_rep['value'] += "- "+str(key)+" "+str(value)+"/"+str(cap)+"\n"
+        stats_rep['value'] = stats_rep['value'][:-1]
+        fields.append(stats_rep)
+
+        return report, title, fields
