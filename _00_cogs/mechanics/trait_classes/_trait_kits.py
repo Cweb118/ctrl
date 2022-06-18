@@ -27,7 +27,7 @@ trait_kits_dict = {
               None, None, {'Endurance':-1}, -2, -1, None, ['2d3']],
 
     'Loyavasi':['Loyavasi', "A mighty race of great strength, the Loyavasi have built an empire to last the test of time.",
-                'race', None, ['on_harvest'], Loyavasi(),
+                'race', None, ['on_refresh'], Loyavasi(),
                 {'cap':{'resource':2}}, None,
                 None, -1, None, None, ['1d6', '1d2']],
 
@@ -42,8 +42,8 @@ trait_kits_dict = {
              {'Water':1}, ['1d5']],
 
     'Rivenborne':['Rivenborne', 'A mighty race of great strength, the Barheim have built an empire to last the test of time.',
-              'race', ['Charged'], ['on_play'], Rivenborne(),
-             None, None, {'Health':2}, None, None, None, ['1d4', '1d8']],
+              'race', ['Charged'], ['on_play', 'on_refresh'], Rivenborne(),
+             None, None, {'Health':1}, None, None, None, ['1d4', '1d8']],
 
     'Tevaru':['Tevaru', 'The Tevaru are aliens to the surface world, but despite the dangerous environment they feel more at home here.',
               'race', None, ['on_play'], Tevaru(),
@@ -76,12 +76,16 @@ trait_kits_dict = {
               {'cap':{'resource':4}, 'cont':2}, None, {'Attack':3, 'Health':3, 'Defense':10, 'Endurance':2, 'Fortitude':4}, 0, 1, {'Food':2, 'Water':2}, ['1d5', '1d7']],
     'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Engineer'], ['on_attack'], Alchemist(),
                  {'cap':{'resource':4}, 'cont':4}, None, {'Attack':1, 'Health':1, 'Defense':8, 'Endurance':3, 'Fortitude':1},  0, -1, {'Food':1, 'Water':3}, ['1d4']],
-    'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack'], Technophant(),
+    'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack', 'on_refresh'], Technophant(),
                    {'cap':{'resource':6}, 'cont':2}, None, {'Attack':0, 'Health':5, 'Defense':10, 'Endurance':2, 'Fortitude':0}, 4, 0, {'Water':4}, ['1d5']],
 
     'Harmony':['Harmony', 'One who is attuned to the Melding.',
               'effect', ['Harmony'], ['on_harvest'], Harmony(),
              None, None, None, None, None, None, None],
+
+    'Charged':['Charged', 'One who is empowered by a greater force...',
+              'effect', ['Charged'], ['on_harvest'], Charged(),
+             None, None, {'Health':1,'Fortitude':-1}, None, None, None, None],
 
     #building_logic
 

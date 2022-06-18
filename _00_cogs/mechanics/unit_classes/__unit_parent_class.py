@@ -134,6 +134,9 @@ class Unit(Card):
                         self.regenName()
                 else:
                     self.effects.append(trait.trait_title)
+            if trait.trait_certs:
+                for cert in trait.trait_certs:
+                    self.addTraitCert(cert)
             if trait.trait_stats_dict:
                 for mod_stat in trait.trait_stats_dict.keys():
                     value = trait.trait_stats_dict[mod_stat]
@@ -209,6 +212,9 @@ class Unit(Card):
                         self.regenName()
                 else:
                     self.effects.remove(trait.trait_title)
+            if trait.trait_certs:
+                for cert in trait.trait_certs:
+                    self.delTraitCert(cert)
             if trait.trait_stats_dict:
                 for mod_stat in trait.trait_stats_dict.keys():
                     value = trait.trait_stats_dict[mod_stat]
@@ -296,8 +302,8 @@ class Unit(Card):
         return has
 
     def addTraitCert(self, cert_name):
-        if cert_name in self.certs:
-            self.certs.remove(cert_name)
+        if not cert_name in self.certs:
+            self.certs.append(cert_name)
 
     def delTraitCert(self, cert_name):
         if cert_name in self.certs:
@@ -380,17 +386,35 @@ class Unit(Card):
             else:
                 health_report = "Your **"+str(self)+'** has sustained no damage.'
 
-            #TODO: HARVEST TRAIT ACTIVATE
+            harvest_report = None
+            if self.traits:
+                if len(self.traits['on_harvest']) > 0:
+                    for action in self.traits['on_harvest']:
+                        harvest_report = action.harvest(self, f, hit)
 
             title = "-----"+str(self)+" Upkeep Results-----"
             report = "- Rolled: "+str(self.die_set)+" ("+str(self)+")\n"+\
                      "- Rolls: "+str(report_dict['rolls'])+"\n"+\
                      "- Defense + Fortitude: "+str(report_dict['threshold'])+"\n"+\
                      "- Damage Taken: "+str(report_dict['hit_count'])+"\n\n"+\
-                     def_report+"\n"+\
-                     health_report
+                     def_report+"\n"+health_report
+            if harvest_report:
+                report += "\n"+harvest_report
+
 
             return report, title
+
+
+    def refresh(self):
+        if self.status == "Played":
+            self.setStat('Endurance', self.statcaps['Endurance'])
+            refresh_report = None
+            if self.traits:
+                if len(self.traits['on_refresh']) > 0:
+                    for action in self.traits['on_refresh']:
+                        refresh_report = action.refresh(self)
+
+
 
     def __str__(self):
         return self.title
