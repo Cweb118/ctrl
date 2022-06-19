@@ -75,7 +75,7 @@ class Player():
             self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
             self._member: nextcord.PermissionOverwrite(read_messages=True)
         }
-        topic =  "Private Discussion"
+        topic = "Private Discussion"
 
         foundInterface = False
         foundChannel = False

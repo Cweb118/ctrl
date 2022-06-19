@@ -68,6 +68,7 @@ class District():
         self.region = region_name
         self.paths = pathsRebuild
         self.players = []
+        self.voice = None
         self.channel = None
         self.interfaceChannel = None
         self.inventory = None

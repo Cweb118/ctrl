@@ -82,14 +82,20 @@ class Scout():
     #TODO: TEST
     def __init__(self):
         self.loot = theJar['resources']['Food']
-        #print('oop')
 
-    def act(self, sender, receiver, operation):
-        #toggles salvanging loot
-        if self.loot == theJar['resources']['Food']:
-            self.loot = theJar['resources']['Water']
-        else:
-            self.loot = theJar['resources']['Food']
+    def act(self, self_unit, from_location, direction):
+        #explore!
+        print('explore!')
+        explore_channel = "get the explore channel from the jar which was made on game start"
+        squad = self_unit.squad
+
+        report = "Player: "+self_unit.owner+"\n"+\
+                 "From Location: "+from_location+"\n"+\
+                 "Direction: "+direction+"\n"+\
+                 "Squad: \n"+squad.report()+"\n"
+
+        #say to explore channel(report)
+
 
     def move(self, self_unit, from_location, to_location):
         #self_unit.owner.updatePerms(from_location, to_location
@@ -117,6 +123,13 @@ class Scout():
             hits = 5
         res_yield = res_per_hit[hits]
         self_unit.inventory.addResource(self.loot,res_yield)
+
+        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
+        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
+        if food_ct > water_ct:
+            self.loot = theJar['resources']['Water']
+        else:
+            self.loot = theJar['resources']['Food']
 
         report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
         return report
@@ -441,7 +454,6 @@ class Harmony():
             health_rep = "The "+str(self_unit)+" steels itself. "+str(def_regen)+" defence was regained."
         return health_rep
 
-#TODO: Charged effect (self deletes, gives and takes Charged cert)
 
 class Charged():
     #TODO: TEST
@@ -449,6 +461,7 @@ class Charged():
         if self_unit.hasTrait('Charged'):
             self_unit.delTrait('Charged')
 
+#TODO: Thorns?
 #----------building_logic----------
 
 class Mend():
