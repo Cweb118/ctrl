@@ -11,7 +11,8 @@ theJar = {
         'Cows':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'}
     },
     'fabs': {},
-    'states': {}, # < Defunct maybe?
+    'states': {}, # < Defunct maybe? No
+    'modalStates': {},
     'nextUniqueID': 0,
     'client': 0
 }

@@ -79,17 +79,28 @@ class Unit(Card):
 
     def setNick(self, nick):
         self.nick = nick
+        self.regenName()
 
     def regenName(self):
-        name = ''
+        nameParts = []
         if self.race:
-            name += self.race
+            nameParts.append(str(self.race))
         if self.job:
-            name += self.job
+            nameParts.append(str(self.job))
         if self.nick:
-            name += '\"'+self.nick+'\"'
+            nameParts.append('\"'+self.nick+'\"')
         if self.owner:
-            name += '('+str(self.owner)+')'
+            nameParts.append('('+str(self.owner)+')')
+
+        name = ''
+
+        for namePart in nameParts:
+            if name != '':
+                name += ' '
+
+            name += namePart
+
+        self.title = name
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity

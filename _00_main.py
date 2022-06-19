@@ -11,6 +11,7 @@ from _00_cogs.architecture.player_class import Player
 from keys import prime_token, prefix
 from nextcord.ext import commands
 from _00_cogs.frontend.menu import menus
+from _00_cogs.frontend.modal import modals
 from _02_global_dicts import theJar
 
 intents = nextcord.Intents.all()
@@ -98,8 +99,19 @@ async def on_interaction(interaction: Interaction):
 
         if menuid in menus:
             menu = menus[menuid]
-            await interaction.response.defer()
+
+            if menu.shouldDefer(elementid, interaction):
+                await interaction.response.defer()
+
             await menu.onInteraction(elementid, interaction)
+    elif interaction.type == InteractionType.modal_submit:
+        id = interaction.data['custom_id']
+        (modalid, stateid) = id.split(':')
+
+        if modalid in modals:
+            modal = modals[modalid]
+            await modal.handleSubmit(stateid, interaction)
+
     else:
         await bot.process_application_commands(interaction) 
 
