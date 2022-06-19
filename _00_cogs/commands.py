@@ -44,46 +44,67 @@ class Commands(commands.Cog):
 
 #----------player----------
 
-    @commands.command(name="region", guild_ids=guilds)
-    async def region_c(self, ctx, name):
+    @slash_command(name="region", guild_ids=guilds)
+    async def region_c(self, ctx: Interaction, name):
+        await self.region_f(ctx, name)
+
+    async def region_f(self, ctx, name):
         region = theJar['regions'][name]
         report, title, fields = region.report()
         await say(ctx, report, title=title, fields=fields)
 
-    @commands.command(name="district", guild_ids=guilds)
-    async def district_c(self, ctx, name):
+
+    @slash_command(name="district", guild_ids=guilds)
+    async def district_c(self, ctx: Interaction, name):
+        await self.district_f(ctx, name)
+
+    async def district_f(self, ctx, name):
         district = theJar['districts'][name]
         report, title, fields = district.report()
         await say(ctx, report, title=title, fields=fields)
 
+
     @slash_command(name="move", guild_ids=guilds)
     async def move_c(self, ctx: Interaction, name):
-        await self._move_c(ctx, name)
+        await self.move_f(ctx, name)
 
-    async def _move_c(self, ctx, name):
+    async def move_f(self, ctx, name):
         player = theJar['players'][ctx.user.id]
         district = theJar['districts'][name]
         report = district.movePlayer(player)
         await say(ctx,report)
 
-    @commands.command(name="inv", guild_ids=guilds)
-    async def inv_c(self, ctx):
+
+    @slash_command(name="inv", guild_ids=guilds)
+    async def inv_c(self, ctx: Interaction):
+        await self.inv_f(ctx)
+
+    async def inv_f(self, ctx):
         player = theJar['players'][ctx.user.id]
         report, title, fields = player.inventory.report()
         await say(ctx, report, title=title, fields=fields)
 
-    @commands.command(name="stats", guild_ids=guilds)
-    async def stats_c(self, ctx):
+    @slash_command(name="stats", guild_ids=guilds)
+    async def stats_c(self, ctx: Interaction):
+        await self.stats_f(ctx)
+
+    async def stats_f(self, ctx):
         player = theJar['players'][ctx.user.id]
         report, title, fields = player.report()
         await say(ctx, report, title=title, fields=fields)
 
-    @commands.command(name="resource", guild_ids=guilds)
-    async def res_c(self, ctx, resource_name):
+
+    @slash_command(name="resource", guild_ids=guilds)
+    async def resource_c(self, ctx: Interaction, resource_name):
+        await self.resource_f(ctx, resource_name)
+
+    async def resource_f(self, ctx, resource_name):
         resource = theJar['resources'][resource_name]
         report = resource.report()
         await say(ctx, report)
 
+    #OLD:
+    """
     @commands.command(name="cardrep", guild_ids=guilds)
     async def cardrep_c(self, ctx, card_type, card_number):
         player = theJar['players'][ctx.user.id]
@@ -192,7 +213,7 @@ class Commands(commands.Cog):
         report = taker.inventory.takeres(resource, quantity, target_type, target)
         await say(ctx,report)
 
-
+    """
 
 
 #----------testing/control----------
@@ -204,10 +225,10 @@ class Commands(commands.Cog):
         #player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
         #player.addCard(building_kits_dict['mother_tree'], 'building')
         #player.addCard(building_kits_dict['bountiful_field'], 'building')
-        await self._makeunit_c(ctx, ['Aratori'])
-        await self._makeunit_c(ctx, ['Prismari'])
-        await self._makeunit_c(ctx, ['Warrior'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
+        await self.makeunit_f(ctx, ['Aratori'])
+        await self.makeunit_f(ctx, ['Prismari'])
+        await self.makeunit_f(ctx, ['Warrior'])
+        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
         await self.cardrep_c(ctx, 'unit', 1)
         await self.cardrep_c(ctx, 'unit', 2)
         await self.cardrep_c(ctx, 'unit', 3)
@@ -223,7 +244,7 @@ class Commands(commands.Cog):
         #await self._makeunit_c(ctx, ['Worker', 'Automata'])
 
         #await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
-        await self._move_c(ctx, 'Home')
+        await self.move_f(ctx, 'Home')
 
         #await self._playcard_c(ctx, 'building', 1, 'district', 'Home')
         #await self._playcard_c(ctx, 'building', 2, 'district', 'Home')
@@ -243,64 +264,31 @@ class Commands(commands.Cog):
         #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
         #await self.cardnick_c(ctx, 'unit', 5, 'B0b')
 
-    @slash_command(name="pairplay", guild_ids=guilds)
-    async def pairplay_c(self, ctx: Interaction):
-        player = theJar['players'][ctx.user.id]
-        player.allegiance = 'Cow'
-        await self._move_c(ctx, 'Home')
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        i = 1
-        while i < 21:
-            await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
-            i += 1
-        await self.joinsquad_c(ctx, 5, 1)
-        await self.joinsquad_c(ctx, 10, 1)
-        await self.joinsquad_c(ctx, 15, 1)
-
     @slash_command(name="cartplay", guild_ids=guilds)
     async def cartplay_c(self, ctx: Interaction):
         player = theJar['players'][ctx.user.id]
         player.allegiance = 'Bandit'
-        await self._move_c(ctx, 'Home')
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Warrior', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Knight', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
-        await self._makeunit_c(ctx, ['Alchemist', 'Aratori'])
+        await self.move_f(ctx, 'Home')
+        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
+        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
+        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
+        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
+        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
+        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
+        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
+        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
+        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
+        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
+        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
+        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
+        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
+        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
+        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
+        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
+        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
+        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
+        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
+        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
         i = 1
         while i < 21:
             await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
@@ -352,8 +340,12 @@ class Commands(commands.Cog):
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
-    @commands.command(name="addres", guild_ids=guilds)
-    async def addres_c(self, ctx, resource_name, quantity: int, user: nextcord.Member):
+
+    @slash_command(name="addres", guild_ids=guilds)
+    async def addres_c(self, ctx: Interaction, resource_name, quantity: int, user: nextcord.Member):
+        await self.addres_f(ctx, resource_name, quantity, user)
+
+    async def addres_f(self, ctx, resource_name, quantity: int, user: nextcord.Member):
         resource = theJar['resources'][resource_name]
         try:
             if quantity > 0:
@@ -366,16 +358,11 @@ class Commands(commands.Cog):
             report = "Transaction Failed."
         await say(ctx,report)
 
-    @commands.command(name="roll", guild_ids=guilds)
-    async def roll_c(self, ctx, quantity, sides, threshold):
-        die_set = Dice(int(quantity), int(sides))
-        await die_set.roll(ctx, threshold)
-
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):
-        await self._makeunit_c(ctx, traits)
+        await self.makeunit_f(ctx, traits)
 
-    async def _makeunit_c(self, ctx: Interaction, traits):
+    async def makeunit_f(self, ctx: Interaction, traits):
         player = theJar['players'][ctx.user.id]
         status, man = player.inventory.addCard(Unit(), 'unit')
         for trait in traits:
@@ -415,24 +402,33 @@ class Commands(commands.Cog):
             action_report = trait_action.action.act(actor, actee, action_arg)
 
 
-    @commands.command(name="harvest", guild_ids=guilds)
-    async def harvest_c(self, ctx):
-        player = theJar['players'][ctx.user.id]
-        for card in player.inventory.cards['unit']:
-            if card.status == "Played":
-                report, title = card.harvest()
+    @slash_command(name="harvest", guild_ids=guilds)
+    async def harvest_c(self, ctx: Interaction):
+        await self.harvest_f(ctx)
+
+    async def harvest_f(self, ctx):
+        for unit in theJar['units']:
+            if unit.status == "Played":
+                report, title = unit.harvest()
+                #send to players private channel instead (as cn)
                 await say(ctx, report, title=title)
 
 
-    @commands.command(name="battle", guild_ids=guilds)
-    async def battle_c(self, ctx):
-        player = theJar['players'][ctx.user.id]
-        location = player.location
-        await battle(ctx, location)
+    @slash_command(name="battle", guild_ids=guilds)
+    async def battle_c(self, ctx: Interaction):
+        await self.battle_f(ctx)
 
-    @commands.command(name="run", guild_ids=guilds)
-    async def run_c(self, ctx):
+    async def battle_f(self, ctx):
+        for loc_name in theJar['districts'].keys():
+            location = theJar['districts']['loc_name']
+            await battle(ctx, location)
 
+
+    @slash_command(name="produce", guild_ids=guilds)
+    async def produce_c(self, ctx: Interaction):
+        await self.produce_f(ctx)
+
+    async def produce_f(self, ctx):
         wave_ints = []
         for building in theJar['played_cards']['building']:
             priority = building.priority
