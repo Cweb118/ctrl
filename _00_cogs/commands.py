@@ -402,54 +402,6 @@ class Commands(commands.Cog):
             action_report = trait_action.action.act(actor, actee, action_arg)
 
 
-    @slash_command(name="harvest", guild_ids=guilds)
-    async def harvest_c(self, ctx: Interaction):
-        await self.harvest_f(ctx)
-
-    async def harvest_f(self, ctx):
-        for unit in theJar['units']:
-            if unit.status == "Played":
-                report, title = unit.harvest()
-                #send to players private channel instead (as cn)
-                await say(ctx, report, title=title)
-
-
-    @slash_command(name="battle", guild_ids=guilds)
-    async def battle_c(self, ctx: Interaction):
-        await self.battle_f(ctx)
-
-    async def battle_f(self, ctx):
-        for loc_name in theJar['districts'].keys():
-            location = theJar['districts']['loc_name']
-            await battle(ctx, location)
-
-
-    @slash_command(name="produce", guild_ids=guilds)
-    async def produce_c(self, ctx: Interaction):
-        await self.produce_f(ctx)
-
-    async def produce_f(self, ctx):
-        wave_ints = []
-        for building in theJar['played_cards']['building']:
-            priority = building.priority
-            if priority not in wave_ints:
-                wave_ints.append(priority)
-        wave_ints = sorted(wave_ints, reverse=True)
-
-        waves = {}
-        for num in wave_ints:
-            wave = []
-            for building in theJar['played_cards']['building']:
-                if building.priority == num:
-                    wave.append(building)
-            waves[num] = wave
-
-        for num in wave_ints:
-            for building in waves[num]:
-                report = building.run()
-                if report:
-                    await say(ctx,report)
-
     @commands.command(name="info", guild_ids=guilds)
     async def run_c(self, ctx, argu):
         try:
