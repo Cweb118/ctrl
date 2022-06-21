@@ -1,4 +1,5 @@
 import operator
+from sys import path_hooks
 
 from _02_global_dicts import theJar
 import nextcord
@@ -8,27 +9,21 @@ from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
 
 class Region():
-    def __init__(self, name, guild = None, guildID = None, districts = []):
+    def __init__(self, name, guild, districts = []):
         self.name = name
         theJar['regions'][name] = self
         self.districts = districts
         self.guild = guild
-        self.guildID = guildID
         self.channel = None
 
 
-        if guild:
-            self.createChannel.start()
-    
-    def __reduce__(self):
-        districtKeys = []
-        for district in self.districts:
-            districtKeys.append(district.name)
-        return(self.__class__, (self.name, None, self.guild.id))
-    
-    def reinstate(self, guild):
-        self.guild = guild 
         self.createChannel.start()
+    
+    #def __reduce__(self):
+    #    districtKeys = []
+    #    for district in self.districts:
+    #    districtKeys.append(district.name)
+    #    return(self.__class__, (self.name, None, self.guild.id))
 
     def addDistrict(self, district):
         self.districts.append(district)
@@ -44,6 +39,7 @@ class Region():
 
         return report
 
+    # Jams: Will be moving channel related content to a new Channels cog
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
@@ -62,24 +58,18 @@ class Region():
             self.channel = nextcord.utils.get(self.guild.channels, name=self.name)
 
 class District():
-    def __init__(self, name, region_name, size, paths = None, guild = None, guildID = None, pathsRebuild = [], inventory = None):
+    def __init__(self, name, region_name, size, paths = [], guild = None):
 
         self.name = name
         self.region = region_name
-        self.paths = pathsRebuild
+        self.paths = []
         self.players = []
         self.voice = None
         self.channel = None
         self.interfaceChannel = None
-        self.inventory = None
         self.guild = guild
         self.size = size
         self.civics = Civics(self)
-
-        if guild:
-            self.guildID = guild.id
-        else:
-            self.guildID = guildID
 
         if guild:
             self.createChannel.start()
@@ -92,10 +82,7 @@ class District():
             'large': [self, 100, None, 10, 10, 24, 8],
             'huge': [self, 100, None, 10, 10, 40, 14],
         }
-        if inventory:
-            self.inventory = inventory
-        else:
-            self.inventory = Inventory(*sizes[size])
+        self.inventory = Inventory(*sizes[size])
 
 
         pathcaps = {
@@ -118,13 +105,10 @@ class District():
 
         self.interfaceDirty = False
     
-    def __reduce__(self):
-        return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
+    #def __reduce__(self):
+    #    return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
 
-    def reinstate(self, guild):
-        self.guild = guild
-        self.createChannel.start()
-
+    # Jams: Will be moving channel related content to a new Channels cog
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
