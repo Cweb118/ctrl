@@ -147,6 +147,18 @@ class Player():
             self._stats[stat] = new_val
         return can_add
 
+    def modStatCap(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
+        new_val = self._stats[stat] + quantity
+        new_cap = self._statcaps[stat] + quantity
+        can_add = False
+        if self._statcaps[stat]:
+            if new_val >= 0:
+                can_add = True
+        if can_add == True:
+            self._stats[stat] = new_val
+            self._statcaps[stat] = new_cap
+        return can_add
+
     def relationCheck(self, other_allegiance):
         status = theJar['allegiances'][self.allegiance][other_allegiance]
         return status

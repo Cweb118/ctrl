@@ -358,6 +358,16 @@ class Commands(commands.Cog):
             report = "Transaction Failed."
         await say(ctx,report)
 
+
+    @slash_command(name="raiseinf", guild_ids=guilds)
+    async def raiseinf_c(self, ctx: Interaction, user: nextcord.Member, quantity: int, ):
+        await self.raiseinf_f(ctx, user, quantity)
+
+    async def raiseinf_f(self, ctx, user, quantity):
+        player = theJar['players'][user.id]
+        player.modStatCap(theJar['resources']['Influence'], quantity)
+
+
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):
         await self.makeunit_f(ctx, traits)

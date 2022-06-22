@@ -113,6 +113,9 @@ class TheClock(commands.Cog):
                 report, title = unit.refresh()
                 #send to players private channel instead (as cn)
                 await say(ctx, report, title=title)
+        for player_id in theJar['players'].keys():
+            player = theJar['players'][player_id]
+            player.modStatCap(theJar['resources']['Influence'], 1)
 
 
     @slash_command(name="battle", guild_ids=guilds)
