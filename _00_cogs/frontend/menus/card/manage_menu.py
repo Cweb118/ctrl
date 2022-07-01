@@ -44,10 +44,12 @@ class ManageMenu(Menu):
 
     @Button(id='take', label='Take', style=ButtonStyle.success, disabledFun=cantInteract)
     async def take(self, state, interaction: Interaction):
+        await Menus.transferResourceMenu.show(interaction, reply=True, newState={'src_type': 'card', 'src_card': state['card'], 'src_card_type': state['card_type'], 'src_player': state['player'], 'dest_type': 'player', 'dest_player': state['player']})
         return False
 
     @Button(id='give', label='Give', style=ButtonStyle.success, disabledFun=cantInteract)
     async def give(self, state, interaction: Interaction):
+        await Menus.transferResourceMenu.show(interaction, reply=True, newState={'src_type': 'player', 'src_player': state['player'], 'dest_type': 'card', 'dest_card': state['card'], 'dest_card_type': state['card_type'], 'dest_player': state['player']})
         return False
 
     @Button(id='nickname', label='Nickname', style=ButtonStyle.success, defer=False)

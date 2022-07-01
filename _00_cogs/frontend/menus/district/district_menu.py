@@ -30,5 +30,9 @@ class DistrictMenu(Menu):
 
     @Button(id='interact', label='Interact', style=ButtonStyle.success)
     async def interact(self, state, interaction: Interaction):
+        if 'district' not in state:
+            raise StateError
+
+        await Menus.interactMenu.show(interaction, reply=True, newState={'district': state['district']})
         return False
 

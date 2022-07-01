@@ -142,6 +142,28 @@ class Inventory():
             report = "Error: Input less than zero."
         return report
 
+    def giveres(self, resource, quantity, dest):
+        srcLoc = None
+        destLoc = None
+
+        if type(self.inv_owner).__name__ == 'District':
+            srcLoc = self.inv_owner
+        else:
+            srcLoc = self.inv_owner.location
+
+        if type(dest).__name__ == 'District':
+            destLoc = dest
+        else:
+            destLoc = dest.location
+
+        if srcLoc == destLoc:
+            report = self.giveResource(resource, quantity, dest.inventory)
+        else:
+            report = 'Not at present location.'
+
+        return report
+        
+    """
     def dropres(self, resource, quantity, target_type, target):
         taker = None
         if target_type == 'district':
@@ -187,7 +209,7 @@ class Inventory():
         if giver:
             report = giver.inventory.giveResource(resource, quantity, self)
         return report
-
+    """
 
     def __str__(self):
         report = str(self.inv_owner)+"'s Inventory"
