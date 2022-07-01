@@ -8,6 +8,21 @@ from _02_global_dicts import theJar
 import _00_cogs.frontend.menus.menus as Menus
 import _00_cogs.frontend.modals.modals as Modals
 
+def cantInteract(state):
+    if 'card' not in state or 'card_type' not in state:
+        raise StateError
+
+    if 'player' not in state or state['player'] not in theJar['players']:
+        raise StateError
+
+    player = theJar['players'][state['player']]
+    card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+    if card.location == player.location:
+        return False
+
+    return True
+
 class ManageMenu(Menu):
     def __init__(self):
         super().__init__('managemenu')
@@ -26,6 +41,14 @@ class ManageMenu(Menu):
             raise StateError
 
         return ('What do you want to do with the ' + card.title + ' card?', [])
+
+    @Button(id='take', label='Take', style=ButtonStyle.success, disabledFun=cantInteract)
+    async def take(self, state, interaction: Interaction):
+        return False
+
+    @Button(id='give', label='Give', style=ButtonStyle.success, disabledFun=cantInteract)
+    async def give(self, state, interaction: Interaction):
+        return False
 
     @Button(id='nickname', label='Nickname', style=ButtonStyle.success, defer=False)
     async def nickname(self, state, interaction: Interaction):
