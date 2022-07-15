@@ -7,7 +7,7 @@ from _00_cogs.mechanics.battle_logic import battle
 
 from _01_functions import say
 from _02_global_dicts import theJar
-from architecture.locations_class import District, Region
+from _00_cogs.architecture.locations_class import District, Region
 
 class TheClock(commands.Cog):
     def __init__(self, bot, day_status = True):

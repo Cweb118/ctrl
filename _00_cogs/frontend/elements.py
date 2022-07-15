@@ -21,14 +21,25 @@ def Button(id: str, label: str, style: ButtonStyle = ButtonStyle.secondary, incl
 
     return wrapper
 
-def UnlimitedSelect(id: str, optionsFun):
+def UnlimitedSelect(id: str, optionsFun, includeFun = lambda state: True):
     def render(fun, state):
+        if not includeFun(state):
+            return None
+
         options = optionsFun(state)
 
         if len(options) == 0:
             options = [SelectOption(label='Nothing', value='empty-list-nothing')]
         else:
             page = state.get('page', 0)
+
+            i = 0
+            for option in options:
+                if option.default:
+                    page = i % 23
+                    break
+
+                i += 1
 
             maxPages = (len(options) - 1) // 23
 

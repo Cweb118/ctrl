@@ -1,12 +1,12 @@
 from nextcord import slash_command
 from nextcord.ext import commands
 from _02_global_dicts import theJar
-from architecture.locations_class import District, Region
+from _00_cogs.architecture.locations_class import District, Region
 
 class TheMap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        """
         self.district_map = {
             'Yavar':['Yavar', 'Yavari Domain', 'huge', ['Central Yavar']],
 
@@ -37,6 +37,7 @@ class TheMap(commands.Cog):
                 d=District(*self.district_map[key])
                 if self.district_map[key][1] not in theJar['regions'].keys():
                     Region(self.district_map[key][1], districts=[d])
+        """
 
 def setup(bot):
     bot.add_cog(TheMap(bot))
