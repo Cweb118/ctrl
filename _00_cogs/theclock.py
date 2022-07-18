@@ -15,7 +15,7 @@ class TheClock(commands.Cog):
         self.is_day = day_status
         if self.is_day:
             self.need_production = True
-            self.need_battle = True
+            self.need_battle = False
             self.need_harvest = True
             self.need_refresh = True
 
@@ -38,7 +38,7 @@ class TheClock(commands.Cog):
                 #group_channel.permissions(player can read = yes, can chat = no)
             self.is_day = True
             self.need_production = True
-            self.need_battle = True
+            self.need_battle = False
             self.need_harvest = True
             self.need_refresh = True
         await say(ctx, "Day start protocol complete.")
@@ -101,6 +101,11 @@ class TheClock(commands.Cog):
                 report, title = unit.harvest()
                 #send to players private channel instead (as cn)
                 await say(ctx, report, title=title)
+        for building in theJar['buildings']:
+            if building.status == "Played":
+                report, title = building.harvest()
+                #send to players private channel instead (as cn)
+                await say(ctx, report, title=title)
 
 
     @slash_command(name="refresh", guild_ids=guilds)
@@ -111,6 +116,11 @@ class TheClock(commands.Cog):
         for unit in theJar['units']:
             if unit.status == "Played":
                 report, title = unit.refresh()
+                #send to players private channel instead (as cn)
+                await say(ctx, report, title=title)
+        for building in theJar['buildings']:
+            if building.status == "Played":
+                report, title = building.refresh()
                 #send to players private channel instead (as cn)
                 await say(ctx, report, title=title)
 

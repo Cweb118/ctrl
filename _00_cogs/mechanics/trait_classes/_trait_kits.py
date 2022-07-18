@@ -64,32 +64,41 @@ trait_kits_dict = {
 
 
     #name, description, type, certs, trigger, action, mod_inv_args, mod_play_cost, mod_stats_dict, initiative, taunt, mod_upkeep_dict, new_dice_stats
-    'Worker':['Worker', '*No man\'s bounty may exceed the sweat of his brow. -The Book of The Patron 5:2*', 'class', ['Novice', 'Harvest', 'Production'], ['on_play'], Worker(), None, None, None, None, None, None, None],
-    'Warrior':['Warrior', '*None shall remain. - The Harbinger*', 'class', ['Combat'], ['on_attack'], Warrior(), None, None, None, None, None, None, None],
-    'Guardian':['Guardian', '*As I have cared for you, so ought you care for one another. - The Matriarch*', 'class', ['Combat'], ['on_defend', 'on_attack'], Guardian(), None, None, None, None, None, None, None],
-    'Ranger':['Ranger', '*A sword should never touch they who are of nimble mind. - Yavari Proverb*', 'class', ['Combat'], ['on_attack'], Ranger(), None, None, None, None, None, None, None],
-    'Scout':['Scout', '*Should you seek after Her own heart, given an eternity, you will find Her.* - Unknown Scribe' , 'class', ['Combat'], ['on_play'], Scout(), None, None, None, None, None, None, None],
-    'Knight':['Knight', '*Let the stalwart of us take up arms, that the weak may live as the brave. -Keive, Aratori Hero*', 'class', ['Combat'], ['on_attack', 'on_defend'], Knight(), None, None, None, None, None, None, None],
-    #'Witch':['Witch', 'The mark of a Witch', 'class', ['Combat', 'Arcanae'], ['on_battle','on_attack'], Witch(), None, None, None, None, None, None, None],
-    'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Engineer'], ['on_attack'], Alchemist(), None, None, None, None, None, None, None],
-    'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack'], Technophant(), None, None, None, None, None, None, None],
-    'Worker':['Worker', 'The mark of a Worker', 'class', ['Novice', 'Harvest', 'Production'], ['on_play'], Worker(),
+    #TODO: Change triggers and stats !
+    'Worker':['Worker', 'The mark of a Worker', 'class', ['Worker'], ['on_play'], Worker(),
               {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Laborer':['Laborer', 'The mark of a Laborer', 'class', ['Worker', 'Laborer'], ['on_play'], Laborer(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Engineer':['Engineer', 'The mark of a Engineer', 'class', ['Worker', 'Engineer'], ['on_play'], Engineer(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Courier':['Courier', 'The mark of a Courier', 'class', ['Courier'], ['on_play'], Transport(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Architect':['Architect', 'The mark of a Architect', 'class', ['Architect'], ['on_play'], Architect(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Pathfinder':['Pathfinder', 'The mark of a Pathfinder', 'class', ['Recon'], ['on_play'], Pathfinder(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+    'Scout':['Scout', 'The mark of a Scout', 'class', ['Recon'], ['on_play'], Scout(),
+             {'cap':{'resource':8}, 'cont':3}, None, {'Attack':1, 'Health':2, 'Defense':8, 'Endurance':3, 'Fortitude':3},  5, -5, {'Food':1, 'Water':2}, ['1d6']],
+    'Sentry':['Sentry', 'The mark of a Sentry', 'class', ['Recon'], ['on_play'], Sentry(),
+              {'cap':{'resource':2}, 'cont':2}, None, {'Attack':0, 'Health':1, 'Defense':6, 'Endurance':1, 'Fortitude':3}, 10, -10, {'Food':1, 'Water':1}, ['1d6']],
+
+
     'Warrior':['Warrior', 'The mark of a Warrior', 'class', ['Combat'], ['on_attack'], Warrior(),
                {'cap':{'resource':4}, 'cont':2}, None, {'Attack':2, 'Health':2, 'Defense':10, 'Endurance':2, 'Fortitude':3}, 0, 0, {'Food':2, 'Water':1}, ['1d6']],
     'Ranger':['Ranger', 'The mark of a Ranger', 'class', ['Combat'], ['on_attack'], Ranger(),
               {'cap':{'resource':2}, 'cont':2}, None, {'Attack':2, 'Health':1, 'Defense':8, 'Endurance':2, 'Fortitude':4}, -1, -1, {'Food':1, 'Water':1}, ['1d8']],
     'Guardian':['Guardian', 'The mark of a Guardian', 'class', ['Combat'], ['on_defend', 'on_attack'], Guardian(),
                 {'cap':{'resource':6}, 'cont':2}, None, {'Attack':1, 'Health':3, 'Defense':12, 'Endurance':2, 'Fortitude':1}, 2, 3, {'Food':3, 'Water':1}, ['1d4']],
-    'Scout':['Scout', 'The mark of a Scout', 'class', ['Combat', 'Scout'], ['on_play'], Scout(),
-             {'cap':{'resource':8}, 'cont':3}, None, {'Attack':1, 'Health':2, 'Defense':8, 'Endurance':3, 'Fortitude':3},  5, -5, {'Food':1, 'Water':2}, ['1d6']],
-    'Knight':['Knight', 'The mark of a Knight', 'class', ['Combat'], ['on_attack', 'on_defend'], Knight(),
+    'Witch':['Witch', 'The mark of a Witch', 'class', ['Combat', 'Arkanist'], ['on_attack', 'on_defend'], Witch(), #TODO: FINISH
               {'cap':{'resource':4}, 'cont':2}, None, {'Attack':3, 'Health':3, 'Defense':10, 'Endurance':2, 'Fortitude':4}, 0, 1, {'Food':2, 'Water':2}, ['1d5', '1d7']],
-    'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Engineer'], ['on_attack'], Alchemist(),
+    'Knight':['Knight', 'The mark of a Knight', 'class', ['Combat', 'Arkanist'], ['on_attack', 'on_defend'], Knight(),
+              {'cap':{'resource':4}, 'cont':2}, None, {'Attack':3, 'Health':3, 'Defense':10, 'Endurance':2, 'Fortitude':4}, 0, 1, {'Food':2, 'Water':2}, ['1d5', '1d7']],
+    'Alchemist':['Alchemist', 'The mark of an Alchemist', 'class', ['Combat', 'Industrialist', 'Engineer'], ['on_attack'], Alchemist(),
                  {'cap':{'resource':4}, 'cont':4}, None, {'Attack':1, 'Health':1, 'Defense':8, 'Endurance':3, 'Fortitude':1},  0, -1, {'Food':1, 'Water':3}, ['1d4']],
     'Technophant':['Technophant', 'The mark of a Technophant', 'class', ['Combat', 'Atomikist'], ['on_attack', 'on_refresh'], Technophant(),
                    {'cap':{'resource':6}, 'cont':2}, None, {'Attack':0, 'Health':5, 'Defense':10, 'Endurance':2, 'Fortitude':0}, 4, 0, {'Water':4}, ['1d5']],
 
+    #effects
     'Harmony':['Harmony', 'One who is attuned to the Melding.',
               'effect', ['Harmony'], ['on_harvest'], Harmony(),
              None, None, None, None, None, None, None],
@@ -98,16 +107,25 @@ trait_kits_dict = {
               'effect', ['Charged'], ['on_harvest'], Charged(),
              None, None, {'Health':1,'Fortitude':-1}, None, None, None, None],
 
+    'Good Morale':['Good Morale', 'GM_DESC',
+                   'effect', None, ['on_work'], Morale(),
+                   None, None, None, None, None, None, None],
+
     #building_logic
 
     'Mend':['Mend', 'MEND_DESC', 'building_logic', None, ['on_work'], Mend(), None, None, None, None, None, None, None],
+    'Upkeep':['Upkeep', 'MEND_DESC', 'building_logic', None, ['on_work'], Upkeep(), None, None, None, None, None, None, None],
+    'Speed':['Speed', 'MEND_DESC', 'building_logic', None, ['on_work'], Speed(), None, None, None, None, None, None, None],
+    'Sacrifice':['Sacrifice', 'MEND_DESC', 'building_logic', None, ['on_work'], Sacrifice(), None, None, None, None, None, None, None],
+    'Defense':['Defense', 'MEND_DESC', 'building_logic', None, ['on_work'], Defense(), None, None, None, None, None, None, None],
+    'Ward':['Ward', 'MEND_DESC', 'building_logic', None, ['on_work'], Ward(), None, None, None, None, None, None, None],
     'Train':['Train', 'TRAIN_DESC', 'building_logic', None, ['on_work'], Train(), None, None, None, None, None, None, None],
-    'Reproduce':['Reproduce', 'REPO_DESC', 'building_logic', None, ['on_work'], Reproduce(), None, None, None, None, None, None, None],
-    'Boon':['Boon', 'BOON_DESC', 'building_logic', None, ['on_work'], Boon(), None, None, None, None, None, None, None],
-    'Carry':['Carry', 'CARRY_DESC', 'building_logic', None, ['on_act', 'on_work', 'on_harvest'], Carry(), None, None, None, None, None, None, None],
+    'Mentor':['Mentor', 'REPO_DESC', 'building_logic', None, ['on_work'], Mentor(), None, None, None, None, None, None, None],
+    'Worker Boon':['Worker Boon', 'BOON_DESC', 'building_logic', None, ['on_work'], WorkerBoon(), None, None, None, None, None, None, None],
+    'District Boon':['District Boon', 'BOON_DESC', 'building_logic', None, ['on_work'], DistrictBoon(), None, None, None, None, None, None, None],
+    'Transport':['Transport', 'CARRY_DESC', 'building_logic', None, ['on_act', 'on_work', 'on_harvest'], Transport(), None, None, None, None, None, None, None],
 
     #building_effects
-    'Good Morale':['Good Morale', 'GM_DESC', 'building_effect', None, ['on_work'], Morale(), None, None, None, None, None, None, None],
 
 }
 

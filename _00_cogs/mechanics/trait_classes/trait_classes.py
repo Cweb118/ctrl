@@ -7,6 +7,93 @@ class Worker():
     def mmmm(self):
         print('mmmm')
 
+class Laborer():
+    def mmmm(self):
+        print('mmmm')
+
+class Engineer():
+    def mmmm(self):
+        print('mmmm')
+
+class Architect():
+    def __init__(self):
+        self.subject = None
+
+    def act(self):
+        #select a subject from the local buildings
+        print('mmmm')
+
+    def harvest(self, self_unit, f, hit):
+        if self_unit.location == self.subject.location:
+            #give unit a copy of the subject as a building card
+            print('mmmm')
+
+class Pathfinder():
+    #TODO: TEST
+    def __init__(self):
+        self.report = None
+
+    def act(self, self_unit, from_location, direction):
+        #explore!
+        print('explore!')
+        explore_channel = "get the explore channel from the jar which was made on game start"
+        squad = self_unit.squad
+
+        self.report = "**Action: Explore**\n"+\
+                 "Player: "+self_unit.owner+"\n"+\
+                 "From Location: "+from_location+"\n"+\
+                 "Direction: "+direction+"\n"+\
+                 "Squad: \n"+squad.report()+"\n"
+
+    def harvest(self, self_unit, f, hit):
+        squad = self_unit.squad
+        can_go = True
+        for unit in squad.units:
+            if unit.stats['Endurance'] < unit.statcaps['Endurance']:
+                can_go = False
+        if can_go:
+            #say to explore channel(report)
+            print(self.report)
+
+class Scout():
+    #TODO: TEST
+    def __init__(self):
+        self.report = None
+
+    def act(self, self_unit, from_location, target_location):
+        #scout!
+        print('scout!')
+        explore_channel = "get the explore channel from the jar which was made on game start"
+        squad = self_unit.squad
+
+        report = "**Action: Scout**\n"+\
+            "Player: "+self_unit.owner+"\n"+\
+                 "From Location: "+from_location+"\n"+\
+                 "Target Location: "+target_location+"\n"+\
+                 "Squad: \n"+squad.report()+"\n"
+
+    def harvest(self, self_unit, f, hit):
+        squad = self_unit.squad
+        can_go = True
+        for unit in squad.units:
+            if unit.stats['Endurance'] < 2:
+                can_go = False
+        if can_go:
+            #say to explore channel(report)
+            print(self.report)
+
+class Sentry():
+    #TODO: TEST
+    def harvest(self, self_unit, f, hit):
+        report = "**Action: Sentry**\n"+\
+                 "Player: "+self_unit.owner+"\n"+\
+                 "Current Location: "+self_unit.location+"\n"+\
+                 "Adj Locations: "+self_unit.location.paths+"\n"
+        #say to explore channel(report)
+        print(report)
+
+
+
 class Warrior():
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
@@ -77,63 +164,6 @@ class Ranger():
                  "Damage Inflicted: "+str(report_dict['hit_count'])+"\n\n"+\
                  "---"+str(report_dict['result'])+"---\n"+health_rep
         return report
-
-class Scout():
-    #TODO: TEST
-    def __init__(self):
-        self.loot = theJar['resources']['Food']
-
-    def act(self, self_unit, from_location, direction):
-        #explore!
-        print('explore!')
-        explore_channel = "get the explore channel from the jar which was made on game start"
-        squad = self_unit.squad
-
-        report = "Player: "+self_unit.owner+"\n"+\
-                 "From Location: "+from_location+"\n"+\
-                 "Direction: "+direction+"\n"+\
-                 "Squad: \n"+squad.report()+"\n"
-
-        #say to explore channel(report)
-
-
-    def move(self, self_unit, from_location, to_location):
-        #self_unit.owner.updatePerms(from_location, to_location
-
-        loc_size_pass_bars = {
-            'tiny': 1,
-            'small': 2,
-            'medium': 3,
-            'large': 4,
-            'huge': 5,
-        }
-
-        res_per_hit = {
-            0:0,
-            1:2,
-            2:5,
-            3:8,
-            4:11,
-            5:14,
-        }
-        to_loc_bar = loc_size_pass_bars[to_location.size]
-        s, report = self_unit.dice.roll_math(to_loc_bar)
-        hits = report['hit_count']
-        if hits > 5:
-            hits = 5
-        res_yield = res_per_hit[hits]
-        self_unit.inventory.addResource(self.loot,res_yield)
-
-        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
-        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
-        if food_ct > water_ct:
-            self.loot = theJar['resources']['Water']
-        else:
-            self.loot = theJar['resources']['Food']
-
-        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
-        return report
-
 
 
 class Knight():
@@ -301,7 +331,7 @@ class Vehicle():
                         report += action_report
         return report
 
-    #TODO: Gotta think about this a bit more, not sure if every defense move can be compatible with this love triangle thing going on
+    #TODO: Gotta think about this a bit more, not sure if every defense move can be compatible with this love triangle thing going on (fixed maybe?)
     def defend(self, defense_unit, attack_unit, dmg):
         report = str(defense_unit)+" has been attacked by"+str(attack_unit)+". Others come to defend:"
         subunit_list = attack_unit.inventory.slots['units']
@@ -369,9 +399,49 @@ class Eelaki():
         print('action!')
 
 class Loyavasi():
+    def __init__(self):
+        self.loot = theJar['resources']['Food']
+
+    def move(self, self_unit, from_location, to_location):
+        #self_unit.owner.updatePerms(from_location, to_location
+
+        loc_size_pass_bars = {
+            'tiny': 1,
+            'small': 2,
+            'medium': 3,
+            'large': 4,
+            'huge': 5,
+        }
+
+        res_per_hit = {
+            0:0,
+            1:2,
+            2:5,
+            3:8,
+            4:11,
+            5:14,
+        }
+        to_loc_bar = loc_size_pass_bars[to_location.size]
+        s, report = self_unit.dice.roll_math(to_loc_bar)
+        hits = report['hit_count']
+        if hits > 5:
+            hits = 5
+        res_yield = res_per_hit[hits]
+        self_unit.inventory.addResource(self.loot,res_yield)
+
+        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
+        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
+        if food_ct > water_ct:
+            self.loot = theJar['resources']['Water']
+        else:
+            self.loot = theJar['resources']['Food']
+
+        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
+        return report
+
     #REFRESH: +2 Endurance over cap
     def refresh(self, self_unit):
-        self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']+2
+        self_unit.stats['Endurance'] = self_unit.stats['Endurance']+2
 
 class Otavan():
     #DONE
@@ -461,35 +531,22 @@ class Charged():
         if self_unit.hasTrait('Charged'):
             self_unit.delTrait('Charged')
 
+
+class Morale():
+    #TODO: TEST
+    def work(self, subject_building, self_unit, subject_units):
+        for output in subject_building.outputs.keys():
+            resource = theJar['resources'][output]
+            subject_building.inventory.addResource(self, resource, 1)
+        subject_building.delTrait('Good Morale')
+
 #TODO: Thorns?
 #----------building_logic----------
 
-class Mend():
-    #TODO: TEST
-    def work(self, self_building, subject_units, stat, quantity):
-        for unit in subject_units:
-            unit.setStat(stat, quantity)
-
-class Train():
-    #TODO: TEST
-    def work(self, self_building, subject_units, new_trait):
-        for unit in subject_units:
-            class_traits = unit.getTraitbyType('class')
-            unit.delTrait(class_traits[0])
-            unit.addTrait(new_trait)
-
-
-class Boon():
-    #TODO: TEST
-    def work(self, self_building, subject_units, trait):
-        district = subject_units[0].location.location
-        for building in district.inventory.slots['building']:
-            building.addTrait(trait)
-
-class Carry():
+class Transport():
     #TODO: TEST
     def __init__(self):
-        self.link_slots = 3
+        self.link_slots = 1
         self.links = []
 
     #Designates the buildings to link up (or unlink)
@@ -503,34 +560,87 @@ class Carry():
             if pair in self.links:
                 self.links.remove(pair)
 
-    #This does... something
-    def work(self, self_building, subject_units):
-        i = 0
-        while i < len(subject_units)/2:
-            sender = self.links[i][0]
-            receiver = self.links[i][1]
-            sender.dellink(receiver)
-            i += 1
-
-    #This re-engages the links (probably)
-    def refresh(self):
+    #This engages the links
+    def harvest(self, self_card, f, hit):
         for link in self.links:
             sender = link[0]
             receiver = link[1]
-            sender.addlink(receiver)
+            if self_card.location == sender.location == receiver.location:
+                sender.addlink(receiver)
 
+    #This cleanses them
+    def refresh(self, self_card):
+        for link in self.links:
+            sender = link[0]
+            receiver = link[1]
+            if self_card.location == sender.location == receiver.location:
+                sender.dellink(receiver)
 
-#TODO: Thorns,
-
-#----------building_effects----------
-
-class Morale():
+class Mend():
     #TODO: TEST
-    def work(self, self_building, subject_units, quantity):
-        for output in self_building.outputs.keys():
-            resource = theJar['resources'][output]
-            self_building.inventory.addResource(self, resource, quantity)
-        self_building.delTrait('Good Morale')
+    def work(self, self_building, subject_units, stat, quantity):
+        for unit in subject_units:
+            unit.setStat(stat, quantity)
+
+class Upkeep():
+    #TODO: TEST
+    def work(self, self_building, subject_units):
+        for unit in subject_units:
+            if unit.upkeep:
+                for resource in unit.upkeep.keys():
+                    unit.inventory.addResource(resource, unit.upkeep[resource])
+
+class Speed():
+    #TODO: TEST
+    def work(self, self_building, subject_units):
+        for unit in subject_units:
+            unit.stats['Endurance'] = unit.statcaps['Endurance']*2
+
+class Sacrifice():
+    #TODO: TEST
+    def work(self, self_building, subject_units, stat, quantity):
+        for unit in subject_units:
+            unit.setHealth(-unit.statcaps['Health'])
+
+class Defense():
+    #TODO: Figure out defense mechanics :)
+    def work(self, self_building, subject_units, def_modifier):
+        district = self_building.location
+
+
+class Ward():
+    #TODO: TEST
+    def work(self, self_building, subject_units, range):
+        report = "**Action: Ward**\n"+\
+                 "Player: "+self_building.owner+"\n"+\
+                 "Current Location: "+self_building.location+"\n"
+        if range > 0:
+            report += "Adj Locations: "+self_building.location.paths+"\n"
+        #say to explore channel(report)
+        print(report)
+
+
+class Train():
+    #TODO: TEST
+    def work(self, self_building, subject_units, new_trait):
+        for unit in subject_units:
+            if new_trait.type == 'class':
+                class_traits = unit.getTraitbyType('class')
+                unit.delTrait(class_traits[0])
+            unit.addTrait(new_trait)
+
+class WorkerBoon():
+    #TODO: TEST
+    def work(self, self_building, subject_units, trait):
+        for unit in subject_units:
+            unit.addTrait(trait)
+
+class DistrictBoon():
+    #TODO: TEST
+    def work(self, self_building, subject_units, trait):
+        district = subject_units[0].location.location
+        for building in district.inventory['building']:
+            building.addTrait(trait)
 
 class Reproduce():
     #TODO: TEST
@@ -547,5 +657,19 @@ class Reproduce():
         man.addTrait(picked_race)
         man.addTrait(picked_class)
 
+class Mentor():
+    #TODO: TEST
+    def work(self, self_building, subject_units):
+        mentor = subject_units[0]
+        traits = mentor.trait_list
+        status, man = self_building.addUnitToBuildingInv()
+        for trait in traits:
+            man.addTrait(trait)
+
+
+#----------building_effects----------
+
+
+#TODO: Thorns?
 
 
