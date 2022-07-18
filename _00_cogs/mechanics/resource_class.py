@@ -31,11 +31,11 @@ resource_kits_dict = {
     'Steam':("Steam", "The angriest form of water.", "Fluid"),
     'Energy':("Energy", "Pure Energy.", "Energy"),
 
-    'Woodland_Gear':("Woodland Gear", "A mere morsel, but it will do.", "Solid"),
-    'Survivalist_Gear':("Survivalist Gear", "A mere morsel, but it will do.", "Solid"),
+    'Woodland Gear':("Woodland Gear", "A mere morsel, but it will do.", "Solid"),
+    'Survivalist Gear':("Survivalist Gear", "A mere morsel, but it will do.", "Solid"),
     'Vessel':("Vessel", "A glowing glass box resembling a lantern, containing the most valuable thing in all of Aporia.", "Solid"),
     'Heart':("Heart", "A clockwork heart, keeping time in order to stabilize its anomalous purpose.", "Solid"),
-    'Nanites':("Nanites", "A swarm of particles bound to The Interface.", "Solid"),
+    'Hive':("Hive", "A swarm of particles bound to The Interface.", "Solid"),
 
 
 

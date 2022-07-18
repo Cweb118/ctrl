@@ -5,6 +5,7 @@ theJar = {
     'players': {},
     'played_cards':{'unit':[], 'building':[]},
     'traits': {},
+    'skillsets':{},
     'allegiances': {
         'Bandits':{'Bandits':'Friendly', 'Camp':'Hostile', 'Cows':'Hostile'},
         'Camp':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'},

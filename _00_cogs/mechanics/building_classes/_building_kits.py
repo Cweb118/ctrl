@@ -20,7 +20,7 @@ building_kits_dict = {
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -35,7 +35,7 @@ building_kits_dict = {
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -50,7 +50,7 @@ building_kits_dict = {
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -65,7 +65,7 @@ building_kits_dict = {
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -80,7 +80,7 @@ building_kits_dict = {
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -95,7 +95,7 @@ building_kits_dict = {
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
-        'input_dict':{'woodland_gear':1},
+        'input_dict':{'Woodland Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -171,7 +171,7 @@ building_kits_dict = {
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Worker'],
         'input_dict':{'Wood':2, 'Stone':1, 'Food':1, 'Water':1,},
-        'output_dict':{'woodland_gear':1},
+        'output_dict':{'Woodland Gear':1},
         'cat_dict':None
     },
 
@@ -202,7 +202,7 @@ building_kits_dict = {
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -217,7 +217,7 @@ building_kits_dict = {
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -232,7 +232,7 @@ building_kits_dict = {
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -247,7 +247,7 @@ building_kits_dict = {
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -262,7 +262,7 @@ building_kits_dict = {
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -277,7 +277,7 @@ building_kits_dict = {
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
-        'input_dict':{'survivalist_gear':1},
+        'input_dict':{'Survivalist Gear':1},
         'output_dict':None,
         'cat_dict':None
     },
@@ -353,7 +353,7 @@ building_kits_dict = {
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Worker'],
         'input_dict':{'Metal':1, 'Stone':2, 'Food':1, 'Water':1,},
-        'output_dict':{'survivalist_gear':1},
+        'output_dict':{'Survivalist Gear':1},
         'cat_dict':None
     },
 
@@ -589,7 +589,7 @@ building_kits_dict = {
 
     'templeofthelibrarian':{
             'title':'Temple of the Librarian',
-            'description':'An alter to the Librarian. May her wealth of knowledge be a blessing and not a curse.',
+            'description':'An alter to the Librarian. May Her wealth of knowledge be a blessing and not a curse.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[None, None, None, None, 1, None],
             'mechanics': ['Train'], #aka traits
@@ -619,7 +619,7 @@ building_kits_dict = {
 
     'templeofthebiologist':{
             'title':'Temple of the Biologist',
-            'description':'An alter to the Biologist. May the life she has given you be lived to the fullest.',
+            'description':'An alter to the Biologist. May the life She has given you be lived to the fullest.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[9, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
@@ -634,7 +634,7 @@ building_kits_dict = {
 
     'templeofthematriarch':{
             'title':'Temple of the Matriarch',
-            'description':'An alter to the Matriarch. May her loving-kindness quench your thirst.',
+            'description':'An alter to the Matriarch. May Her loving-kindness quench your thirst.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[12, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
@@ -649,7 +649,7 @@ building_kits_dict = {
 
     'templeofthearchitect':{
             'title':'Temple of the Architect',
-            'description':'An alter to the Architect. May his wisdom and foresight tend to all your needs.',
+            'description':'An alter to the Architect. May His wisdom and foresight tend to all your needs.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[5, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
@@ -664,7 +664,7 @@ building_kits_dict = {
 
     'templeofthewarlord':{
             'title':'Temple of the Warlord',
-            'description':'An alter to the Warlord. May his strength fall upon you so that you may be a blight to your enemies.',
+            'description':'An alter to the Warlord. May His strength fall upon you so that you may be a blight to your enemies.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, None, None],
             'mechanics': ['Defense'], #aka traits
@@ -679,7 +679,7 @@ building_kits_dict = {
 
     'templeofthepatron':{
             'title':'Temple of the Patron',
-            'description':'An alter to the Patron. May his loving embrace satiate your hunger.',
+            'description':'An alter to the Patron. May His loving embrace satiate your hunger.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, 2, None],
             'mechanics': ['Upkeep'], #aka traits
@@ -694,7 +694,7 @@ building_kits_dict = {
 
     'templeofthevigil':{
             'title':'Temple of the Vigil',
-            'description':'An alter to the Vigil. May his watchful eye be your ward.',
+            'description':'An alter to the Vigil. May His watchful eye be your ward.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, None, None],
             'mechanics': ['Ward'], #aka traits
@@ -709,7 +709,7 @@ building_kits_dict = {
 
     'templeofthetraveler':{
             'title':'Temple of the Traveler',
-            'description':'An alter to the Traveler. May his wanderings inspire you to go far and wide.',
+            'description':'An alter to the Traveler. May His wanderings inspire you to go far and wide.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, 2, None],
             'mechanics': ['Speed'], #aka traits

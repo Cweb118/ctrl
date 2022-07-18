@@ -1,6 +1,21 @@
 import random
 from _02_global_dicts import theJar
 import _00_cogs.mechanics.resource_class
+
+#----------unit arguement guide----------
+
+# act(self, args):
+# play(self, self_unit, location):
+# work(self, subject_building, self_unit, subject_units):
+# move(self, self_unit, from_location, to_location):
+# battle(self, attack_squad, defense_squad):
+# attack(self, attack_unit, defense_unit):
+# defend(self, defense_unit, attack_unit, dmg):
+# death(self, ???):
+# harvest(self, self_unit, def_lost, hit_status):
+# refresh(self, self_unit)
+
+
 #----------unit classes----------
 
 class Worker():
@@ -541,6 +556,22 @@ class Morale():
         subject_building.delTrait('Good Morale')
 
 #TODO: Thorns?
+
+
+#----------building arguement guide----------
+
+# act(self, args*):
+# play(self, self_unit, location):
+# work(self, subject_building, subject_units, logic_args*):
+# move(self, self_unit, from_location, to_location):
+# battle(self, attack_squad, defense_squad):
+# attack(self, attack_unit, defense_unit):
+# defend(self, defense_unit, attack_unit, dmg):
+# death(self, ???):
+# harvest(self, self_unit, def_lost, hit_status):
+# refresh(self, self_unit):
+
+
 #----------building_logic----------
 
 class Transport():
@@ -561,7 +592,7 @@ class Transport():
                 self.links.remove(pair)
 
     #This engages the links
-    def harvest(self, self_card, f, hit):
+    def harvest(self, self_card, def_lost, hit_status):
         for link in self.links:
             sender = link[0]
             receiver = link[1]

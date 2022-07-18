@@ -20,14 +20,18 @@ class Unit(Card):
             'Health':0,
             'Defense':0,
             'Endurance':0,
-            'Fortitude':0
+            'Fortitude':0,
+            'Initiative':0,
+            'Taunt':0
         }
         self.statcaps = {
             'Attack':0,
             'Health':0,
             'Defense':0,
             'Endurance':0,
-            'Fortitude':0
+            'Fortitude':0,
+            'Initiative':0,
+            'Taunt':0
         }
 
         self.initiative = 0
@@ -197,10 +201,6 @@ class Unit(Card):
                                 inv.slotcap[type] = mod
                     else:
                         print("Error: Invalid inventory constraint.")
-            if trait.trait_initiative:
-                self.initiative += trait.trait_initiative
-            if trait.trait_threat:
-                self.threat += trait.trait_threat
             if trait.trait_dice_stats:
                 new_set = self.die_list + trait.trait_dice_stats
                 self.die_list = new_set
@@ -267,10 +267,6 @@ class Unit(Card):
 
                     else:
                         print("Error: Invalid inventory constraint.")
-            if trait.trait_initiative:
-                self.initiative += -trait.trait_initiative
-            if trait.trait_threat:
-                self.threat += -trait.trait_threat
             if trait.trait_dice_stats:
                 for die in trait.trait_dice_stats:
                     self.die_list.remove(die)
