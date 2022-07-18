@@ -58,7 +58,6 @@ class Unit(Card):
             'on_death': [],
             'on_harvest': [],
             'on_refresh': [],
-
         }
         for trait_name in self.trait_list:
             self.addTrait(trait_name)
@@ -113,8 +112,8 @@ class Unit(Card):
     def setHealth(self, quantity):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:
-            self.status = "DEAD"
-            report = "The **"+str(self)+'** has died.'
+            self.status = "LOST"
+            report = "The **"+str(self)+'** has been lost.'
         else:
             report = "The **"+str(self)+'** now has '+str(self.stats['Health'])+' Health.'
         return report
@@ -424,6 +423,7 @@ class Unit(Card):
                 if len(self.traits['on_refresh']) > 0:
                     for action in self.traits['on_refresh']:
                         refresh_report = action.refresh(self)
+            return refresh_report
 
 
 

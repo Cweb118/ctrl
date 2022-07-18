@@ -24,17 +24,20 @@ class Building(Card):
 
         self.trait_list = traits
         self.traits = {
+            'on_act': [],
             'on_play': [],
             'on_work': [],
             'on_move': [],
-            'on_battle': [],
+            'on_battle':[],
             'on_attack': [],
             'on_defend': [],
             'on_death': [],
-            'on_act': [],
+            'on_harvest': [],
+            'on_refresh': [],
         }
-        for trait_name in traits:
-            self.addTrait(trait_name)
+        if traits:
+            for trait_name in traits:
+                self.addTrait(trait_name)
 
         self.logic_args = logic_args
         self.worker_req = worker_req
@@ -94,7 +97,12 @@ class Building(Card):
                 needed = self.catalyst[res]
                 have = self.inventory.resources[res_obj]
                 if have < needed:
-                    can_run = False
+                    if res == 'Vessel':
+                        for unit in self.inventory.slots['units']:
+                            if not unit.getTrait('Charged'):
+                                can_run = False
+                    else:
+                        can_run = False
                     report = "Error: **"+str(self)+"** lacks required catalytic resources."
 
         if self.inventory.slotcap['unit'] > 0:
@@ -132,6 +140,12 @@ class Building(Card):
                         workers = self.inventory.slots['units']
                         args = [self, workers]+self.logic_args
                         trait.action.work(*args)
+                for worker in self.inventory.slots['units']:
+                    if len(worker.traits['on_work']) > 0:
+                        for trait in worker.traits['on_work']:
+                            workers = self.inventory.slots['units']
+                            args = [self, worker, workers]
+                            trait.action.work(*args)
                 report = "**"+str(self) + "** has run successfully."
             else:
                 report = req_report
@@ -151,7 +165,16 @@ class Building(Card):
         report = ''
         if len(self.traits['on_harvest']) > 0:
             for trait in self.traits['on_harvest']:
-                action_report = trait.action.harvest()
+                action_report = trait.action.harvest(self, None, None)
+                if action_report:
+                    report += action_report
+        return report
+
+    def refresh(self):
+        report = ''
+        if len(self.traits['on_refresh']) > 0:
+            for trait in self.traits['on_refresh']:
+                action_report = trait.action.refresh(self)
                 if action_report:
                     report += action_report
         return report
@@ -168,8 +191,8 @@ class Building(Card):
     def setHealth(self, quantity):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:
-            self.status = "DESTROYED"
-            report = "The **"+str(self)+'** has been destroyed.'
+            self.status = "LOST"
+            report = "The **"+str(self)+'** has been lost.'
         else:
             report = "The **"+str(self)+'** now has '+str(self.stats['Health'])+' Health.'
         return report

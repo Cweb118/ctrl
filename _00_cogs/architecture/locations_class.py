@@ -76,11 +76,11 @@ class District():
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
-            'tiny': [self, 100, None, 10, 10, 4, 1],
-            'small': [self, 100, None, 10, 10, 8, 2],
-            'medium': [self, 100, None, 10, 10, 16, 4],
-            'large': [self, 100, None, 10, 10, 24, 8],
-            'huge': [self, 100, None, 10, 10, 40, 14],
+            'tiny': [self, 10, 10, 10, 10, 4, 1],
+            'small': [self, 10, 10, 10, 10, 8, 2],
+            'medium': [self, 10, 10, 10, 10, 16, 4],
+            'large': [self, 10, 10, 10, 10, 24, 8],
+            'huge': [self, 10, 10, 10, 10, 40, 14],
         }
         self.inventory = Inventory(*sizes[size])
 

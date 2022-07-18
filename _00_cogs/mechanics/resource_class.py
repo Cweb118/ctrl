@@ -21,8 +21,24 @@ resource_kits_dict = {
     'Influence':("Influence", "A representation of your favor with the people.", "Abstract"),
     'Water':("Water", "Its wet and refreshing.", "Fluid"),
     'Food':("Food", "A mere morsel, but it will do.", "Solid"),
-    'Metal':("Metal", "Scrap metal. Its hard to work with, but durable.", "Solid"),
     'Wood':("Wood", "Hardwood. Its easy to work with, but not as strong.", "Solid"),
+    'Stone':("Stone", "Scrap metal. Its hard to work with, but durable.", "Solid"),
+    'Coal':("Coal", "Scrap metal. Its hard to work with, but durable.", "Solid"),
+    'Ore':("Ore", "Scrap metal. Its hard to work with, but durable.", "Solid"),
+    'Metal':("Metal", "Scrap metal. Its hard to work with, but durable.", "Solid"),
+    'Silver':("Silver", "A mere morsel, but it will do.", "Solid"),
+
+    'Steam':("Steam", "The angriest form of water.", "Fluid"),
+    'Energy':("Energy", "Pure Energy.", "Energy"),
+
+    'Woodland_Gear':("Woodland Gear", "A mere morsel, but it will do.", "Solid"),
+    'Survivalist_Gear':("Survivalist Gear", "A mere morsel, but it will do.", "Solid"),
+    'Vessel':("Vessel", "A glowing glass box resembling a lantern, containing the most valuable thing in all of Aporia.", "Solid"),
+    'Heart':("Heart", "A clockwork heart, keeping time in order to stabilize its anomalous purpose.", "Solid"),
+    'Nanites':("Nanites", "A swarm of particles bound to The Interface.", "Solid"),
+
+
+
 }
 
 for key in resource_kits_dict.keys():
