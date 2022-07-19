@@ -1,18 +1,15 @@
+import copy
+
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics._cards_class import Card
-from _00_cogs.mechanics.trait_classes.__trait_parent_class import Trait
 from _00_cogs.mechanics.trait_classes._trait_kits import trait_kits_dict
 from _02_global_dicts import theJar
-
-for trait_kit in trait_kits_dict.keys():
-    trait = Trait(*trait_kits_dict[trait_kit])
-    theJar['traits'][trait.trait_title] = trait
 
 class Unit(Card):
     def __init__(self):
 
         inv_args = [self]+[0, 0, None, None, None, None]
-        super().__init__('', '...', inv_args=inv_args, play_cost=None)
+        super().__init__('Tim', 'Civilian', inv_args=inv_args, play_cost=None)
         self.nick = None
 
         self.stats = {
@@ -34,37 +31,17 @@ class Unit(Card):
             'Taunt':0
         }
 
-        self.initiative = 0
-        self.threat = 0
         self.upkeep = {}
         self.die_list = []
         self.die_set = None
         self.squad = None
 
-        upkeep_dict = {'Food':0, 'Water':0}
-        for key in upkeep_dict.keys():
-            resource = theJar['resources'][key]
-            self.upkeep[resource] = upkeep_dict[key]
-
+        self.traits = []
+        self.skillsets = []
         self.effects = []
         self.certs = []
         self.race = None
         self.job = None
-        self.trait_list = []
-        self.traits = {
-            'on_act': [],
-            'on_play': [],
-            'on_work': [],
-            'on_move': [],
-            'on_battle':[],
-            'on_attack': [],
-            'on_defend': [],
-            'on_death': [],
-            'on_harvest': [],
-            'on_refresh': [],
-        }
-        for trait_name in self.trait_list:
-            self.addTrait(trait_name)
 
 
     def addUnit(self, card_kit_id, inv_owner, owner_type):
@@ -130,16 +107,26 @@ class Unit(Card):
             health_rep = self.setHealth(-attack_value)
         return health_rep
 
-#Make all unit kits traits
-#To transpose, remove old then add new
-#Init all traits and add into the Jar
-#To add/remove a trait, reference the jar (dont add entire trait to trigger anymore)
+    # 'TraitName':{
+        #     'title':'TITLE',
+        #     'description':'DESC',
+        #     'type':'TYPE',
+        #     'certs':'CERTS',
+        #     'skillsets':'SKILLSET_LIST',
+        #     'inv_args':'INV_ARGS_DICT',
+        #     'play_cost':'PLAY_COST_DICT',
+        #     'stats':'STATS_DICT',
+        #     'upkeep':'UPKEEP_DICT',
+        #     'die_set':'DIE_SET_LIST'
+        # },
+
+
     def addTrait(self, trait_name):
         if not self.hasTrait(trait_name):
-            trait = self.getTrait(trait_name)
+            trait = trait_kits_dict[trait_name]
             #rework to be modular
-            if trait.trait_title not in self.title:
-                if trait.trait_type != 'effect':
+            if trait['title'] not in self.title:
+                if trait['trait'] != 'effect':
                     if trait.trait_type == 'class':
                         self.job = trait_name
                         self.regenName()
@@ -148,38 +135,39 @@ class Unit(Card):
                         self.regenName()
                 else:
                     self.effects.append(trait.trait_title)
-            if trait.trait_certs:
-                for cert in trait.trait_certs:
-                    self.addTraitCert(cert)
-            if trait.trait_stats_dict:
-                for mod_stat in trait.trait_stats_dict.keys():
-                    value = trait.trait_stats_dict[mod_stat]
+            if trait['certs']:
+                for cert in trait['certs']:
+                    self.addCert(cert)
+            if trait['stats']:
+                for mod_stat in trait['stats'].keys():
+                    value = trait['stats'][mod_stat]
                     self.stats[mod_stat] += value
                     self.statcaps[mod_stat] += value
                     if self.statcaps[mod_stat] < 0:
                         self.stats[mod_stat] = 0
                         self.statcaps[mod_stat] = 0
-            if trait.trait_play_cost:
-                for mod_cost in trait.trait_play_cost.keys():
-                    value = trait.trait_play_cost[mod_cost]
+            if trait['play_cost']:
+                for mod_res in trait['play_cost'].keys():
+                    mod_res_obj = theJar['resources'][mod_res]
+                    value = trait['play_cost'][mod_res_obj]
                     try:
-                        self.upkeep[mod_cost] += value
+                        self.play_cost[mod_res_obj] += value
                     except:
-                        self.upkeep[mod_cost] = value
-            if trait.trait_upkeep_dict:
-                for mod_upkeep in trait.trait_upkeep_dict.keys():
+                        self.play_cost[mod_res_obj] = value
+            if trait['upkeep']:
+                for mod_upkeep in trait['upkeep'].keys():
                     resource = theJar['resources'][mod_upkeep]
-                    value = trait.trait_upkeep_dict[mod_upkeep]
+                    value = trait['upkeep'][mod_upkeep]
                     try:
                         self.upkeep[resource] += value
                     except:
                         self.upkeep[resource] = value
                     if self.upkeep[resource] < 0:
                         self.upkeep[resource] = 0
-            if trait.trait_inv_args:
+            if trait['inv_args']:
                 inv = self.inventory
-                for key in trait.trait_inv_args.keys():
-                    value = trait.trait_inv_args[key]
+                for key in trait['inv_args'].keys():
+                    value = trait['inv_args'][key]
                     if key == 'cont':
                         try:
                             inv.cont += value
@@ -201,59 +189,60 @@ class Unit(Card):
                                 inv.slotcap[type] = mod
                     else:
                         print("Error: Invalid inventory constraint.")
-            if trait.trait_dice_stats:
-                new_set = self.die_list + trait.trait_dice_stats
+            if trait['die_set']:
+                new_set = self.die_list + trait['die_set']
                 self.die_list = new_set
                 self.die_set = Dice(new_set)
-            for trig in trait.trigger:
-                self.traits[trig].append(trait.action)
-            self.trait_list.append(trait_name)
+            if trait['skillsets']:
+                self.skillsets[trait_name] = trait['skillsets']
+            self.traits.append(trait_name)
 
     def delTrait(self, trait_name):
         if self.hasTrait(trait_name):
-            trait = self.getTrait(trait_name)
-            if trait.trait_title not in self.title:
-                if trait.trait_type != 'effect':
-                    if trait.trait_type == 'class':
+            trait = trait_kits_dict[trait_name]
+            if trait['title'] not in self.title:
+                if trait['type'] != 'effect':
+                    if trait['type'] == 'class':
                         self.job = None
                         self.regenName()
-                    elif trait.trait_type == 'race':
+                    elif trait['type'] == 'race':
                         self.race = None
                         self.regenName()
                 else:
-                    self.effects.remove(trait.trait_title)
-            if trait.trait_certs:
-                for cert in trait.trait_certs:
-                    self.delTraitCert(cert)
-            if trait.trait_stats_dict:
-                for mod_stat in trait.trait_stats_dict.keys():
-                    value = trait.trait_stats_dict[mod_stat]
+                    self.effects.remove(trait['title'])
+            if trait['certs']:
+                for cert in trait['certs']:
+                    self.delCert(cert)
+            if trait['stats']:
+                for mod_stat in trait['stats'].keys():
+                    value = trait['stats'][mod_stat]
                     self.stats[mod_stat] += -value
                     self.statcaps[mod_stat] += -value
                     if self.statcaps[mod_stat] < 0:
                         self.stats[mod_stat] = 0
                         self.statcaps[mod_stat] = 0
-            if trait.trait_play_cost:
-                for mod_cost in trait.trait_play_cost.keys():
-                    value = trait.trait_play_cost[mod_cost]
+            if trait['play_cost']:
+                for mod_res in trait['play_cost'].keys():
+                    mod_res_obj = theJar['resources'][mod_res]
+                    value = trait['play_cost'][mod_res_obj]
                     try:
-                        self.upkeep[mod_cost] += -value
+                        self.play_cost[mod_res_obj] += -value
                     except:
-                        self.upkeep[mod_cost] = -value
-            if trait.trait_upkeep_dict:
+                        self.play_cost[mod_res_obj] = -value
+            if trait['upkeep']:
                 for mod_upkeep in trait.trait_upkeep_dict.keys():
                     resource = theJar['resources'][mod_upkeep]
-                    value = trait.trait_upkeep_dict[mod_upkeep]
+                    value = trait['upkeep'][mod_upkeep]
                     try:
                         self.upkeep[resource] += -value
                     except:
                         self.upkeep[resource] = -value
                     if self.upkeep[resource] < 0:
                         self.upkeep[resource] = 0
-            if trait.trait_inv_args:
+            if trait['inv_args']:
                 inv = self.inventory
-                for key in trait.trait_inv_args.keys():
-                    value = trait.trait_inv_args[key]
+                for key in trait['inv_args'].keys():
+                    value = trait['inv_args'][key]
                     if key == 'cont':
                         inv.cont += -value
                     elif key == "cap":
@@ -267,27 +256,27 @@ class Unit(Card):
 
                     else:
                         print("Error: Invalid inventory constraint.")
-            if trait.trait_dice_stats:
-                for die in trait.trait_dice_stats:
+            if trait['die_set']:
+                for die in trait['die_set']:
                     self.die_list.remove(die)
                 self.die_set = Dice(self.die_list)
-            for trig in trait.trigger:
-                self.traits[trig].remove(trait.action)
-            self.trait_list.remove(trait_name)
+            if trait['skillsets']:
+                del self.skillsets[trait_name]
+            self.traits.remove(trait_name)
 
     def hasTrait(self, trait_name):
         has = False
-        if trait_name in self.trait_list:
+        if trait_name in self.traits:
             has = True
         return has
 
     def getTrait(self, trait_name):
-        trait = theJar['traits'][trait_name]
+        trait = trait_kits_dict[trait_name]
         return trait
 
     def hasTraitType(self, type):
         has = False
-        for trait_name in self.trait_list:
+        for trait_name in self.traits:
             trait = self.getTrait(trait_name)
             if trait.trait_type == type:
                 has = True
@@ -295,26 +284,26 @@ class Unit(Card):
 
     def getTraitbyType(self, type):
         trait_name_list = []
-        for trait_name in self.trait_list:
+        for trait_name in self.traits:
             trait = self.getTrait(trait_name)
             if trait.trait_type == type:
                 trait_name_list.append(trait.trait_title)
         return trait_name_list
 
-    def hasTraitCert(self, cert_name):
+    def hasCert(self, cert_name):
         has = False
         if cert_name in self.certs:
             has = True
         return has
 
-    def addTraitCert(self, cert_name):
+    def addCert(self, cert_name):
         if not cert_name in self.certs:
             self.certs.append(cert_name)
 
-    def delTraitCert(self, cert_name):
+    def delCert(self, cert_name):
         if cert_name in self.certs:
             remove = True
-            for trait_name in self.trait_list:
+            for trait_name in self.traits:
                 trait = self.getTrait(trait_name)
                 if cert_name in trait.certs:
                     remove = False
@@ -458,7 +447,7 @@ class Unit(Card):
         info_rep['title'] = '-- Info:'
         info_rep['value'] =  "\n- Status: "+str(self.status)+\
                              "\n- Location: "+str(self.location)+\
-                             "\n- Traits: "+str(self.trait_list)
+                             "\n- Traits: "+str(self.traits)
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
         for key in self.upkeep.keys():

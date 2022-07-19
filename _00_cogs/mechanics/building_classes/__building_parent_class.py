@@ -99,7 +99,7 @@ class Building(Card):
                 if have < needed:
                     if res == 'Vessel':
                         for unit in self.inventory.slots['units']:
-                            if not unit.getTrait('Charged'):
+                            if not unit.hasTrait('Charged'):
                                 can_run = False
                     else:
                         can_run = False

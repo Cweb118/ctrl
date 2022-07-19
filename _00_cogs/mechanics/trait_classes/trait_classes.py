@@ -1,6 +1,5 @@
 import random
 from _02_global_dicts import theJar
-import _00_cogs.mechanics.resource_class
 
 #----------unit arguement guide----------
 
@@ -18,20 +17,10 @@ import _00_cogs.mechanics.resource_class
 
 #----------unit classes----------
 
-class Worker():
-    def mmmm(self):
-        print('mmmm')
-
-class Laborer():
-    def mmmm(self):
-        print('mmmm')
-
-class Engineer():
-    def mmmm(self):
-        print('mmmm')
 
 class Architect():
     def __init__(self):
+        self.triggers = ['on_act', 'on_harvest']
         self.subject = None
 
     def act(self):
@@ -46,6 +35,7 @@ class Architect():
 class Pathfinder():
     #TODO: TEST
     def __init__(self):
+        self.triggers = ['on_act', 'on_harvest']
         self.report = None
 
     def act(self, self_unit, from_location, direction):
@@ -73,6 +63,7 @@ class Pathfinder():
 class Scout():
     #TODO: TEST
     def __init__(self):
+        self.triggers = ['on_act', 'on_harvest']
         self.report = None
 
     def act(self, self_unit, from_location, target_location):
@@ -99,6 +90,9 @@ class Scout():
 
 class Sentry():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_harvest']
+
     def harvest(self, self_unit, f, hit):
         report = "**Action: Sentry**\n"+\
                  "Player: "+self_unit.owner+"\n"+\
@@ -110,6 +104,9 @@ class Sentry():
 
 
 class Warrior():
+    def __init__(self):
+        self.triggers = ['on_attack']
+
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         hit, report_dict = attack_unit.die_set.roll_math(def_def)
@@ -128,6 +125,7 @@ class Warrior():
 
 class Guardian():
     def __init__(self):
+        self.triggers = ['on_attack', 'on_defend']
         self.charged = True
 
     def attack(self, attack_unit, defense_unit):
@@ -163,6 +161,9 @@ class Guardian():
             return report
 
 class Ranger():
+    def __init__(self):
+        self.triggers = ['on_attack']
+
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         hit, report_dict = attack_unit.die_set.roll_math(def_def)
@@ -182,6 +183,9 @@ class Ranger():
 
 
 class Knight():
+    def __init__(self):
+        self.triggers = ['on_attack', 'on_defend']
+
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         hit, report_dict = attack_unit.die_set.roll_math(def_def)
@@ -234,6 +238,9 @@ class Knight():
 
 class Witch():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_battle', 'on_attack']
+
     def battle(self, attack_squad, defense_squad):
         self.allies = attack_squad
         self.enemies = defense_squad
@@ -282,6 +289,9 @@ class Witch():
         return report
 
 class Alchemist():
+    def __init__(self):
+        self.triggers = ['on_attack']
+
     def attack(self, attack_unit, defense_unit):
         def_att = defense_unit.stats['Attack']
         hit, report_dict = attack_unit.die_set.roll_math(def_att)
@@ -309,6 +319,9 @@ class Alchemist():
         return report
 
 class Technophant():
+    def __init__(self):
+        self.triggers = ['on_attack', 'on_refresh']
+
     def attack(self, attack_unit, defense_unit):
         att_att = attack_unit.stats['Attack']
         hit, report_dict = attack_unit.die_set.roll_math(att_att)
@@ -335,6 +348,9 @@ class Technophant():
 
 #----------vehicles----------
 class Vehicle():
+    def __init__(self):
+        self.triggers = ['on_play']
+
     def attack(self, attack_unit, defense_unit):
         report = str(attack_unit)+" has attacked "+str(defense_unit)+". Others follow suit:"
         subunit_list = attack_unit.inventory.slots['units']
@@ -363,7 +379,9 @@ class Vehicle():
 #----------races----------
 
 class Aratori():
-    #DONE
+    def __init__(self):
+        self.triggers = ['on_attack']
+
     def attack(self, attack_unit, defense_unit):
         def_def = defense_unit.stats['Defense']
         att_att = attack_unit.stats['Attack']
@@ -382,13 +400,13 @@ class Aratori():
         return report
 
 class Automata():
-    #DONE
-    #NOTE: PASSIVE (no upkeep)
-    def action(self):
-        print('action!')
+    def __init__(self):
+        self.triggers = ['on_play']
 
 class Barheim():
-    #NOTE: On work, reduce unit cap by 1
+    def __init__(self):
+        self.triggers = ['on_play', 'on_move']
+
     def reduce(self, building):
         if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
             building.inventory.slotcap['unit'] += -1
@@ -408,13 +426,14 @@ class Barheim():
 
 
 class Eelaki():
+    def __init__(self):
+        self.triggers = ['on_play']
     #PASS
     #Somehow decide a target; they get a big buff (defence or dodge idk)
-    def action(self):
-        print('action!')
 
 class Loyavasi():
     def __init__(self):
+        self.triggers = ['on_move', 'on_refresh']
         self.loot = theJar['resources']['Food']
 
     def move(self, self_unit, from_location, to_location):
@@ -459,13 +478,13 @@ class Loyavasi():
         self_unit.stats['Endurance'] = self_unit.stats['Endurance']+2
 
 class Otavan():
-    #DONE
-    #PASSIVE: Stealth (-2 Taunt)
-    def action(self):
-        print('action!')
+    def __init__(self):
+        self.triggers = ['on_play']
 
 class Prismari():
-    #DONE
+    def __init__(self):
+        self.triggers = ['on_defend']
+
     def defend(self, defense_unit, attack_unit, dmg):
         if attack_unit.threat >= 0:
             att_def = attack_unit.stats['Defense']
@@ -487,7 +506,9 @@ class Prismari():
         return report
 
 class Rivenborne():
-    #PASSIVE: Has Charged (renews)
+    def __init__(self):
+        self.triggers = ['on_play', 'on_refresh']
+
     def play(self, self_unit):
         if not self_unit.hasTrait('Charged'):
             self_unit.addTrait('Charged')
@@ -497,19 +518,19 @@ class Rivenborne():
 
 
 class Tevaru():
-    #PASS
-    #NOTE: PASSIVE (can have a 'partner' played to them)
-    def action(self):
-        print('action!')
+    def __init__(self):
+        self.triggers = ['on_play']
 
 class Xinn():
-    #DONE
-    #PASSIVE: Has the Harvest cert by default
-    def action(self):
-        print('action!')
+    def __init__(self):
+        self.triggers = ['on_play']
+
 
 class Yavari():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_act']
+
     def act(self, self_unit, target_unit):
         effect_trait_names = None
         if self_unit.hasTraitType('effect'):
@@ -530,6 +551,9 @@ class Yavari():
 #----------effects----------
 
 class Harmony():
+    def __init__(self):
+        self.triggers = ['on_harvest']
+
     #TODO: TEST
     def harvest(self, self_unit, def_lost, hit_status):
         health_rep = "The "+str(self_unit)+" rests in revelries."
@@ -541,6 +565,9 @@ class Harmony():
 
 
 class Charged():
+    def __init__(self):
+        self.triggers = ['on_havest']
+
     #TODO: TEST
     def harvest(self, self_unit, def_lost, hit_status):
         if self_unit.hasTrait('Charged'):
@@ -548,6 +575,9 @@ class Charged():
 
 
 class Morale():
+    def __init__(self):
+        self.triggers = ['on_work']
+
     #TODO: TEST
     def work(self, subject_building, self_unit, subject_units):
         for output in subject_building.outputs.keys():
@@ -577,6 +607,7 @@ class Morale():
 class Transport():
     #TODO: TEST
     def __init__(self):
+        self.triggers = ['on_act', 'on_harvest', 'on_refresh']
         self.link_slots = 1
         self.links = []
 
@@ -609,12 +640,18 @@ class Transport():
 
 class Mend():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, stat, quantity):
         for unit in subject_units:
             unit.setStat(stat, quantity)
 
 class Upkeep():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units):
         for unit in subject_units:
             if unit.upkeep:
@@ -623,24 +660,36 @@ class Upkeep():
 
 class Speed():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units):
         for unit in subject_units:
             unit.stats['Endurance'] = unit.statcaps['Endurance']*2
 
 class Sacrifice():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, stat, quantity):
         for unit in subject_units:
             unit.setHealth(-unit.statcaps['Health'])
 
 class Defense():
     #TODO: Figure out defense mechanics :)
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, def_modifier):
         district = self_building.location
 
 
 class Ward():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, range):
         report = "**Action: Ward**\n"+\
                  "Player: "+self_building.owner+"\n"+\
@@ -653,6 +702,9 @@ class Ward():
 
 class Train():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, new_trait):
         for unit in subject_units:
             if new_trait.type == 'class':
@@ -662,12 +714,18 @@ class Train():
 
 class WorkerBoon():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, trait):
         for unit in subject_units:
             unit.addTrait(trait)
 
 class DistrictBoon():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units, trait):
         district = subject_units[0].location.location
         for building in district.inventory['building']:
@@ -675,6 +733,9 @@ class DistrictBoon():
 
 class Reproduce():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units):
         races = [x.getTraitbyType('race') for x in subject_units]
         classes = [x.getTraitbyType('class') for x in subject_units] + ['Worker']
@@ -690,6 +751,9 @@ class Reproduce():
 
 class Mentor():
     #TODO: TEST
+    def __init__(self):
+        self.triggers = ['on_work']
+
     def work(self, self_building, subject_units):
         mentor = subject_units[0]
         traits = mentor.trait_list
