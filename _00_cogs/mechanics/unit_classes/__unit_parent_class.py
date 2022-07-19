@@ -2,7 +2,7 @@ import copy
 
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics._cards_class import Card
-from _00_cogs.mechanics.trait_classes._trait_kits import trait_kits_dict
+from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
 from _02_global_dicts import theJar
 
 class Unit(Card):
