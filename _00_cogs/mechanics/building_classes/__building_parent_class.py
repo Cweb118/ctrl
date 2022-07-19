@@ -141,11 +141,9 @@ class Building(Card):
                         args = [self, workers]+self.logic_args
                         trait.action.work(*args)
                 for worker in self.inventory.slots['units']:
-                    if len(worker.traits['on_work']) > 0:
-                        for trait in worker.traits['on_work']:
-                            workers = self.inventory.slots['units']
-                            args = [self, worker, workers]
-                            trait.action.work(*args)
+                    workers = self.inventory.slots['units']
+                    work_arg_list = [self, worker, workers]
+                    work_report = worker.triggerSkill('on_refresh', work_arg_list)
                 report = "**"+str(self) + "** has run successfully."
             else:
                 report = req_report
