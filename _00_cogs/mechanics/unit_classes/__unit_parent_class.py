@@ -2,7 +2,7 @@ import copy
 
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics._cards_class import Card
-from _00_cogs.mechanics.trait_classes._trait_kits import trait_kits_dict
+from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
 from _02_global_dicts import theJar
 
 class Unit(Card):
@@ -278,7 +278,7 @@ class Unit(Card):
         has = False
         for trait_name in self.traits:
             trait = self.getTrait(trait_name)
-            if trait.trait_type == type:
+            if trait['type'] == type:
                 has = True
         return has
 
@@ -286,8 +286,8 @@ class Unit(Card):
         trait_name_list = []
         for trait_name in self.traits:
             trait = self.getTrait(trait_name)
-            if trait.trait_type == type:
-                trait_name_list.append(trait.trait_title)
+            if trait['type'] == type:
+                trait_name_list.append(trait_name)
         return trait_name_list
 
     def hasCert(self, cert_name):
@@ -305,10 +305,39 @@ class Unit(Card):
             remove = True
             for trait_name in self.traits:
                 trait = self.getTrait(trait_name)
-                if cert_name in trait.certs:
+                if cert_name in trait['certs']:
                     remove = False
             if remove:
                 self.certs.remove(cert_name)
+
+    def triggerSkill(self, trigger, arg_list):
+        if self.skillsets:
+            for skillset in self.skillsets:
+                if trigger in skillset.triggers:
+                    report = None
+                    if trigger == 'on_act':
+                       report = skillset.act(arg_list)
+                    if trigger == 'on_play':
+                       report = skillset.play(arg_list)
+                    if trigger == 'on_work':
+                       report = skillset.work(arg_list)
+                    if trigger == 'on_move':
+                       report = skillset.move(arg_list)
+                    if trigger == 'on_battle':
+                       report = skillset.battle(arg_list)
+                    if trigger == 'on_attack':
+                       report = skillset.attack(arg_list)
+                    if trigger == 'on_defend':
+                       report = skillset.defend(arg_list)
+                    if trigger == 'on_death':
+                       report = skillset.death(arg_list)
+                    if trigger == 'on_harvest':
+                       report = skillset.harvest(arg_list)
+                    if trigger == 'on_refresh':
+                       report = skillset.refresh(arg_list)
+                    if report:
+                        return report
+
 
     def unitCanMove(self, dest_type, destination):
         can_move = False
@@ -337,10 +366,8 @@ class Unit(Card):
             slot_count = len(destination.inventory.slots['unit'])
             slotcap = destination.inventory.slotcap['unit']
             if slot_count < slotcap:
-                if self.traits:
-                    if len(self.traits['on_move']) > 0:
-                        for action in self.traits['on_move']:
-                            move_report = action.move(self, self.location, destination)
+                move_arg_list = [self, self.location, destination]
+                move_report = self.triggerSkill('on_move', move_arg_list)
 
                 destination.inventory.addCardToSlot(self, 'unit')
                 self.location.inventory.removeCardFromSlot(self, 'unit')
@@ -381,11 +408,8 @@ class Unit(Card):
             else:
                 health_report = "Your **"+str(self)+'** has sustained no damage.'
 
-            harvest_report = None
-            if self.traits:
-                if len(self.traits['on_harvest']) > 0:
-                    for action in self.traits['on_harvest']:
-                        harvest_report = action.harvest(self, f, hit)
+            harvest_arg_list = [self, f, hit]
+            harvest_report = self.triggerSkill('on_harvest', harvest_arg_list)
 
             title = "-----"+str(self)+" Upkeep Results-----"
             report = "- Rolled: "+str(self.die_set)+" ("+str(self)+")\n"+\
@@ -403,11 +427,8 @@ class Unit(Card):
     def refresh(self):
         if self.status == "Played":
             self.setStat('Endurance', self.statcaps['Endurance'])
-            refresh_report = None
-            if self.traits:
-                if len(self.traits['on_refresh']) > 0:
-                    for action in self.traits['on_refresh']:
-                        refresh_report = action.refresh(self)
+            refresh_arg_list = [self]
+            refresh_report = self.triggerSkill('on_refresh', refresh_arg_list)
             return refresh_report
 
 
