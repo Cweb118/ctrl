@@ -388,7 +388,7 @@ class Commands(commands.Cog):
             destination = theJar['districts'][target]
         elif target_type == 'unit':
             destination = player.inventory.getCard(target_type, int(target))
-        report = card.moveUnit(target_type, destination)
+        can_move, report = card.moveUnit(target_type, destination)
         await say(ctx,report)
 
     @commands.command(name="unitaction", guild_ids=guilds)
