@@ -70,6 +70,18 @@ def canPlayCard(state):
 
     return card.status == 'Held'
 
+def canCommandCard(state):
+    if 'card' not in state or 'card_type' not in state:
+        raise StateError
+
+    if 'player' not in state or state['player'] not in theJar['players']:
+        raise StateError
+
+    player = theJar['players'][state['player']]
+    card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+    return card.status != 'Held' and state['card_type'] == 'unit'
+
 class CardMenu(Menu):
     def __init__(self):
         super().__init__('cardmenu')
@@ -114,7 +126,7 @@ class CardMenu(Menu):
         await Menus.manageMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
         return False
 
-    @Button(id='command', label='Command', style=ButtonStyle.success, includeFun=lambda state: 'card_type' in state and state['card_type'] == 'unit')
+    @Button(id='command', label='Command', style=ButtonStyle.success, includeFun=canCommandCard)
     async def command(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:
             raise StateError

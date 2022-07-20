@@ -8,6 +8,7 @@ import _00_cogs.frontend.menus.card.squads_menu as squads_menu
 import _00_cogs.frontend.menus.district.district_menu as district_menu
 import _00_cogs.frontend.menus.district.travel_menu as travel_menu
 import _00_cogs.frontend.menus.district.interact_menu as interact_menu
+import _00_cogs.frontend.menus.card.move_menu as move_menu
 
 cardsMenu = cards_menu.CardsMenu()
 cardMenu = cards_menu.CardMenu()
@@ -22,3 +23,7 @@ playMenu = play_menu.PlayMenu()
 manageMenu = manage_menu.ManageMenu()
 commandMenu = command_menu.CommandMenu()
 transferResourceMenu = transfer_resource_menu.TransferResourceMenu()
+
+moveMenu = move_menu.MoveMenu()
+buildingMoveMenu = move_menu.BuildingMoveMenu()
+districtMoveMenu = move_menu.DistrictMoveMenu()
