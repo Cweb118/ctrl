@@ -5,6 +5,7 @@ from nextcord.ext import tasks
 from _02_global_dicts import theJar
 from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
+from .channels_class import Channel
 
 class StateError(Exception):
     pass
@@ -28,10 +29,10 @@ class Player():
         else:
             self._guild = None
 
-        self._channel = ""
-        self.interfaceChannel = None #Channel ID
-
+        self._channel = None
+        self.interfaceChannel = None
         self.createPrivateChannel.start()
+
         if inventory == None:
             self._inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
         else:
@@ -65,8 +66,8 @@ class Player():
             return
 
         # Ginger: Added Interface Channel
-        interfaceCategory = nextcord.utils.get(self._guild.categories, name='Interface')
-        category = nextcord.utils.get(self._guild.categories, name='Players')
+        #interfaceCategory = nextcord.utils.get(self._guild.categories, name='Interface')
+       # category = nextcord.utils.get(self._guild.categories, name='Players')
         interfaceOverwrites = {
             self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
             self._member: nextcord.PermissionOverwrite(read_messages=True)
@@ -77,6 +78,15 @@ class Player():
         }
         topic = "Private Discussion"
 
+        interfaceName = self._member.name.replace(' ', '-').lower() + '_interface'
+        channelName = self._member.name.replace(' ', '-').lower()
+
+        self.interfaceChannel = await Channel(self._guild, interfaceName, 'Interface', can_talk=False).init()
+        self._channel = await Channel(self._guild, channelName, 'Players').init()
+
+        await asyncio.gather(self._channel.addPlayer(self._member), self.interfaceChannel.addPlayer(self._member))
+
+        """
         foundInterface = False
         foundChannel = False
 
@@ -95,30 +105,31 @@ class Player():
 
         if not foundChannel:
             self._channel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower(), topic=topic, overwrites=overwrites, category=category)
+        """
 
-        interfaceMessages = await self.interfaceChannel.history(limit=None, oldest_first=True).flatten()
-        self.squadsMessage = None
+        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+        #self.squadsMessage = None
         self.unitsMessage = None
         self.buildingsMessage = None
 
         for interfaceMessage in interfaceMessages:
             if interfaceMessage.author.id == theJar['client']:
-                if self.squadsMessage == None:
-                    self.squadsMessage = interfaceMessage
-                elif self.unitsMessage == None:
+                #if self.squadsMessage == None:
+                    #self.squadsMessage = interfaceMessage
+                if self.unitsMessage == None:
                     self.unitsMessage = interfaceMessage
                 elif self.buildingsMessage == None:
                     self.buildingsMessage = interfaceMessage
                     break
 
-        if (self.squadsMessage == None):
-            self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel, state={'player': self._member.id})
+        #if (self.squadsMessage == None):
+            #self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id})
         
         if (self.unitsMessage == None):
-            self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self._member.id, 'card_type': 'unit'})
+            self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id, 'card_type': 'unit'})
         
         if (self.buildingsMessage == None):
-            self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel, state={'player': self.member.id, 'card_type': 'building'})
+            self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'building'})
 
         self.interfaceDirty = False
 
@@ -130,9 +141,11 @@ class Player():
 
         allUpdates = []
 
-        allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
-        allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
-        allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
+        #allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
+        if self.unitsMessage:
+            allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
+        if self.buildingsMessage:
+            allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
 
         await asyncio.gather(*allUpdates)  
 

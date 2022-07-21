@@ -7,6 +7,7 @@ import os
 import nextcord
 import time
 import datetime
+import _00_cogs.mechanics.resource_class # Make sure that resources get loaded into the jar
 from _00_cogs.architecture.player_class import Player
 from keys import prime_token, prefix
 from nextcord.ext import commands

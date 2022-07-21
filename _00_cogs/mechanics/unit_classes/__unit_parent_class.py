@@ -381,7 +381,7 @@ class Unit(Card):
             report = "Error: This destination is too far."
         if move_report:
             report += +"\n"+move_report
-        return report
+        return can_move, report
 
     def harvest(self):
         if self.status == "Played":

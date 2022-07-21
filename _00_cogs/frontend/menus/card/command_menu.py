@@ -27,6 +27,23 @@ class CommandMenu(Menu):
 
         return ('What orders do you want to give the ' + card.title + ' card?', [])
 
+    @Button(id='move', label='Move', style=ButtonStyle.success)
+    async def move(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError 
+
+        player = theJar['players'][state['player']]
+        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+        if card is None:
+            raise StateError
+
+        await Menus.districtMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+
     @Button(id='gather', label='Gather', style=ButtonStyle.success)
     async def gather(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:

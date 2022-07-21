@@ -7,6 +7,7 @@ import time, asyncio
 from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
+from .channels_class import Channel
 
 class Region():
     def __init__(self, name, guild, districts = []):
@@ -44,18 +45,28 @@ class Region():
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
+        category = nextcord.utils.get(self.guild.categories, name=self.name)
+
+        if not category:
+            category = await self.guild.create_category(self.name)
+
+        self.channel = await Channel(self.guild, self.name, self.name).init()
+        await self.channel.addPlayer(playerRole)
+
+        """
         categoryNames = []
         for category in self.guild.categories:
             categoryNames.append(category.name)
 
         if self.name not in categoryNames:
-            category = await self.guild.create_category(self.name)
+            
             self.channel = await category.create_text_channel(self.name)
             await self.channel.set_permissions(self.guild.default_role, read_messages=False)
             await self.channel.set_permissions(playerRole, read_messages = True)
         else:
             print("Channel was found for", self.name, "region.")
             self.channel = nextcord.utils.get(self.guild.channels, name=self.name)
+        """
 
 class District():
     def __init__(self, name, region_name, size, paths = [], guild = None):
@@ -116,6 +127,28 @@ class District():
         #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
         await asyncio.sleep(.25)
 
+        #category = nextcord.utils.get(self._guild.categories, name=self.region.lower())
+
+        channelName = self.name.replace(' ', '-').lower()
+        interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+
+        self.channel = await Channel(self.guild, channelName, self.region.lower()).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region.lower(), can_talk=False).init()
+
+        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+        self.interfaceMessage = None
+
+        for interfaceMessage in interfaceMessages:
+            if interfaceMessage.author.id == theJar['client']:
+                self.interfaceMessage = interfaceMessage
+                break
+
+        if self.interfaceMessage == None:
+            self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+
+        self.interfaceDirty = False
+
+        """
         for category in self.guild.categories:
             if category.name.lower() == self.region.lower():
                 # Ginger: Added interface channel
@@ -161,7 +194,9 @@ class District():
                 self.interfaceDirty = False
                 
                 return
+        
         print("Error: Category not found. This may be due to the delay not long enough after the category is created.")
+        """
 
     # Ginger: Updates the interface message
     def updateInterface(self):
@@ -221,12 +256,12 @@ class District():
                 await category.set_permissions(player.member, read_messages=False)
         
             #remove player from old district channel
-            await theJar['regions'][player.location.region].channel.set_permissions(player.member, read_messages=False)
+            await theJar['regions'][player.location.region].channel.removePlayer(player.member)
         player.location = self
         self.players.append(player)
         self.updateInterface()
         self.civics.addPlayer(player)
-        await self.channel.set_permissions(player.member, read_messages=True)
+        await self.channel.addPlayer(player.member)
 
     def __str__(self):
         return self.name
