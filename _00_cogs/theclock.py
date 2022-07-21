@@ -41,6 +41,10 @@ class TheClock(commands.Cog):
             self.need_battle = False
             self.need_harvest = True
             self.need_refresh = True
+
+            for unit in theJar['played_cards']['unit']:
+                daybreak_report = unit.triggerSkill('on_daybreak', [unit])
+
         await say(ctx, "Day start protocol complete.")
 
 

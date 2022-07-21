@@ -23,14 +23,24 @@ class Architect():
         self.triggers = ['on_act', 'on_harvest']
         self.subject = None
 
-    def act(self):
-        #select a subject from the local buildings
-        print('mmmm')
+    def act(self, self_unit, local_target_building):
+        can_copy = True
+        for cert in local_target_building.certs:
+            if cert not in self_unit.certs:
+                can_copy = False
+        if can_copy:
+            self.subject = local_target_building
+            report = 'This unit begins their study...'
+        else:
+            report = 'This unit lacks the required knowledge...'
 
-    def harvest(self, self_unit, f, hit):
-        if self_unit.location == self.subject.location:
-            #give unit a copy of the subject as a building card
-            print('mmmm')
+    def harvest(self, self_unit, def_lost, hit):
+        if self.subject:
+            if self_unit.stats['Endurance'] == 0:
+                if self_unit.location != self.subject.location:
+                    status, bldg = self_unit.addBuildingToUnitInv(self.subject.title)
+
+
 
 class Pathfinder():
     #TODO: TEST
@@ -39,54 +49,46 @@ class Pathfinder():
         self.report = None
 
     def act(self, self_unit, from_location, direction):
-        #explore!
-        print('explore!')
-        explore_channel = "get the explore channel from the jar which was made on game start"
-        squad = self_unit.squad
-
         self.report = "**Action: Explore**\n"+\
                  "Player: "+self_unit.owner+"\n"+\
                  "From Location: "+from_location+"\n"+\
-                 "Direction: "+direction+"\n"+\
-                 "Squad: \n"+squad.report()+"\n"
+                 "Direction: "+direction+"\n"
 
-    def harvest(self, self_unit, f, hit):
-        squad = self_unit.squad
+    def harvest(self, self_unit, def_lost, hit):
+        explore_channel = "get the explore channel from the jar which was made on game start"
         can_go = True
-        for unit in squad.units:
-            if unit.stats['Endurance'] < unit.statcaps['Endurance']:
-                can_go = False
+        if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
+            can_go = False
         if can_go:
-            #say to explore channel(report)
+            #say to explore channel(report)cdswq
             print(self.report)
 
 class Scout():
     #TODO: TEST
     def __init__(self):
-        self.triggers = ['on_act', 'on_harvest']
-        self.report = None
+        self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
+        self.target_location = None
+        self.can_go = False
 
-    def act(self, self_unit, from_location, target_location):
-        #scout!
-        print('scout!')
-        explore_channel = "get the explore channel from the jar which was made on game start"
-        squad = self_unit.squad
+    def act(self, self_unit, adjacent_target_location):
+        self.target_location = adjacent_target_location
 
-        report = "**Action: Scout**\n"+\
-            "Player: "+self_unit.owner+"\n"+\
-                 "From Location: "+from_location+"\n"+\
-                 "Target Location: "+target_location+"\n"+\
-                 "Squad: \n"+squad.report()+"\n"
+    def harvest(self, self_unit, def_lost, hit):
+        self.can_go = True
+        if not self.target_location:
+            self.can_go = False
+        if self_unit.stats['Endurance'] < 2:
+            self.can_go = False
+        if self.target_location:
+            if self.target_location not in self_unit.location.paths:
+                self.can_go = False
 
-    def harvest(self, self_unit, f, hit):
-        squad = self_unit.squad
-        can_go = True
-        for unit in squad.units:
-            if unit.stats['Endurance'] < 2:
-                can_go = False
-        if can_go:
-            #say to explore channel(report)
-            print(self.report)
+    def daybreak(self, self_unit):
+        if self.can_go:
+            player = self_unit.owner
+            report = self.target_location.report()
+            #send report to player channel
+
 
 class Sentry():
     #TODO: TEST
@@ -401,11 +403,25 @@ class Aratori():
 
 class Automata():
     def __init__(self):
-        self.triggers = ['on_play']
+        self.triggers = ['on_act']
+
+    def act(self, self_unit):
+        inv = self_unit.inventory
+        steam = theJar['resources']['Steam']
+        if inv.resources[steam] > 0:
+            if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
+                inv.addResource(steam, -1)
+                self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']
+                report = "The "+str(self_unit)+" whistles as its Endurance grows."
+            else:
+                report = "The "+str(self_unit)+" already has full Endurance!"
+        else:
+            report = "The "+str(self_unit)+" lacks steam!"
+        return report
 
 class Barheim():
     def __init__(self):
-        self.triggers = ['on_play', 'on_move']
+        self.triggers = ['on_play', 'on_act', 'on_move']
 
     def reduce(self, building):
         if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
@@ -424,6 +440,15 @@ class Barheim():
         if type(from_location).__name__.lower() == 'building':
             self.unreduce(from_location)
 
+    def act(self, self_unit, local_industrialist_target_unit):
+        if not local_industrialist_target_unit.hasTrait('Charged'):
+            if self_unit.stats['Endurance'] == self_unit.statcaps['Endurance']:
+                self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
+                local_industrialist_target_unit.addTrait('Charged')
+            else:
+                print('Unit lacks endurance!')
+        else:
+            print('target unit is already charged!')
 
 class Eelaki():
     def __init__(self):
@@ -433,49 +458,10 @@ class Eelaki():
 
 class Loyavasi():
     def __init__(self):
-        self.triggers = ['on_move', 'on_refresh']
-        self.loot = theJar['resources']['Food']
+        self.triggers = ['on_refresh']
 
-    def move(self, self_unit, from_location, to_location):
-        #self_unit.owner.updatePerms(from_location, to_location
-
-        loc_size_pass_bars = {
-            'tiny': 1,
-            'small': 2,
-            'medium': 3,
-            'large': 4,
-            'huge': 5,
-        }
-
-        res_per_hit = {
-            0:0,
-            1:2,
-            2:5,
-            3:8,
-            4:11,
-            5:14,
-        }
-        to_loc_bar = loc_size_pass_bars[to_location.size]
-        s, report = self_unit.dice.roll_math(to_loc_bar)
-        hits = report['hit_count']
-        if hits > 5:
-            hits = 5
-        res_yield = res_per_hit[hits]
-        self_unit.inventory.addResource(self.loot,res_yield)
-
-        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
-        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
-        if food_ct > water_ct:
-            self.loot = theJar['resources']['Water']
-        else:
-            self.loot = theJar['resources']['Food']
-
-        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
-        return report
-
-    #REFRESH: +2 Endurance over cap
     def refresh(self, self_unit):
-        self_unit.stats['Endurance'] = self_unit.stats['Endurance']+2
+        self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']+2
 
 class Otavan():
     def __init__(self):
@@ -531,19 +517,21 @@ class Yavari():
     def __init__(self):
         self.triggers = ['on_act']
 
-    def act(self, self_unit, target_unit):
+    def act(self, self_unit, local_target_unit):
         effect_trait_names = None
         if self_unit.hasTraitType('effect'):
             effect_trait_names = self_unit.getTraitbyType('effect')
         if effect_trait_names:
-            if self_unit.owner._stats[theJar['resources']['Influence']] > 0:
-                self_unit.owner.modStat(theJar['resources']['Influence'], -1)
+            if self_unit.stats['Endurance'] == self_unit.statcaps['Endurance']:
+                self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
                 for effect_trait in effect_trait_names:
-                    if not target_unit.hasTrait(effect_trait):
-                        target_unit.addTrait(effect_trait)
+                    if not local_target_unit.hasTrait(effect_trait):
+                        local_target_unit.addTrait(effect_trait)
                         print('Target was given '+effect_trait+' successfully.')
                     else:
                         print('Target already has '+effect_trait+'!')
+            else:
+                print('Unit lacks endurance!')
         else:
             print('User unit does not possess any effect traits!')
 
@@ -586,6 +574,66 @@ class Morale():
         subject_building.delTrait('Good Morale')
 
 #TODO: Thorns?
+
+
+# unit skills
+
+class Gatherer():
+    def __init__(self):
+        self.triggers = ['on_move']
+        self.loot = theJar['resources']['Food']
+
+    def move(self, self_unit, from_location, to_location):
+        #self_unit.owner.updatePerms(from_location, to_location
+
+        loc_size_pass_bars = {
+            'tiny': 1,
+            'small': 2,
+            'medium': 3,
+            'large': 4,
+            'huge': 5,
+        }
+
+        res_per_hit = {
+            0:0,
+            1:1,
+            2:3,
+            3:5,
+            4:7,
+            5:9,
+        }
+        to_loc_bar = loc_size_pass_bars[to_location.size]
+        s, report = self_unit.dice.roll_math(to_loc_bar)
+        hits = report['hit_count']
+        if hits > 5:
+            hits = 5
+        res_yield = res_per_hit[hits]
+        self_unit.inventory.addResource(self.loot,res_yield)
+
+        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
+        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
+        if food_ct > water_ct:
+            self.loot = theJar['resources']['Water']
+        else:
+            self.loot = theJar['resources']['Food']
+
+        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
+        return report
+
+
+class Colonist():
+    def __init__(self):
+        self.triggers = ['on_harvest']
+
+    #TODO: TEST
+    def harvest(self, self_unit, def_lost, hit_status):
+        health_rep = None
+        if hit_status:
+            hit, report_dict = self_unit.die_set.roll_math(self_unit.stats['Defense']+self_unit.stats['Fortitude'])
+            if not hit:
+                self_unit.setHealth(-1)
+                health_rep = "The "+str(self_unit)+" steels itself, negating loss of health."
+        return health_rep
 
 
 #----------building arguement guide----------
@@ -758,8 +806,9 @@ class Mentor():
         mentor = subject_units[0]
         traits = mentor.trait_list
         status, man = self_building.addUnitToBuildingInv()
-        for trait in traits:
-            man.addTrait(trait)
+        if man:
+            for trait in traits:
+                man.addTrait(trait)
 
 
 #----------building_effects----------
