@@ -1,5 +1,7 @@
 from _00_cogs.mechanics._cards_class import Card
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
+from _00_cogs.mechanics.dice_class import Dice
+from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _02_global_dicts import theJar
 
@@ -22,33 +24,21 @@ class Building(Card):
             'Size':stats['size'],
         }
 
-        self.trait_list = traits
-        self.traits = {
-            'on_act': [],
-            'on_play': [],
-            'on_work': [],
-            'on_move': [],
-            'on_battle':[],
-            'on_attack': [],
-            'on_defend': [],
-            'on_death': [],
-            'on_harvest': [],
-            'on_refresh': [],
-        }
+        self.traits = []
         if traits:
             for trait_name in traits:
                 self.addTrait(trait_name)
 
-        self.logic_args = logic_args
-        self.worker_req = worker_req
+        self.skillsets = {}
+        self.logic_args = {logic_args}
+        self.certs = worker_req
+
         self.input = input_dict
         self.output = output_dict
         self.catalyst = cat_dict
 
         self.links = []
         self.priority = priority
-
-    #TODO: ADD addTrait and delTrait
 
     def addBuilding(self, card_kit_id, inv_owner, owner_type):
         #defunct?
@@ -135,16 +125,18 @@ class Building(Card):
             if can_run:
                 self.doInput()
                 self.doOutput()
-                if len(self.traits['on_work']) > 0:
-                    for trait in self.traits['on_work']:
-                        workers = self.inventory.slots['units']
-                        args = [self, workers]+self.logic_args
-                        trait.action.work(*args)
+                report = "**"+str(self) + "** has run successfully."
+
+                for skill in self.skillsets.keys():
+                    self_work_report = self.triggerSkill(self, skill)
+                    report += '\n\n' +self_work_report
+
                 for worker in self.inventory.slots['units']:
                     workers = self.inventory.slots['units']
                     work_arg_list = [self, worker, workers]
-                    work_report = worker.triggerSkill('on_refresh', work_arg_list)
-                report = "**"+str(self) + "** has run successfully."
+                    worker_work_report = worker.triggerSkill('on_refresh', work_arg_list)
+                    report += '\n\n' +worker_work_report
+
             else:
                 report = req_report
             return report
@@ -159,22 +151,200 @@ class Building(Card):
         if receiver_building in self.links:
             self.links.remove(receiver_building)
 
+    def addTrait(self, trait_name):
+        if not self.hasTrait(trait_name):
+            trait = trait_kits_dict[trait_name]
+            if trait['certs']:
+                for cert in trait['certs']:
+                    self.addCert(cert)
+            if trait['stats']:
+                for mod_stat in trait['stats'].keys():
+                    value = trait['stats'][mod_stat]
+                    self.stats[mod_stat] += value
+                    self.statcaps[mod_stat] += value
+                    if self.statcaps[mod_stat] < 0:
+                        self.stats[mod_stat] = 0
+                        self.statcaps[mod_stat] = 0
+            if trait['play_cost']:
+                for mod_res in trait['play_cost'].keys():
+                    mod_res_obj = theJar['resources'][mod_res]
+                    value = trait['play_cost'][mod_res_obj]
+                    try:
+                        self.play_cost[mod_res_obj] += value
+                    except:
+                        self.play_cost[mod_res_obj] = value
+            if trait['inv_args']:
+                inv = self.inventory
+                for key in trait['inv_args'].keys():
+                    value = trait['inv_args'][key]
+                    if key == 'cont':
+                        try:
+                            inv.cont += value
+                        except:
+                            inv.cont = value
+                    elif key == "cap":
+                        for type in value.keys():
+                            mod = value[type]
+                            try:
+                                inv.cap[type] += mod
+                            except:
+                                inv.cap[type] = mod
+                    elif key == "slotcap":
+                        for type in value.keys():
+                            mod = value[type]
+                            try:
+                                inv.slotcap[type] += mod
+                            except:
+                                inv.slotcap[type] = mod
+                    else:
+                        print("Error: Invalid inventory constraint.")
+            if trait['die_set']:
+                new_set = self.die_list + trait['die_set']
+                self.die_list = new_set
+                self.die_set = Dice(new_set)
+            if trait['skillsets']:
+                self.skillsets[trait_name] = trait['skillsets']
+
+    def delTrait(self, trait_name):
+        if self.hasTrait(trait_name):
+            trait = trait_kits_dict[trait_name]
+            if trait['certs']:
+                for cert in trait['certs']:
+                    self.delCert(cert)
+            if trait['stats']:
+                for mod_stat in trait['stats'].keys():
+                    value = trait['stats'][mod_stat]
+                    self.stats[mod_stat] += -value
+                    self.statcaps[mod_stat] += -value
+                    if self.statcaps[mod_stat] < 0:
+                        self.stats[mod_stat] = 0
+                        self.statcaps[mod_stat] = 0
+            if trait['play_cost']:
+                for mod_res in trait['play_cost'].keys():
+                    mod_res_obj = theJar['resources'][mod_res]
+                    value = trait['play_cost'][mod_res_obj]
+                    try:
+                        self.play_cost[mod_res_obj] += -value
+                    except:
+                        self.play_cost[mod_res_obj] = -value
+            if trait['inv_args']:
+                inv = self.inventory
+                for key in trait['inv_args'].keys():
+                    value = trait['inv_args'][key]
+                    if key == 'cont':
+                        inv.cont += -value
+                    elif key == "cap":
+                        for type in value.keys():
+                            mod = value[type]
+                            inv.cap[type] += -mod
+                    elif key == "slotcap":
+                        for type in value.keys():
+                            mod = value[type]
+                            inv.slotcap[type] += -mod
+
+                    else:
+                        print("Error: Invalid inventory constraint.")
+            if trait['die_set']:
+                for die in trait['die_set']:
+                    self.die_list.remove(die)
+                self.die_set = Dice(self.die_list)
+            if trait['skillsets']:
+                del self.skillsets[trait_name]
+            self.traits.remove(trait_name)
+
+    def hasTrait(self, trait_name):
+        has = False
+        if trait_name in self.traits:
+            has = True
+        return has
+
+    def getTrait(self, trait_name):
+        trait = trait_kits_dict[trait_name]
+        return trait
+
+    def hasTraitType(self, type):
+        has = False
+        for trait_name in self.traits:
+            trait = self.getTrait(trait_name)
+            if trait['type'] == type:
+                has = True
+        return has
+
+    def getTraitbyType(self, type):
+        trait_name_list = []
+        for trait_name in self.traits:
+            trait = self.getTrait(trait_name)
+            if trait['type'] == type:
+                trait_name_list.append(trait_name)
+        return trait_name_list
+
+    def hasCert(self, cert_name):
+        has = False
+        if cert_name in self.certs:
+            has = True
+        return has
+
+    def addCert(self, cert_name):
+        if not cert_name in self.certs:
+            self.certs.append(cert_name)
+
+    def delCert(self, cert_name):
+        if cert_name in self.certs:
+            remove = True
+            for trait_name in self.traits:
+                trait = self.getTrait(trait_name)
+                if cert_name in trait['certs']:
+                    remove = False
+            if remove:
+                self.certs.remove(cert_name)
+
+    def triggerWorkSkill(self, trait_name):
+        skillset = self.skillsets[trait_name]
+        logic_args = self.logic_args[trait_name]
+        work_args = [self, self.inventory.slots['units']]+logic_args
+        report = skillset.work(work_args)
+        return report
+
+    def triggerSkill(self, trigger, arg_list):
+        if self.skillsets:
+            for skillset in self.skillsets:
+                if trigger in skillset.triggers:
+                    report = None
+                    if trigger == 'on_act':
+                       report = skillset.act(arg_list)
+                    if trigger == 'on_play':
+                       report = skillset.play(arg_list)
+                    if trigger == 'on_move':
+                       report = skillset.move(arg_list)
+                    if trigger == 'on_battle':
+                       report = skillset.battle(arg_list)
+                    if trigger == 'on_attack':
+                       report = skillset.attack(arg_list)
+                    if trigger == 'on_defend':
+                       report = skillset.defend(arg_list)
+                    if trigger == 'on_death':
+                       report = skillset.death(arg_list)
+                    if trigger == 'on_harvest':
+                       report = skillset.harvest(arg_list)
+                    if trigger == 'on_refresh':
+                       report = skillset.refresh(arg_list)
+                    if report:
+                        return report
+
     def harvest(self):
         report = ''
-        if len(self.traits['on_harvest']) > 0:
-            for trait in self.traits['on_harvest']:
-                action_report = trait.action.harvest(self, None, None)
-                if action_report:
-                    report += action_report
+        harvest_arg_list = [self, None, None]
+        harvest_report = self.triggerSkill('on_harvest', harvest_arg_list)
+        if harvest_report:
+            report += harvest_report
         return report
 
     def refresh(self):
         report = ''
-        if len(self.traits['on_refresh']) > 0:
-            for trait in self.traits['on_refresh']:
-                action_report = trait.action.refresh(self)
-                if action_report:
-                    report += action_report
+        refresh_arg_list = [self]
+        refresh_report = self.triggerSkill('on_refresh', refresh_arg_list)
+        if refresh_report:
+            report += refresh_report
         return report
 
     def setStat(self, stat, quantity):
@@ -239,8 +409,8 @@ class Building(Card):
         req_rep = {'inline':False}
         req_rep['title'] = "-- Worker Requirements:"
         req_rep['value'] = ''
-        if self.worker_req:
-            for req in self.worker_req:
+        if self.certs:
+            for req in self.certs:
                 req_rep['value'] += "- "+str(req)+"\n"
             req_rep['value'] = req_rep['value'][:-1]
         else:

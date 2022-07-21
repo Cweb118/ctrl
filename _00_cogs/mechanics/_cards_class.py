@@ -92,10 +92,9 @@ class Card():
                         report = "Error: You are not currently present at the designated location."
                         can_play = False
                 if target_type == 'building':
-                    if target_obj.worker_req:
-                        certs = self.getTraitCerts()
-                        for req in target_obj.worker_req:
-                            if req not in certs:
+                    if target_obj.certs:
+                        for cert in target_obj.certs:
+                            if cert not in self.certs:
                                 report = "Error: This unit does not meet all requirements for the destination."
                                 can_play = False
             else:
@@ -135,8 +134,8 @@ class Card():
             if slot_count < slotcap:
                 can_play = True
                 if target_type == 'building':
-                    for tag in target_obj.worker_req:
-                        if tag not in self.trait_list:
+                    for cert in target_obj.certs:
+                        if cert not in self.certs:
                             report = "Error: This unit does not meet all requirements for the destination."
                             can_play = False
         return can_play, report
@@ -165,10 +164,9 @@ class Card():
                 self.location.civics.getGovernor(player.allegiance)
             self.title += " ("+str(self.owner)+")"
             play_report = None
-            if self.traits:
-                if len(self.traits['on_play']) > 0:
-                    for action in self.traits['on_play']:
-                        play_report = action.play(self, target_obj)
+
+            play_arg_list = [self, target_obj]
+            play_report = self.triggerSkill('on_play', play_arg_list)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
             if play_report:
                 report += "\n"+play_report
