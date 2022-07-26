@@ -6,13 +6,10 @@ theJar = {
     'played_cards':{'unit':[], 'building':[]},
     'traits': {},
     'skillsets':{},
-    'allegiances': {
-        'Bandits':{'Bandits':'Friendly', 'Camp':'Hostile', 'Cows':'Hostile'},
-        'Camp':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'},
-        'Cows':{'Bandits':'Hostile', 'Camp':'Friendly', 'Cows':'Friendly'}
-    },
+    'factions': {},
+    'parties':{},
     'fabs': {},
-    'states': {}, # < Defunct maybe? No
+    'states': {},
     'modalStates': {},
     'nextUniqueID': 0,
     'client': 0

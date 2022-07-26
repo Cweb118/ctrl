@@ -31,11 +31,12 @@ class TheClock(commands.Cog):
                 #TODO: Made before the location class was changed, will need to be checked
                 location_channel = theJar['channels'][player.location.channel_id]
                 region_channel = theJar['channels'][player.location.region.channel_id]
-                #group_channel = theJar['factions'][player.faction]
+                party_channel = theJar['channels'][player.faction.channel_id]
+
 
                 #location_channel.permissions(player can read = yes, can chat = yes)
                 #region_channel.permissions(player can read = yes, can chat = yes)
-                #group_channel.permissions(player can read = yes, can chat = no)
+                #party_channel.permissions(players can read = yes, can chat = no)
             self.is_day = True
             self.need_production = True
             self.need_battle = False

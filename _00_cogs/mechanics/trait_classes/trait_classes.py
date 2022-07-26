@@ -660,7 +660,7 @@ class Transport():
         self.links = []
 
     #Designates the buildings to link up (or unlink)
-    def act(self, sender, receiver, operation):
+    def act(self, self_card, sender, receiver, operation):
         if operation == 'add':
             pair = (sender, receiver)
             if len(self.links) < self.link_slots:

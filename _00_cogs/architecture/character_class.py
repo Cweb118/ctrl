@@ -4,7 +4,7 @@ from _02_global_dicts import theJar
 
 
 class Character():
-    def __init__(self, player_id, location_id, inventory_kit):
+    def __init__(self, player_id, faction_title, location_id, inventory_kit):
         self.player = theJar['players'][player_id]
         self.location = theJar['districts'][location_id]
 
@@ -14,6 +14,9 @@ class Character():
         self.resources = inventory_kit['resources']
         self.units = inventory_kit['units']
         self.buildings = inventory_kit['buildings']
+
+        self.party = theJar['parties'][faction_title]
+        self.party.addPlayer(self.player)
 
         for resource_name in self.resources.keys():
             self.player.inventory.addResource(theJar['resources'][resource_name],self.resources[resource_name])

@@ -1,7 +1,8 @@
 
 
 #[user_snowflake (must be a registered player), starting_loc, alleigance, inventory_kit]
-g1 = [
+#TODO: Needs to be updated for game 1 balance
+g0 = [
 
     ['snowflake', 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},

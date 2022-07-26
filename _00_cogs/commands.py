@@ -267,7 +267,7 @@ class Commands(commands.Cog):
     @slash_command(name="cartplay", guild_ids=guilds)
     async def cartplay_c(self, ctx: Interaction):
         player = theJar['players'][ctx.user.id]
-        player.allegiance = 'Bandit'
+        #player.faction = 'Bandit'
         await self.move_f(ctx, 'Home')
         await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
         await self.makeunit_f(ctx, ['Warrior', 'Aratori'])

@@ -10,7 +10,7 @@ from .channels_class import Channel
 class StateError(Exception):
     pass
 class Player():
-    def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, allegiance = None):
+    def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, faction = None):
         self._member = member
 
         if self._member != None:
@@ -46,7 +46,7 @@ class Player():
             #instance:cap
             theJar['resources']['Influence']:20
         }
-        self.allegiance = allegiance
+        self.faction = faction
         self.squads = []
 
         self.interfaceDirty = False
@@ -172,9 +172,9 @@ class Player():
             self._statcaps[stat] = new_cap
         return can_add
 
-    def relationCheck(self, other_allegiance):
-        status = theJar['allegiances'][self.allegiance][other_allegiance]
-        return status
+    def relationCheck(self, other_faction_title):
+        rep = self.faction.repCheck(other_faction_title)
+        return rep
 
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
@@ -196,8 +196,8 @@ class Player():
         al_rep = {'inline':True}
         al_rep['title'] = "-- Alliegence:"
         al_rep['value'] = '- None'
-        if self._allegiance:
-            al_rep['value'] = "- "+str(self._allegiance)
+        if self.faction:
+            al_rep['value'] = "- "+str(self.faction)
         fields.append(al_rep)
 
         stats_rep = {'inline':True}

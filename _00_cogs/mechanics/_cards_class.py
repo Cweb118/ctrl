@@ -48,39 +48,38 @@ class Card():
                         if player._inventory.resources[theJar['resources'][key]] < cost:
                             report = "Error: You lack the required resources to play this card."
                             can_play = False
-                if card_type == 'unit':
-                    if player._stats[theJar['resources']['Influence']] == 0:
-                        report = "Error: You lack the required influence."
-                        can_play = False
+                if player._stats[theJar['resources']['Influence']] == 0:
+                    report = "Error: You lack the required influence."
+                    can_play = False
                 if card_type == 'building':
-                    loc_gov_allegiance = None
-                    loc_occ_allegiance = None
+                    loc_gov_faction = None
+                    loc_occ_faction = None
                     if target_type == 'district':
                         loc_civics = target_obj.civics
                     else:
                         loc_civics = target_obj.location.civics
 
                     if loc_civics.governance:
-                        loc_gov_allegiance = loc_civics.governance
+                        loc_gov_faction = loc_civics.governance
                     if loc_civics.occupance:
-                        loc_occ_allegiance = loc_civics.occupance
+                        loc_occ_faction = loc_civics.occupance
 
-                    for alleg in loc_civics.alleigances:
-                        if self.owner.relationCheck(alleg) == 'Hostile':
+                    for faction in loc_civics.factions:
+                        if self.owner.relationCheck(faction) < -1:
                             report = "Error: There is a Hostile party at present at this location."
                             can_play = False
                     if can_play:
-                        if not loc_occ_allegiance or loc_occ_allegiance == loc_gov_allegiance != None:
+                        if not loc_occ_faction or loc_occ_faction == loc_gov_faction != None:
                             #Gov in charge
-                            if self.owner.relationCheck(loc_gov_allegiance) != 'Friendly':
+                            if self.owner.relationCheck(loc_gov_faction) < 3:
                                 #Player is neutral or hostile to local government
-                                report = "Error: You are not Friendly with the ruling governance."
+                                report = "Error: You are not Allied with the ruling governance."
                                 can_play = False
-                        elif loc_occ_allegiance and loc_occ_allegiance != loc_gov_allegiance:
+                        elif loc_occ_faction and loc_occ_faction != loc_gov_faction:
                             #There is an occupation which is not the local government
-                            if self.owner.relationCheck(loc_gov_allegiance) != 'Friendly':
+                            if self.owner.relationCheck(loc_occ_faction) < 2:
                                 #Player is neutral or hostile to local occupance
-                                report = "Error: You are not Friendly with the ruling occupance."
+                                report = "Error: You are not Cooperative with the ruling occupance."
                                 can_play = False
 
                 if target_type == 'district':
@@ -181,9 +180,6 @@ class Card():
         if can_unplay:
             target_obj = self.location
             self.toggleStatus()
-            if card_type == 'unit':
-                if player_type == 'player':
-                    player.modStat(theJar['resources']['Influence'], 1)
             self.location.inventory.removeCardFromSlot(self, card_type)
             self.location = None
             theJar['played_cards'][card_type].append(self)
