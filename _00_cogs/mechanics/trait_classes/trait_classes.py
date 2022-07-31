@@ -1,6 +1,4 @@
 import random
-from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
-#from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _02_global_dicts import theJar
 
 #----------unit arguement guide----------
@@ -40,13 +38,7 @@ class Architect():
         if self.subject:
             if self_unit.stats['Endurance'] == 0:
                 if self_unit.location != self.subject.location:
-                    can_add = self_unit.inventory.capMathCard('building')
-                    bldg = None
-                    if can_add == True:
-                        pass
-                        #kit = [k for k, v in building_kits_dict.items() if v['title'] == self.subject]
-                        #bldg = self_unit.inventory.cards['building'].append(Building(*building_kits_dict[kit]))
-                    return can_add, bldg
+                    status, bldg = self_unit.addBuildingToUnitInv(self.subject.title)
 
 
 

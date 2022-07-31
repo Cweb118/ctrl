@@ -2,7 +2,6 @@ from _00_cogs.mechanics._cards_class import Card
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
-from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _02_global_dicts import theJar
 
 class Building(Card):
@@ -463,3 +462,4 @@ class Building(Card):
         fields += inv_fields
         return report, title, fields
 
+from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
