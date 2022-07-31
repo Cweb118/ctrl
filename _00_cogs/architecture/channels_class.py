@@ -52,3 +52,13 @@ class Channel():
         await self.channel.set_permissions(user, read_messages=False)
         if self.VC_channel:
             await self.VC_channel.set_permissions(user, connect=False)
+
+    async def muteChannel(self):
+        await self.channel.set_permissions(self.guild.default_role, send_messages=False)
+        if self.VC_channel:
+            await self.VC_channel.set_permissions(self.guild.default_role, speak=False)
+
+    async def unmuteChannel(self):
+        await self.channel.set_permissions(self.guild.default_role, send_messages=self.can_talk)
+        if self.VC_channel:
+            await self.VC_channel.set_permissions(self.guild.default_role, speak=self.can_talk)

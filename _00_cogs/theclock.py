@@ -28,7 +28,7 @@ class TheClock(commands.Cog):
         if not self.is_day:
             await say(ctx, "Day begins, initiating protocols.")
             for player in theJar['players'].keys():
-                #TODO: Made before the location class was changed, will need to be checked
+                #TODO: Toggle night/day with channels class
                 location_channel = theJar['channels'][player.location.channel_id]
                 region_channel = theJar['channels'][player.location.region.channel_id]
                 party_channel = theJar['channels'][player.faction.channel_id]
@@ -85,7 +85,7 @@ class TheClock(commands.Cog):
         if not self.is_day:
             await say(ctx, "Night begins, initiating protocols.")
             for player in theJar['players'].keys():
-                #TODO: Made before the location class was changed, will need to be checked
+                #TODO: Toggle night/day with channels class
                 location_channel = theJar['channels'][player.location.channel_id]
                 region_channel = theJar['channels'][player.location.region.channel_id]
                 #group_channel = theJar['factions'][player.faction]

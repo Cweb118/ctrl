@@ -1,5 +1,5 @@
 from typing import List
-from discord import Interaction, SelectOption, TextInputStyle
+from nextcord import Interaction, SelectOption, TextInputStyle
 from nextcord import ButtonStyle
 import nextcord
 

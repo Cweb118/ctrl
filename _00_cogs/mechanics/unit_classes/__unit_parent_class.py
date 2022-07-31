@@ -1,7 +1,5 @@
 import copy
 
-from _00_cogs.mechanics.building_classes.__building_parent_class import Building
-from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.dice_class import Dice
 from _00_cogs.mechanics._cards_class import Card
 from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
@@ -433,14 +431,6 @@ class Unit(Card):
             refresh_arg_list = [self]
             refresh_report = self.triggerSkill('on_refresh', refresh_arg_list)
             return refresh_report
-
-
-    def addBuildingToUnitInv(self, kit_title):
-        can_add = self.inventory.capMathCard('building')
-        if can_add == True:
-            kit = [k for k, v in building_kits_dict.items() if v['title'] == kit_title]
-            bldg = self.inventory.cards['building'].append(Building(*building_kits_dict[kit]))
-        return can_add, bldg
 
     def __str__(self):
         return self.title

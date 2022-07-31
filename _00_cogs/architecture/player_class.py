@@ -9,10 +9,12 @@ from .channels_class import Channel
 
 class StateError(Exception):
     pass
+
 class Player():
     def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, faction = None):
         self._member = member
 
+        #pickle stuff (rework soon):
         if self._member != None:
             self._username = member.display_name
             self._memberID = member.id
@@ -50,7 +52,7 @@ class Player():
         self.squads = []
 
         self.interfaceDirty = False
-
+    #pickle
     def __reduce__(self):
         return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
     
@@ -65,9 +67,6 @@ class Player():
         if self._member == None or self._guild == None:
             return
 
-        # Ginger: Added Interface Channel
-        #interfaceCategory = nextcord.utils.get(self._guild.categories, name='Interface')
-       # category = nextcord.utils.get(self._guild.categories, name='Players')
         interfaceOverwrites = {
             self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
             self._member: nextcord.PermissionOverwrite(read_messages=True)
@@ -85,27 +84,6 @@ class Player():
         self._channel = await Channel(self._guild, channelName, 'Players').init()
 
         await asyncio.gather(self._channel.addPlayer(self._member), self.interfaceChannel.addPlayer(self._member))
-
-        """
-        foundInterface = False
-        foundChannel = False
-
-        for channel in interfaceCategory.channels:
-            if channel.name.lower() == self._member.name.replace(' ', '-').lower() + '_interface':
-                self.interfaceChannel = channel
-                foundInterface = True
-        
-        for channel in category.channels:
-            if channel.name.lower() == self._member.name.replace(' ', '-').lower():
-                self._channel = channel
-                foundChannel = True
-                
-        if not foundInterface:
-            self.interfaceChannel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower() + '_interface', overwrites=interfaceOverwrites, category=interfaceCategory)
-
-        if not foundChannel:
-            self._channel = await self._guild.create_text_channel(name=self._member.name.replace(' ', '-').lower(), topic=topic, overwrites=overwrites, category=category)
-        """
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
         #self.squadsMessage = None
@@ -179,6 +157,7 @@ class Player():
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
         await self._channel.delete()
+        await self.interfaceChannel.delete()
     
     def delPrivateChannel(self):
         self.__delPrivateChannel.start()
@@ -194,7 +173,7 @@ class Player():
         title = "-----"+str(self)+"-----"
 
         al_rep = {'inline':True}
-        al_rep['title'] = "-- Alliegence:"
+        al_rep['title'] = "-- Faction:"
         al_rep['value'] = '- None'
         if self.faction:
             al_rep['value'] = "- "+str(self.faction)
