@@ -164,7 +164,23 @@ class District():
         return can_move
 
     #TODO: Do
-    def canChat(self, player):
+    def canChat(self, player, location):
+        #call within but just prior to player move and unit move iff player is not present
+        can_chat = False
+        can_interface = False
+        local_card_list = []
+        for unit in player.inventory['unit']:
+            if unit.location == location.name:
+                can_interface = True
+                local_card_list.append(unit)
+        for building in player.inventory['building']:
+            if building.location == location.name:
+                can_interface = True
+                local_card_list.append(building)
+        for card in local_card_list:
+            if 'Recon' in card.certs:
+                can_chat = True
+        return can_chat, can_interface
         pass
 
     def movePlayer(self, player):
@@ -191,12 +207,20 @@ class District():
         if player.location:
             #if player is being moved to a different region, remove permissions from old region channel and category.
             if not player.location.region == self.region:
+                #Not sure how to adapt this to new channel system -cart
                 category = nextcord.utils.get(self.guild.categories, name=player.location.region)
                 await category.set_permissions(player.member, read_messages=False)
         
-            #remove player from old district channel
-            await theJar['regions'][player.location.region].channel.removePlayer(player.member)
-        player.location = self
+            #remove player from old district channel (after checking to make sure this needs to happen)
+            can_chat, can_interface = self.canChat(player, player.location)
+            if not can_chat:
+                #remove from chat channel
+                await theJar['districts'][player.location].channel.removePlayer(player.member)
+            if not can_interface:
+                #remove from interface
+                await theJar['districts'][player.location].interfaceChannel.removePlayer(player.member)
+        #This was just changed to make the player location a string instead of object- may break things -cart
+        player.location = str(self)
         self.players.append(player)
         self.updateInterface()
         self.civics.addPlayer(player)
@@ -273,6 +297,7 @@ class Civics():
         if player in self.players:
             if player.location != self.location:
                 remove = True
+                #TODO: Make combatants
                 for squad in self.squad_list:
                     if squad.owner==player:
                         remove = False
@@ -345,7 +370,7 @@ class Civics():
         if len(metrics) > 0:
             cmdr = metrics[0]
             try:
-                old_cmdr = next(item for item in self.commanders if item['faction']==faction)
+                old_cmdr = next(x for x in self.commanders if x['faction']==faction)
                 self.commanders.remove(old_cmdr)
             except:
                 pass
@@ -390,10 +415,28 @@ class Civics():
 
     def refresh(self):
         self.faction_stances = {}
-        for alleg in theJar['factions'].keys():
-            self.faction_stances[alleg] = {'stance':None}
+        for faction in theJar['factions'].keys():
+            self.faction_stances[faction] = {'stance':None}
         self.conflicts = []
         self.retreats = {}
+
+    def strReport(self):
+        counts = {}
+        for faction in self.factions:
+            fc = 0
+            f_units = [x for x in self.location.inventory.slots['unit'] if x.owner.faction == faction]
+            f_buildings = [x for x in self.location.inventory.slots['building'] if x.owner.faction == faction]
+            f_cards = f_units+f_buildings
+            for card in f_cards:
+                if 'Combat' in card.certs:
+                    fc += 1
+            counts[faction] = fc
+        title = '----------'+str(self.location)+' Strength----------'
+        report = ''
+        for count in counts.keys():
+            report += '- '+count+': '+str(counts[count])+'\n'
+        return report, title
+
 
     def report(self):
         fields = []

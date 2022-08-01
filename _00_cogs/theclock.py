@@ -131,6 +131,11 @@ class TheClock(commands.Cog):
         for player_id in theJar['players'].keys():
             player = theJar['players'][player_id]
             player.modStatCap(theJar['resources']['Influence'], 1)
+        for district_id in theJar['districts'].keys():
+            district = theJar['districts'][district_id]
+            if len(district.inventory.slots['unit']) or len(district.inventory.slots['building']) > 0:
+                report, title = district.civics.strReport()
+                await say(ctx, report, title=title)
 
 
     @slash_command(name="battle", guild_ids=guilds)

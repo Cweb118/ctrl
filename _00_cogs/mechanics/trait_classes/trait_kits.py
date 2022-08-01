@@ -485,7 +485,7 @@ trait_kits_dict = {
         'title': 'Ward',
         'description': 'WARD_DESC',
         'type': 'building_logic',
-        'certs': None,
+        'certs': ['Recon'],
         'skillsets': [Ward()],
         'inv_args': None,
         'play_cost': None,

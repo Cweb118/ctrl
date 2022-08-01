@@ -358,6 +358,14 @@ class Commands(commands.Cog):
             report = "Transaction Failed."
         await say(ctx,report)
 
+    @slash_command(name="countstr", guild_ids=guilds)
+    async def addres_c(self, ctx: Interaction, location):
+        await self.countstr_f(ctx, location)
+
+    async def countstr_f(self, ctx, location):
+        district = theJar['districts'][location]
+        report = district.civics.strReport()
+        await say(ctx,report)
 
     @slash_command(name="raiseinf", guild_ids=guilds)
     async def raiseinf_c(self, ctx: Interaction, user: nextcord.Member, quantity: int, ):
