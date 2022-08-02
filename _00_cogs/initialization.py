@@ -3,6 +3,8 @@ import nextcord
 from nextcord import guild
 
 from _00_cogs.architecture.character_class import Character
+from _00_cogs.architecture.factions_class import init_factions
+from _00_cogs.architecture.kits.faction_kits import faction_kits_dict
 from _00_cogs.architecture.kits.character_kits import character_kits_dict
 from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
@@ -10,6 +12,8 @@ from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from nextcord import slash_command
 from nextcord.ext import commands
+
+from _00_cogs.themap import TheMap
 from _01_functions import say
 from _02_global_dicts import theJar
 
@@ -67,24 +71,26 @@ class PlayerCog(commands.Cog):
             case _:
                 await ctx.send("invalid input")
 
-    @slash_command(name="init", guild_ids=guilds)
+    @slash_command(name="init_game", guild_ids=guilds)
     async def init_c(self, ctx: Interaction):
+        #INIT ORDER: Factions > Map > Players > Characters
+        await init_factions(faction_kits_dict, guilds[0])
+        TheMap(self.bot)
         await self.playerInit(ctx)
 
-        for key in theJar['players'].keys():
-            player = theJar['players'][key]
-            player.inventory.addResource(theJar['resources']['Water'], 10)
-            player.inventory.addResource(theJar['resources']['Food'], 10)
-            player.inventory.addResource(theJar['resources']['Metal'], 10)
-            player.inventory.addResource(theJar['resources']['Wood'], 10)
+        #for key in theJar['players'].keys():
+            #player = theJar['players'][key]
+            #player.inventory.addResource(theJar['resources']['Water'], 10)
+            #player.inventory.addResource(theJar['resources']['Food'], 10)
+            #player.inventory.addResource(theJar['resources']['Metal'], 10)
+            #player.inventory.addResource(theJar['resources']['Wood'], 10)
 
-        Region("Range", guild=ctx.guild)
+        #Region("Range", guild=ctx.guild)
         #name, region_name, size, paths=None
-        District('Home', 'Range', 'huge', guild=ctx.guild)
-        District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild)
-        District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
-        District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
-
+        #District('Home', 'Range', 'huge', guild=ctx.guild)
+        #District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild)
+        #District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
+        #District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
 
         report = "Initilization Complete."
         await say(ctx,report)

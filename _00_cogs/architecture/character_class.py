@@ -17,7 +17,7 @@ class Character():
         self.buildings = inventory_kit['buildings']
 
         #this is ASYNC
-        self.party = theJar['parties'][faction_title]
+        self.party = theJar['factions'][faction_title]
         self.party.addPlayer(self.player)
 
         for resource_name in self.resources.keys():

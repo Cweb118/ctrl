@@ -1,11 +1,12 @@
+from _00_cogs.architecture.channels_class import Channel
 from _02_global_dicts import theJar
 from _00_cogs.architecture.kits.faction_kits import *
 
 
 class Faction():
-    def __init__(self, faction_name):
+    def __init__(self, faction_name, guild):
         self.title = faction_name
-
+        self.guild = guild
         #faction_title:rep_int
         self.reps = {}
 
@@ -20,6 +21,29 @@ class Faction():
         }
 
         theJar['factions'][self.title] = self
+        self.players = []
+
+    async def init(self):
+        self.channel = await Channel(self.guild, self.title, 'Factions').init()
+
+    async def addPlayer(self, player_obj):
+        player_obj.addRep(self.title, 6)
+        player_obj.faction = self.title
+        self.players.append(player_obj.memberID)
+        await self.channel.addPlayer(player_obj.member)
+
+    async def delPlayer(self, player_obj):
+        player_obj.addRep(self.title, -6)
+        player_obj.faction = None
+        self.players.remove(player_obj.memberID)
+        await self.channel.removePlayer(player_obj.member)
+
+    def report(self):
+        reps = self.reps
+        report = self.title+" Standings:\n"
+        for rep in reps.keys():
+            report += rep+': '+self.rep_cypher[reps[rep]]+'\n'
+        return report
 
     def addRep(self, other_faction_title, rep_change):
         rep_change = int(rep_change)
@@ -45,11 +69,13 @@ class Faction():
         return report
 
 
-def init_factions(factions_kit):
+async def init_factions(factions_kit, guild):
     f_list = []
     for faction in factions_kit.keys():
-        f = Faction(faction)
-        f_list.append(f)
+        if faction not in theJar['factions']:
+            f = Faction(faction, guild)
+            await f.init()
+            f_list.append(f)
     for faction in f_list:
         for rep in factions_kit[faction.title].keys():
             faction.addRep(rep,factions_kit[faction.title][rep])

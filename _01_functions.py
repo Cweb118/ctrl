@@ -1,7 +1,11 @@
+import time
 import nextcord
+from _00_cogs.sudo import Sudo
 
+#This may not work at all
 async def say(ctx, msg, title=None, color=None, fields=None):
     embedded = createEmbed(msg, title, color, fields)
+    #await Sudo().sudo_f(ctx, 'cn', ctx.channel.name, '', embedded)
     await ctx.send(embed = embedded)
 
 def createEmbed(msg, title=None, color=None, fields=None):
@@ -16,6 +20,7 @@ def createEmbed(msg, title=None, color=None, fields=None):
 
     return embedded
 
+#old
 async def send(ctx, msg):
     if "```" not in msg:
         response = "```\n"+msg+"```"
