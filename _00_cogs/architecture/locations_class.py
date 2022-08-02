@@ -112,7 +112,7 @@ class District():
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        
+        print(self.guild)
         #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
         await asyncio.sleep(.25)
 
@@ -362,7 +362,7 @@ class Civics():
             #metric = {'cmd':cand, 'inf': inf, 'squads': len(squads)}
             #squad_count += len(squads)
 
-            combatants = [x for x in cand.inventory['unit'] if x.location == self.location and 'Combat' in x.certs]
+            combatants = [x for x in cand.inventory.slots['unit'] if x.location == self.location and 'Combat' in x.certs]
             metric = {'cmd':cand, 'inf': inf, 'squads': len(combatants)}
             combatant_count += len(combatants)
             metrics.append(metric)
@@ -374,26 +374,31 @@ class Civics():
                 self.commanders.remove(old_cmdr)
             except:
                 pass
-            self.commanders.append({"cmdr":cmdr['cmd'], 'faction':faction, 'inf':cmdr['inf'], 'squads':combatant_count})
+            self.commanders.append({"cmdr":cmdr['cmd'], 'faction':faction, 'inf':cmdr['inf'], 'combatants':combatant_count})
         else:
             self.delFaction(faction)
         self.setCommanderRankings()
 
     def setCommanderRankings(self):
         self.commanders.sort(key=operator.itemgetter('combatants','inf'))
-        cmdr_faction = theJar['factions'][self.commanders[0]['faction']]
-        if self.occupance:
-            #if neutral to current occ, overtake
-            if cmdr_faction.checkRep(self.occupance) < 1:
-                self.occupance = cmdr_faction
-        else:
-            if self.governance:
-                #if netural to current gov, overtake
-                if cmdr_faction.checkrep(self.governance) < 1:
+
+        try:
+            cmdr_faction = theJar['factions'][self.commanders[0]['faction']]
+        except:
+            cmdr_faction = None
+        if cmdr_faction:
+            if self.occupance:
+                #if neutral to current occ, overtake
+                if cmdr_faction.checkRep(self.occupance) < 1:
                     self.occupance = cmdr_faction
             else:
-                #no gov or occ, overtake
-                self.occupance = cmdr_faction
+                if self.governance:
+                    #if netural to current gov, overtake
+                    if cmdr_faction.checkrep(self.governance) < 1:
+                        self.occupance = cmdr_faction
+                else:
+                    #no gov or occ, overtake
+                    self.occupance = cmdr_faction
 
     def setStance(self, player, stance, target=None):
         if not target:

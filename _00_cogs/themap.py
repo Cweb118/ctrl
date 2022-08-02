@@ -7,19 +7,19 @@ from _00_cogs.architecture.locations_class import District, Region
 class TheMap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        """
+
         self.district_map = {
-            'Yavar':['Yavar', 'Yavari Domain', 'huge', ['Central Yavar']],
+            'Yavar':['Yavar', 'Yavari Domain', 'huge', []],
 
-            'The Shores':['The Shores', 'Levyt Cliffside', 'medium', ['Yavar','The Rise']],
+            'The Shores':['The Shores', 'Levyt Cliffside', 'medium', ['Yavar']],
 
-            'The Threshold':['The Threshold', 'The City of Barheim', 'small', ['The Foot of Barheim', 'The Core']],
-            'The Core':['The Core', 'The City of Barheim', 'large', ['The Threshold']],
+            'The Core':['The Core', 'The City of Barheim', 'large', []],
+            'The Threshold':['The Threshold', 'The City of Barheim', 'small', ['The Core']],
         }
 
         self.district_map_PENDING = {
             #[name, region_name, size, path_list]
-            'Yavar':['Yavar', 'Yavari Domain', 'huge', ['Central Yavar']],
+            'Yavar':['Yavar', 'Yavari Domain', 'huge', ['The Shores']],
 
             'The Shores':['The Shores', 'Levyt Cliffside', 'medium', ['Yavar','The Rise']],
             'The Rise':['The Rise', 'Levyt Cliffside', 'tiny', ['The Shores','The Overlook']],
@@ -33,12 +33,17 @@ class TheMap(commands.Cog):
             'The Core':['The Core', 'The City of Barheim', 'large', ['The Threshold']],
         }
 
+    async def reloadMap(self, guild):
         for key in self.district_map.keys():
+            if self.district_map[key][1] not in theJar['regions'].keys():
+                    Region(self.district_map[key][1], guild=guild)
             if key not in theJar['districts'].keys():
-                d=District(*self.district_map[key])
-                if self.district_map[key][1] not in theJar['regions'].keys():
-                    Region(self.district_map[key][1], districts=[d])
-        """
+                d=District(*self.district_map[key], guild=guild)
+                await d.createChannel()
+            print(theJar['regions'])
+            print(theJar['districts'])
+
+
 
 def setup(bot):
     bot.add_cog(TheMap(bot))

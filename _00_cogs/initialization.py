@@ -27,8 +27,12 @@ class PlayerCog(commands.Cog):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
             theJar['players'][member.id]=(Player(member))
-            charkit = character_kits_dict[member.id]
-            Character(*charkit)
+            if member.id == 160020690051792898:
+                charkit = character_kits_dict[member.id]
+                ch = Character(*charkit)
+                await ch.setFaction()
+            else:
+                print('no charkit for '+member.display_name)
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="listplayers", guild_ids=guilds)
@@ -74,9 +78,9 @@ class PlayerCog(commands.Cog):
     @slash_command(name="init_game", guild_ids=guilds)
     async def init_c(self, ctx: Interaction):
         #INIT ORDER: Factions > Map > Players > Characters
-        await init_factions(faction_kits_dict, guilds[0])
-        TheMap(self.bot)
-        await self.playerInit(ctx)
+        await init_factions(faction_kits_dict, ctx.guild)
+        await TheMap(self.bot).reloadMap(ctx.guild)
+        #await self.playerInit(ctx)
 
         #for key in theJar['players'].keys():
             #player = theJar['players'][key]

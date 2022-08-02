@@ -38,10 +38,10 @@ g0_character_kits = {
 g0_casting_components = {
             'intro':'This is the part everyone gets to know',
             'locations':{
-                'start_loc1':'And ye who are in this specific location get to know this',
+                'Yavar':'And ye who are in Yavar get to know this',
             },
             'factions':{
-                'faction1':'And ye who are part of this specific faction obtain the faction knowledge',
+                'faction1':'And ye who are part of the Yavari faction obtain the faction knowledge',
             },
             'characters':{
                 1:'And finally, ye who are in the middle of all of this, get the secret wisdom'

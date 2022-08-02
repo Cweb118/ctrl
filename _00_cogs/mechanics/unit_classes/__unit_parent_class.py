@@ -127,11 +127,11 @@ class Unit(Card):
             trait = trait_kits_dict[trait_name]
             #rework to be modular
             if trait['title'] not in self.title:
-                if trait['trait'] != 'effect':
-                    if trait.trait_type == 'class':
+                if trait['type'] != 'effect':
+                    if trait['type'] == 'class':
                         self.job = trait_name
                         self.regenName()
-                    elif trait.trait_type == 'race':
+                    elif trait['type'] == 'race':
                         self.race = trait_name
                         self.regenName()
                 else:

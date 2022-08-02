@@ -32,11 +32,10 @@ class TheClock(commands.Cog):
                 location_channel = theJar['channels'][player.location.channel_id]
                 region_channel = theJar['channels'][player.location.region.channel_id]
                 party_channel = theJar['channels'][player.faction.channel_id]
+                location_channel.unmuteChannel()
+                region_channel.unmuteChannel()
+                party_channel.muteChannel()
 
-
-                #location_channel.permissions(player can read = yes, can chat = yes)
-                #region_channel.permissions(player can read = yes, can chat = yes)
-                #party_channel.permissions(players can read = yes, can chat = no)
             self.is_day = True
             self.need_production = True
             self.need_battle = False
@@ -88,11 +87,11 @@ class TheClock(commands.Cog):
                 #TODO: Toggle night/day with channels class
                 location_channel = theJar['channels'][player.location.channel_id]
                 region_channel = theJar['channels'][player.location.region.channel_id]
-                #group_channel = theJar['factions'][player.faction]
+                group_channel = theJar['parties'][player.faction]
 
-                #location_channel.permissions(player can read = yes, can chat = no)
-                #region_channel.permissions(player can read = yes, can chat = no)
-                #group_channel.permissions(player can read = yes, can chat = yes)
+                location_channel.muteChannel()
+                region_channel.muteChannel()
+                group_channel.unmuteChannel()
         await say(ctx, "Night start protocol complete.")
 
 

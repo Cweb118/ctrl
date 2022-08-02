@@ -38,13 +38,6 @@ class Faction():
         self.players.remove(player_obj.memberID)
         await self.channel.removePlayer(player_obj.member)
 
-    def report(self):
-        reps = self.reps
-        report = self.title+" Standings:\n"
-        for rep in reps.keys():
-            report += rep+': '+self.rep_cypher[reps[rep]]+'\n'
-        return report
-
     def addRep(self, other_faction_title, rep_change):
         rep_change = int(rep_change)
         try:
@@ -79,8 +72,7 @@ async def init_factions(factions_kit, guild):
     for faction in f_list:
         for rep in factions_kit[faction.title].keys():
             faction.addRep(rep,factions_kit[faction.title][rep])
-    print(theJar['factions'])
-    for faction in f_list:
-        print(faction.report())
+    #print(theJar['factions'])
+    #for faction in f_list:
+        #print(faction.report())
 
-#init_factions(g0)
