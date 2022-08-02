@@ -1,5 +1,3 @@
-
-
 g0 = {
     'Cows': {'Cowboys':2, 'Bandits':-2},
     'Cowboys': {'Cows':2, 'Bandits':-3},

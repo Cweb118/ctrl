@@ -1,6 +1,9 @@
 from discord import Interaction
 import nextcord
 from nextcord import guild
+
+from _00_cogs.architecture.character_class import Character
+from _00_cogs.architecture.kits.character_kits import character_kits_dict
 from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
@@ -19,7 +22,9 @@ class PlayerCog(commands.Cog):
     async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
-            theJar['players'][member.id]=(Player(member, allegiance='Camp'))
+            theJar['players'][member.id]=(Player(member))
+            charkit = character_kits_dict[member.id]
+            Character(*charkit)
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="listplayers", guild_ids=guilds)

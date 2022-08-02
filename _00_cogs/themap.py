@@ -3,6 +3,7 @@ from nextcord.ext import commands
 from _02_global_dicts import theJar
 from _00_cogs.architecture.locations_class import District, Region
 
+#I DONT KNOW WHY THIS IS COMMENTED OUT AAAAA
 class TheMap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

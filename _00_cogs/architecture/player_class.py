@@ -12,6 +12,9 @@ class StateError(Exception):
 
 class Player():
     def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, faction = None):
+        #flag to see if the player has been cast as a character once before
+        self.cast = False
+
         self._member = member
 
         #pickle stuff (rework soon):
