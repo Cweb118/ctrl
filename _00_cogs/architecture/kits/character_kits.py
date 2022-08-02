@@ -2,40 +2,52 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 #[user_snowflake (must be a registered player), starting_loc, alleigance, inventory_kit]
 #TODO: Needs to be updated for game 0 balance
 
-g0 = {
+g0_character_kits = {
     #The Cartographer (me)
-    160020690051792898:[160020690051792898, 'Yavar', 'Yavari',
+    160020690051792898:[160020690051792898, 1, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},
       'units':[['Yavari','Worker'],['Yavari','Worker']],
       'buildings':[bk['harmonist_scout_guild'],bk['mother_tree']]}],
 
-    'snowflake2':['snowflake', 'Yavar', 'Yavari',
+    'snowflake2':['snowflake', 2, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},
       'units':[['Loyavasi','Scout'],['Loyavasi','Scout']],
       'buildings':[]}],
 
-    'snowflake3':['snowflake', 'Yavar', 'Yavari',
+    'snowflake3':['snowflake', 3, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},
       'units':[['Xinn','Scout'],['Xinn','Scout']],
       'buildings':[]}],
 
-    'snowflake4':['snowflake', 'Barheim', 'Barheim',
+    'snowflake4':['snowflake', 4, 'Barheim', 'Barheim',
      {'resources':{'Food':10,'Water':10},
       'units':[['Barheim','Worker'],['Barheim','Worker']],
       'buildings':[]}],
 
-    'snowflake5':['snowflake', 'Barheim', 'Barheim',
+    'snowflake5':['snowflake', 5, 'Barheim', 'Barheim',
      {'resources':{'Food':10,'Water':10},
       'units':[['Automata','Worker'],['Automata','Scout']],
       'buildings':[]}],
 
-    'snowflake6':['snowflake', 'Barheim', 'Barheim',
+    'snowflake6':['snowflake', 6, 'Barheim', 'Barheim',
      {'resources':{'Food':10,'Water':10},
       'units':[['Eelaki','Worker'],['Eelaki','Engineer']],
       'buildings':[]}],
 }
 
+g0_casting_components = {
+            'intro':'This is the part everyone gets to know',
+            'locations':{
+                'start_loc1':'And ye who are in this specific location get to know this',
+            },
+            'factions':{
+                'faction1':'And ye who are part of this specific faction obtain the faction knowledge',
+            },
+            'characters':{
+                1:'And finally, ye who are in the middle of all of this, get the secret wisdom'
+            },
+            'outro':'Good luck!',
+}
 
-
-
-character_kits_dict = g0
+character_kits_dict = g0_character_kits
+character_briefs_dict = g0_casting_components
