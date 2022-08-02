@@ -112,15 +112,14 @@ class District():
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        print(self.guild)
         #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
         await asyncio.sleep(.25)
 
-        channelName = self.name.replace(' ', '-').lower()
         interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+        channelName = self.name.replace(' ', '-').lower()
 
-        self.channel = await Channel(self.guild, channelName, self.region.lower()).init()
-        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region.lower(), can_talk=False).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+        self.channel = await Channel(self.guild, channelName, self.region).init()
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
         self.interfaceMessage = None

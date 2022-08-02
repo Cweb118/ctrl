@@ -1,3 +1,5 @@
+import asyncio
+
 from discord import Interaction
 import nextcord
 from nextcord import guild
@@ -79,7 +81,9 @@ class PlayerCog(commands.Cog):
     async def init_c(self, ctx: Interaction):
         #INIT ORDER: Factions > Map > Players > Characters
         await init_factions(faction_kits_dict, ctx.guild)
+        print(theJar['factions'])
         await TheMap(self.bot).reloadMap(ctx.guild)
+        await asyncio.sleep(1)
         await self.playerInit(ctx)
 
         #for key in theJar['players'].keys():

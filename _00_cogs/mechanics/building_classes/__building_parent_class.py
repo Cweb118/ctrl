@@ -5,10 +5,11 @@ from _00_cogs.mechanics.trait_classes.trait_kits import trait_kits_dict
 from _02_global_dicts import theJar
 
 class Building(Card):
-    def __init__(self, title, description, inv_args, traits, logic_args, play_cost, stats, worker_req, input_dict, output_dict, cat_dict, priority=0):
-        inv_args = [self]+inv_args
-        super().__init__(title, description, inv_args=inv_args, play_cost=play_cost)
+    def __init__(self, bk, priority=0):
 
+        inv_args = [self]+bk['inv_args']
+        super().__init__(bk['title'], bk['description'], inv_args=inv_args, play_cost=bk['play_cost'])
+        stats = bk['stats']
         self.stats = {
             'Attack':stats['attack'],
             'Health':stats['health'],
@@ -24,33 +25,33 @@ class Building(Card):
         }
 
         self.traits = []
-        if traits:
-            for trait_name in traits:
-                self.addTrait(trait_name)
-
         self.skillsets = {}
-        self.logic_args = {logic_args}
-        self.certs = worker_req
+        self.logic_args = bk['mechanics_args']
+        self.certs = bk['worker_req']
 
-        self.input = input_dict
-        self.output = output_dict
-        self.catalyst = cat_dict
+        self.input = bk['input_dict']
+        self.output = bk['output_dict']
+        self.catalyst = bk['cat_dict']
 
         self.links = []
         self.priority = priority
 
-    def addBuilding(self, card_kit_id, inv_owner, owner_type):
-        #defunct?
-        inv = theJar[owner_type][inv_owner].inventory
-        can_add = inv.capMathCard('building')
-        if can_add == True:
-            kit = [inv_owner]+building_kits_dict[card_kit_id]
-            card = Building(*kit)
-            if card:
-                inv.cards['building'].append(card)
-            else:
-                can_add = False
-        return can_add, card
+        if bk['mechanics']:
+            for trait_name in bk['mechanics']:
+                self.addTrait(trait_name)
+
+    # def addBuilding(self, card_kit_id, inv_owner, owner_type):
+    #     #defunct?
+    #     inv = theJar[owner_type][inv_owner].inventory
+    #     can_add = inv.capMathCard('building')
+    #     if can_add == True:
+    #         kit = [inv_owner]+building_kits_dict[card_kit_id]
+    #         card = Building(*kit)
+    #         if card:
+    #             inv.cards['building'].append(card)
+    #         else:
+    #             can_add = False
+    #     return can_add, card
 
     def addUnitToBuildingInv(self):
         can_add = self.inventory.capMathCard('unit')

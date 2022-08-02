@@ -41,7 +41,7 @@ g0_casting_components = {
                 'Yavar':'And ye who are in Yavar get to know this',
             },
             'factions':{
-                'faction1':'And ye who are part of the Yavari faction obtain the faction knowledge',
+                'Yavari':'And ye who are part of the Yavari faction obtain the faction knowledge',
             },
             'characters':{
                 1:'And finally, ye who are in the middle of all of this, get the secret wisdom'

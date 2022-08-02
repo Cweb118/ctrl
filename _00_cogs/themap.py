@@ -36,12 +36,9 @@ class TheMap(commands.Cog):
     async def reloadMap(self, guild):
         for key in self.district_map.keys():
             if self.district_map[key][1] not in theJar['regions'].keys():
-                    Region(self.district_map[key][1], guild=guild)
+                Region(self.district_map[key][1], guild=guild)
             if key not in theJar['districts'].keys():
                 d=District(*self.district_map[key], guild=guild)
-                await d.createChannel()
-            print(theJar['regions'])
-            print(theJar['districts'])
 
 
 

@@ -11,6 +11,7 @@ class Unit(Card):
 
         inv_args = [self]+[0, 0, None, None, None, None]
         super().__init__('Tim', 'Civilian', inv_args=inv_args, play_cost=None)
+        self.owner = None
         self.nick = None
 
         self.stats = {
@@ -38,7 +39,7 @@ class Unit(Card):
         self.squad = None
 
         self.traits = []
-        self.skillsets = []
+        self.skillsets = {}
         self.effects = []
         self.certs = []
         self.race = None
