@@ -80,7 +80,7 @@ class PlayerCog(commands.Cog):
         #INIT ORDER: Factions > Map > Players > Characters
         await init_factions(faction_kits_dict, ctx.guild)
         await TheMap(self.bot).reloadMap(ctx.guild)
-        #await self.playerInit(ctx)
+        await self.playerInit(ctx)
 
         #for key in theJar['players'].keys():
             #player = theJar['players'][key]
@@ -96,7 +96,7 @@ class PlayerCog(commands.Cog):
         #District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
         #District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
 
-        report = "Initilization Complete."
+        report = "Initialization Complete."
         await say(ctx,report)
 
 def setup(bot):
