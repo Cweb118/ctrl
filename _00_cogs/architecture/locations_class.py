@@ -182,7 +182,7 @@ class District():
         return can_chat, can_interface
         pass
 
-    def movePlayer(self, player):
+    async def movePlayer(self, player):
         #If player is already in a location, check if they can move. Otherwise, set it to true.
         if player.location:
             can_move = self.moveCheck(player)
@@ -195,11 +195,10 @@ class District():
             can_move = True
 
         if can_move:
-            self._movePlayer.start(player)
+            await self._movePlayer(player)
             return str(player) + " has moved to " + str(self)
         return "Error: " + str(player) + " is unable to move to " + str(self)
     
-    @tasks.loop(seconds=1, count=1)
     async def _movePlayer(self, player):
 
         #Check if player is already in a location. Player may not be in a region at the start of initialization.

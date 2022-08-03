@@ -31,7 +31,8 @@ class PlayerCog(commands.Cog):
             theJar['players'][member.id]=(Player(member))
             if member.id != 161520114657656832:
                 charkit = character_kits_dict[member.id]
-                ch = Character(*charkit)
+                ch = Character()
+                await ch.init(*charkit)
                 await ch.setFaction()
             else:
                 print('no charkit for '+member.display_name)
