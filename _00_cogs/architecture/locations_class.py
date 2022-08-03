@@ -224,6 +224,7 @@ class District():
         self.updateInterface()
         self.civics.addPlayer(player)
         await self.channel.addPlayer(player.member)
+        await self.interfaceChannel.addPlayer(player.member)
 
     def __str__(self):
         return self.name
@@ -387,14 +388,16 @@ class Civics():
             cmdr_faction = None
         if cmdr_faction:
             if self.occupance:
-                #if neutral to current occ, overtake
-                if cmdr_faction.checkRep(self.occupance) < 1:
-                    self.occupance = cmdr_faction
+                if cmdr_faction != self.occupance:
+                    #if neutral to current occ, overtake
+                    if cmdr_faction.repCheck(self.occupance.title) < 1:
+                        self.occupance = cmdr_faction
             else:
                 if self.governance:
-                    #if netural to current gov, overtake
-                    if cmdr_faction.checkrep(self.governance) < 1:
-                        self.occupance = cmdr_faction
+                    if cmdr_faction != self.governance:
+                        #if netural to current gov, overtake
+                        if cmdr_faction.repCheck(self.governance.title) < 1:
+                            self.occupance = cmdr_faction
                 else:
                     #no gov or occ, overtake
                     self.occupance = cmdr_faction
