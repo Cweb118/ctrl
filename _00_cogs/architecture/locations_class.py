@@ -53,8 +53,8 @@ class Region():
 
         self.channel = await Channel(self.guild, self.name, self.name).init()
 
-        #Will need to be amended/removed as not to add every player all the time
-        await self.channel.addPlayer(playerRole)
+        #Remove?
+        #await self.channel.addPlayer(playerRole)
 
 
 class District():

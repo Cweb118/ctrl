@@ -1,12 +1,7 @@
 import time
 import nextcord
-from _00_cogs.sudo import Sudo
+from _00_cogs.sudo import Sudo, sudo_profiles
 
-#This may not work at all
-async def say(ctx, msg, title=None, color=None, fields=None):
-    embedded = createEmbed(msg, title, color, fields)
-    #await Sudo().sudo_f(ctx, 'cn', ctx.channel.name, '', embedded)
-    await ctx.send(embed = embedded)
 
 def createEmbed(msg, title=None, color=None, fields=None):
     if not title:
@@ -20,31 +15,23 @@ def createEmbed(msg, title=None, color=None, fields=None):
 
     return embedded
 
-#old
-async def send(ctx, msg):
-    if "```" not in msg:
-        response = "```\n"+msg+"```"
+async def say(ctx, msg, channel=None, title=None, color=None, fields=None, sudo=False):
+    #Sends a message in the channel of interaction's origin (or otherwise, specified channel name)
+    embedded = createEmbed(msg, title, color, fields)
+    if not channel:
+        channel = ctx.channel
+    if sudo:
+        await sudo_say(ctx, '', channel, embed=embedded)
     else:
-        response = msg
-    await ctx.send(response)
+        await channel.send(embed=embedded)
 
-
-async def reply(ctx, msg):
-    if "```" not in msg:
-        response = "```\n"+msg+"```"
+async def sudo_say(ctx, message, channel, profile='cn', embed=None):
+    #Sends a message in the channel of interaction's origin (or otherwise, specified channel name) as a sudo profile
+    if not channel:
+        channel = ctx.channel
+    webhook = await channel.create_webhook(name=time.time())
+    if embed:
+        await webhook.send(message, embed=embed, username=sudo_profiles[profile]["name"], avatar_url=sudo_profiles[profile]["pfp"])
     else:
-        response = msg
-    await ctx.reply(response)
-
-
-async def player_pm(ctx, user):
-    content = ctx.message.content.split('\"')[1]
-    priv = nextcord.utils.get(ctx.guild.channels, name=user.display_name.lower())
-    response = "```NEW MESSAGE:```"+"```"+content+"```"
-    await priv.send(response)
-
-
-async def shout(ctx, channel):
-    content = ctx.message.content.split('\"')[1]
-    response = "```"+content+"```"
-    await channel.send(response)
+        await webhook.send(message, username=sudo_profiles[profile]["name"], avatar_url=sudo_profiles[profile]["pfp"])
+    await webhook.delete()

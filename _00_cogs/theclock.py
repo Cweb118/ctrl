@@ -27,14 +27,12 @@ class TheClock(commands.Cog):
     async def day_start_f(self, ctx):
         if not self.is_day:
             await say(ctx, "Day begins, initiating protocols.")
-            for player in theJar['players'].keys():
-                #TODO: Toggle night/day with channels class
-                location_channel = theJar['channels'][player.location.channel_id]
-                region_channel = theJar['channels'][player.location.region.channel_id]
-                party_channel = theJar['channels'][player.faction.channel_id]
-                location_channel.unmuteChannel()
-                region_channel.unmuteChannel()
-                party_channel.muteChannel()
+            #for region in theJar['regions']:
+                #region.channel.unmuteChannel()
+            for district in theJar['districts']:
+                district.channel.unmuteChannel()
+            for faction in theJar['factions']:
+                faction.channel.muteChannel()
 
             self.is_day = True
             self.need_production = True
@@ -44,6 +42,7 @@ class TheClock(commands.Cog):
 
             for unit in theJar['played_cards']['unit']:
                 daybreak_report = unit.triggerSkill('on_daybreak', [unit])
+                #send daybreak_report to owner's channel
 
         await say(ctx, "Day start protocol complete.")
 
@@ -83,15 +82,12 @@ class TheClock(commands.Cog):
     async def night_start_f(self, ctx):
         if not self.is_day:
             await say(ctx, "Night begins, initiating protocols.")
-            for player in theJar['players'].keys():
-                #TODO: Toggle night/day with channels class
-                location_channel = theJar['channels'][player.location.channel_id]
-                region_channel = theJar['channels'][player.location.region.channel_id]
-                group_channel = theJar['parties'][player.faction]
-
-                location_channel.muteChannel()
-                region_channel.muteChannel()
-                group_channel.unmuteChannel()
+            #for region in theJar['regions']:
+                #region.channel.muteChannel()
+            for district in theJar['districts']:
+                district.channel.muteChannel()
+            for faction in theJar['factions']:
+                faction.channel.unmuteChannel()
         await say(ctx, "Night start protocol complete.")
 
 

@@ -1,4 +1,6 @@
 import random
+
+from _01_functions import say
 from _02_global_dicts import theJar
 
 #----------unit arguement guide----------
@@ -46,6 +48,7 @@ class Pathfinder():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest']
+        self.action_name = 'Explore'
         self.report = None
 
     def act(self, self_unit, from_location, direction):
@@ -54,19 +57,19 @@ class Pathfinder():
                  "From Location: "+from_location+"\n"+\
                  "Direction: "+direction+"\n"
 
-    def harvest(self, self_unit, def_lost, hit):
+    async def harvest(self, self_unit, def_lost, hit):
         explore_channel = "get the explore channel from the jar which was made on game start"
         can_go = True
         if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
             can_go = False
         if can_go:
-            #say to explore channel(report)cdswq
-            print(self.report)
+            await say(None, self.report, channel=theJar['control']['explore-log'])
 
 class Scout():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
+        self.action_name = 'Scout'
         self.target_location = None
         self.can_go = False
 
@@ -83,15 +86,16 @@ class Scout():
             if self.target_location not in self_unit.location.paths:
                 self.can_go = False
 
-    def daybreak(self, self_unit):
+    async def daybreak(self, self_unit):
         if self.can_go:
             player = self_unit.owner
             report = self.target_location.report()
-            #send report to player channel
+            await say(None, report, channel=player.channel)
 
 
 class Sentry():
     #TODO: TEST
+    #Shouldn't this be a passive vision of adj interfaces?
     def __init__(self):
         self.triggers = ['on_harvest']
 
@@ -404,6 +408,7 @@ class Aratori():
 class Automata():
     def __init__(self):
         self.triggers = ['on_act']
+        self.action_name = 'Refuel'
 
     def act(self, self_unit):
         inv = self_unit.inventory
@@ -422,6 +427,7 @@ class Automata():
 class Barheim():
     def __init__(self):
         self.triggers = ['on_play', 'on_act', 'on_move']
+        self.action_name = 'Tutor'
 
     def reduce(self, building):
         if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
@@ -516,6 +522,7 @@ class Yavari():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act']
+        self.action_name = 'Harmonize'
 
     def act(self, self_unit, local_target_unit):
         effect_trait_names = None
@@ -656,6 +663,7 @@ class Transport():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest', 'on_refresh']
+        self.action_name = 'Transport'
         self.link_slots = 1
         self.links = []
 
@@ -726,6 +734,7 @@ class Sacrifice():
 
 class Defense():
     #TODO: Figure out defense mechanics :)
+    #Done: It just counts the Combatant certs lol
     def __init__(self):
         self.triggers = ['on_work']
 
@@ -735,6 +744,7 @@ class Defense():
 
 class Ward():
     #TODO: TEST
+    #Should show adj location interfaces?
     def __init__(self):
         self.triggers = ['on_work']
 

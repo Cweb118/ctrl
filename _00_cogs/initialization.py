@@ -29,7 +29,7 @@ class PlayerCog(commands.Cog):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
             theJar['players'][member.id]=(Player(member))
-            if member.id != 161520114657656832:
+            if member.id == 160020690051792898:
                 charkit = character_kits_dict[member.id]
                 ch = Character(*charkit)
                 await ch.setFaction()
@@ -81,7 +81,7 @@ class PlayerCog(commands.Cog):
     async def init_c(self, ctx: Interaction):
         #INIT ORDER: Factions > Map > Players > Characters
         await init_factions(faction_kits_dict, ctx.guild)
-        print(theJar['factions'])
+        #print(theJar['factions'])
         await TheMap(self.bot).reloadMap(ctx.guild)
         await asyncio.sleep(1)
         await self.playerInit(ctx)
