@@ -9,7 +9,8 @@ g0_character_kits = {
       'units':[['Yavari','Worker'],['Yavari','Worker']],
       'buildings':[bk['harmonist_scout_guild'],bk['mother_tree']]}],
 
-    'snowflake2':['snowflake', 2, 'Yavar', 'Yavari',
+    #jamspinnle
+    143574434874130432:[143574434874130432, 1, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},
       'units':[['Loyavasi','Scout'],['Loyavasi','Scout']],
       'buildings':[]}],
@@ -41,7 +42,7 @@ g0_casting_components = {
                 'Yavar':'And ye who are in Yavar get to know this',
             },
             'factions':{
-                'faction1':'And ye who are part of the Yavari faction obtain the faction knowledge',
+                'Yavari':'And ye who are part of the Yavari faction obtain the faction knowledge',
             },
             'characters':{
                 1:'And finally, ye who are in the middle of all of this, get the secret wisdom'

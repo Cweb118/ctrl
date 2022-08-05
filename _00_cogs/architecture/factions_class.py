@@ -24,7 +24,7 @@ class Faction():
         self.players = []
 
     async def init(self):
-        self.channel = await Channel(self.guild, self.title, 'Factions').init()
+        self.channel = await Channel(self.guild, self.title.replace(' ', '-').lower(), category_name='factions').init()
 
     async def addPlayer(self, player_obj):
         player_obj.addRep(self.title, 6)

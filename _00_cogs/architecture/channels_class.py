@@ -21,9 +21,10 @@ class Channel():
     async def init(self):
         if self.channel and (self.VC_channel or not self.VC_Mode):
             return self
-
+        control_role = nextcord.utils.get(self.guild.roles, name="control")
         overwrites = {
                 self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=self.can_talk, connect=False, speak=self.can_talk),
+                control_role: nextcord.PermissionOverwrite(read_messages=True, send_messages=self.can_talk, connect=True, speak=self.can_talk),
             }
         if self.category_name:
             category = nextcord.utils.get(self.guild.categories, name=self.category_name)
@@ -54,9 +55,12 @@ class Channel():
             await self.VC_channel.set_permissions(user, connect=False)
 
     async def muteChannel(self):
+        control_role = nextcord.utils.get(self.guild.roles, name="control")
         await self.channel.set_permissions(self.guild.default_role, send_messages=False)
+        await self.channel.set_permissions(control_role, send_messages=True)
         if self.VC_channel:
             await self.VC_channel.set_permissions(self.guild.default_role, speak=False)
+            await self.VC_channel.set_permissions(control_role, speak=True)
 
     async def unmuteChannel(self):
         await self.channel.set_permissions(self.guild.default_role, send_messages=self.can_talk)

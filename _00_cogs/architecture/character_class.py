@@ -6,12 +6,15 @@ from _02_global_dicts import theJar
 #This does NOT need to be pickled
 class Character():
     #i have no idea if this works pls help
-    def __init__(self, player_id, char_id, location_name, faction_title, inventory_kit):
+    def __init__(self):
+        pass
+
+    async def init(self, player_id, char_id, location_name, faction_title, inventory_kit):
         self.player = theJar['players'][player_id]
         self.location = theJar['districts'][location_name]
         self.faction = theJar['factions'][faction_title]
 
-        self.location.movePlayer(self.player)
+        await self.location.movePlayer(self.player)
         self.player.modStat(theJar['resources']['Influence'], 1)
 
         self.resources = inventory_kit['resources']
@@ -25,11 +28,11 @@ class Character():
                 man = Unit()
                 for trait in unit:
                     man.addTrait(trait)
-                self.player.inventory.addCard(unit, 'unit')
+                self.player.inventory.addCard(man, 'unit')
 
         if len(self.buildings) > 0:
-            for building in self.buildings:
-                hut = Building(*building)
+            for building_kit in self.buildings:
+                hut = Building(building_kit)
                 self.player.inventory.addCard(hut, 'building')
 
         self.briefing = character_briefs_dict['intro']+'\n'
@@ -37,6 +40,7 @@ class Character():
         self.briefing += character_briefs_dict['factions'][faction_title]+'\n'
         self.briefing += character_briefs_dict['characters'][char_id]+'\n'
         self.briefing += character_briefs_dict['outro']+'\n'
+        #print(self.briefing)
 
 
         self.player.cast = True

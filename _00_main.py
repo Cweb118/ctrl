@@ -117,9 +117,11 @@ async def on_interaction(interaction: Interaction):
         await bot.process_application_commands(interaction) 
 
     allInterfaceUpdates = []
-
+    #print('update?')
     for id, player in theJar['players'].items():
+        #print('update????????')
         if player.interfaceDirty:
+            #print('updating interface...')
             allInterfaceUpdates.append(player.doInterfaceUpdate())
 
     for id, district in theJar['districts'].items():

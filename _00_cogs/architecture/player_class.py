@@ -52,6 +52,7 @@ class Player():
             theJar['resources']['Influence']:20
         }
         self.faction = faction
+        self.reps = {}
         self.squads = []
 
         self.interfaceDirty = False
@@ -152,6 +153,19 @@ class Player():
             self._stats[stat] = new_val
             self._statcaps[stat] = new_cap
         return can_add
+
+
+    def addRep(self, other_faction_title, rep_change):
+        rep_change = int(rep_change)
+        try:
+            self.reps[other_faction_title] += rep_change
+        except:
+            self.reps[other_faction_title] = 0
+            self.reps[other_faction_title] += rep_change
+        if self.reps[other_faction_title] > 3:
+            self.reps[other_faction_title] = 3
+        if self.reps[other_faction_title] > -3:
+            self.reps[other_faction_title] = -3
 
     def relationCheck(self, other_faction_title):
         rep = self.faction.repCheck(other_faction_title)

@@ -56,8 +56,11 @@ class Inventory():
     def addCard(self, card, card_type):
         can_add = self.capMathCard(card_type)
         if can_add == True:
+            #print(card.title)
             self.cards[card_type].append(card)
+            #print(self.inv_owner.__class__)
             card.owner = self.inv_owner
+            #print(card.owner)
             # Ginger: Make sure it gets displayed visually
             self.inv_owner.updateInterface()
         return can_add, card

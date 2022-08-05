@@ -25,22 +25,17 @@ class Commands(commands.Cog):
 
     @slash_command(name="ping", guild_ids=guilds)
     async def ping(self, ctx):
-        await send(ctx, 'Pog.')
+        await say(ctx, 'Pog !')
 
-    @commands.command(name="pm", guild_ids=guilds)
-    async def pm_c(self, ctx, user: nextcord.Member):
-        await player_pm(ctx, user)
+    @slash_command(name="say", guild_ids=guilds)
+    async def say_c(self, ctx, channelname, message):
+        channel = nextcord.utils.get(ctx.guild.text_channels, name=channelname)
+        await say(ctx, message, channel=channel)
 
-    @commands.command(name='pa', guild_ids=guilds)
-    @commands.has_role('control')
-    async def pa_c(self, ctx, room):
-        print('E')
-        #await pa(ctx, room)
-
-    @commands.command(name='shout', guild_ids=guilds)
-    @commands.has_role('control')
-    async def shout_c(self, ctx, channel: nextcord.TextChannel):
-        await shout(ctx, channel)
+    @slash_command(name="cnsay", guild_ids=guilds)
+    async def cnsay_c(self, ctx, channelname, message):
+        channel = nextcord.utils.get(ctx.guild.text_channels, name=channelname)
+        await sudo_say(ctx, message, channel, profile='cn', embed=None)
 
 #----------player----------
 
@@ -52,7 +47,6 @@ class Commands(commands.Cog):
         region = theJar['regions'][name]
         report, title, fields = region.report()
         await say(ctx, report, title=title, fields=fields)
-
 
     @slash_command(name="district", guild_ids=guilds)
     async def district_c(self, ctx: Interaction, name):

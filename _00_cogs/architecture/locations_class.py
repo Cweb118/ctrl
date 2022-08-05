@@ -53,8 +53,8 @@ class Region():
 
         self.channel = await Channel(self.guild, self.name, self.name).init()
 
-        #Will need to be amended/removed as not to add every player all the time
-        await self.channel.addPlayer(playerRole)
+        #Remove?
+        #await self.channel.addPlayer(playerRole)
 
 
 class District():
@@ -112,15 +112,14 @@ class District():
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        print(self.guild)
         #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
         await asyncio.sleep(.25)
 
-        channelName = self.name.replace(' ', '-').lower()
         interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+        channelName = self.name.replace(' ', '-').lower()
 
-        self.channel = await Channel(self.guild, channelName, self.region.lower()).init()
-        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region.lower(), can_talk=False).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+        self.channel = await Channel(self.guild, channelName, self.region).init()
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
         self.interfaceMessage = None
@@ -183,7 +182,7 @@ class District():
         return can_chat, can_interface
         pass
 
-    def movePlayer(self, player):
+    async def movePlayer(self, player):
         #If player is already in a location, check if they can move. Otherwise, set it to true.
         if player.location:
             can_move = self.moveCheck(player)
@@ -196,11 +195,10 @@ class District():
             can_move = True
 
         if can_move:
-            self._movePlayer.start(player)
+            await self._movePlayer(player)
             return str(player) + " has moved to " + str(self)
         return "Error: " + str(player) + " is unable to move to " + str(self)
     
-    @tasks.loop(seconds=1, count=1)
     async def _movePlayer(self, player):
 
         #Check if player is already in a location. Player may not be in a region at the start of initialization.
@@ -225,6 +223,7 @@ class District():
         self.updateInterface()
         self.civics.addPlayer(player)
         await self.channel.addPlayer(player.member)
+        await self.interfaceChannel.addPlayer(player.member)
 
     def __str__(self):
         return self.name
@@ -388,14 +387,16 @@ class Civics():
             cmdr_faction = None
         if cmdr_faction:
             if self.occupance:
-                #if neutral to current occ, overtake
-                if cmdr_faction.checkRep(self.occupance) < 1:
-                    self.occupance = cmdr_faction
+                if cmdr_faction != self.occupance:
+                    #if neutral to current occ, overtake
+                    if cmdr_faction.repCheck(self.occupance.title) < 1:
+                        self.occupance = cmdr_faction
             else:
                 if self.governance:
-                    #if netural to current gov, overtake
-                    if cmdr_faction.checkrep(self.governance) < 1:
-                        self.occupance = cmdr_faction
+                    if cmdr_faction != self.governance:
+                        #if netural to current gov, overtake
+                        if cmdr_faction.repCheck(self.governance.title) < 1:
+                            self.occupance = cmdr_faction
                 else:
                     #no gov or occ, overtake
                     self.occupance = cmdr_faction

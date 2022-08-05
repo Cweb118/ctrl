@@ -1,3 +1,5 @@
+import asyncio
+
 from discord import Interaction
 import nextcord
 from nextcord import guild
@@ -29,7 +31,8 @@ class PlayerCog(commands.Cog):
             theJar['players'][member.id]=(Player(member))
             if member.id == 160020690051792898:
                 charkit = character_kits_dict[member.id]
-                ch = Character(*charkit)
+                ch = Character()
+                await ch.init(*charkit)
                 await ch.setFaction()
             else:
                 print('no charkit for '+member.display_name)
@@ -79,7 +82,9 @@ class PlayerCog(commands.Cog):
     async def init_c(self, ctx: Interaction):
         #INIT ORDER: Factions > Map > Players > Characters
         await init_factions(faction_kits_dict, ctx.guild)
+        #print(theJar['factions'])
         await TheMap(self.bot).reloadMap(ctx.guild)
+        await asyncio.sleep(1)
         await self.playerInit(ctx)
 
         #for key in theJar['players'].keys():
