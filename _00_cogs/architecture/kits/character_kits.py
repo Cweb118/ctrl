@@ -20,9 +20,10 @@ g0_character_kits = {
       'units':[['Xinn','Scout'],['Xinn','Scout']],
       'buildings':[]}],
 
-    'snowflake4':['snowflake', 4, 'Barheim', 'Barheim',
+    #Pairjax
+    169961433625264128:[169961433625264128, 1, 'The Threshold', 'Barheim',
      {'resources':{'Food':10,'Water':10},
-      'units':[['Barheim','Worker'],['Barheim','Worker']],
+      'units':[['Barheim','Scout'],['Barheim','Scout']],
       'buildings':[]}],
 
     'snowflake5':['snowflake', 5, 'Barheim', 'Barheim',

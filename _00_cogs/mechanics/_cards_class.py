@@ -83,7 +83,7 @@ class Card():
                                 can_play = False
 
                 if target_type == 'district':
-                    if player.location != target_obj:
+                    if player.location != str(target_obj):
                         report = "Error: You are not currently present at the designated location."
                         can_play = False
                 else:
@@ -140,7 +140,7 @@ class Card():
         return can_play, report
 
 
-    def playCard(self, player, target_obj):
+    async def playCard(self, player, target_obj):
         card_type = type(self).__name__.lower()
         player_type = type(player).__name__.lower()
         if player_type == 'player':
@@ -165,7 +165,7 @@ class Card():
             play_report = None
 
             play_arg_list = [self, target_obj]
-            play_report = self.triggerSkill('on_play', play_arg_list)
+            play_report = await self.triggerSkill('on_play', play_arg_list)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
             if play_report:
                 report += "\n"+play_report
