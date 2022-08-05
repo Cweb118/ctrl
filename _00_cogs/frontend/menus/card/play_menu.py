@@ -40,7 +40,7 @@ class PlayMenu(Menu):
         if card is None:
             raise StateError
 
-        can_play, result = card.playCard(player, theJar['districts'][player.location])
+        can_play, result = await card.playCard(player, theJar['districts'][player.location])
 
         if result == '':
             result = 'Error'
@@ -140,7 +140,7 @@ class BuildingPlayMenu(Menu):
         if building is None:
             raise StateError
 
-        can_play, result = card.playCard(player, building)
+        can_play, result = await card.playCard(player, building)
 
         if result == '':
             result = 'Error'

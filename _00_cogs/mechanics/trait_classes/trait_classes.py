@@ -125,6 +125,36 @@ class Sentry():
         #say to explore channel(report)
         print(report)
 
+class Recon():
+    def __init__(self):
+        self.triggers = ['on_move', 'on_death']
+
+    async def move(self, self_unit, from_location, to_location):
+        player = self_unit.owner
+        #check if unit was the last recon unit in from_loc
+        print('Unit Movement, Analyzing: '+str(from_location))
+        old_chat, old_inf = from_location.canChat(player)
+        if not old_chat:
+            await from_location.channel.removePlayer(player.member)
+        if not old_inf:
+            await from_location.interfaceChannel.removePlayer(player.member)
+        #check if unit is the first recon unit in to_loc
+        print('Unit Movement, Analyzing: '+str(to_location))
+        new_chat, new_inf = to_location.canChat(self_unit.owner)
+        if new_chat:
+             await to_location.channel.addPlayer(player.member)
+        if new_inf:
+            await to_location.interfaceChannel.addPlayer(player.member)
+
+    async def death(self, self_unit):
+        player = self_unit.owner
+        old_location = theJar['districts'][self_unit.location]
+        #check if unit was the last recon unit in old_loc
+        old_chat, old_inf = old_location.canChat(player)
+        if not old_chat:
+            await old_location.channel.removePlayer(player.member)
+        if not old_inf:
+            await old_location.interfaceChannel.removePlayer(player.member)
 
 
 class Warrior():

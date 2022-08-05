@@ -45,7 +45,7 @@ class TravelMenu(Menu):
         destination = theJar['districts'][state['destination']]
         player = theJar['players'][interaction.user.id]
 
-        destination.movePlayer(player)
+        await destination.movePlayer(player)
 
         return False
 

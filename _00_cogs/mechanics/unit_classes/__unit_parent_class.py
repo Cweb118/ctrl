@@ -312,33 +312,65 @@ class Unit(Card):
             if remove:
                 self.certs.remove(cert_name)
 
-    def triggerSkill(self, trigger, arg_list):
+    async def triggerSkill(self, trigger, arg_list):
         if self.skillsets:
-            for skillset in self.skillsets:
-                if trigger in skillset.triggers:
-                    report = None
-                    if trigger == 'on_act':
-                       report = skillset.act(arg_list)
-                    if trigger == 'on_play':
-                       report = skillset.play(arg_list)
-                    if trigger == 'on_work':
-                       report = skillset.work(arg_list)
-                    if trigger == 'on_move':
-                       report = skillset.move(arg_list)
-                    if trigger == 'on_battle':
-                       report = skillset.battle(arg_list)
-                    if trigger == 'on_attack':
-                       report = skillset.attack(arg_list)
-                    if trigger == 'on_defend':
-                       report = skillset.defend(arg_list)
-                    if trigger == 'on_death':
-                       report = skillset.death(arg_list)
-                    if trigger == 'on_harvest':
-                       report = skillset.harvest(arg_list)
-                    if trigger == 'on_refresh':
-                       report = skillset.refresh(arg_list)
-                    if report:
-                        return report
+            for skillset_name in self.skillsets.keys():
+                skillsets = self.skillsets[skillset_name]
+                for skillset in skillsets:
+                    if trigger in skillset.triggers:
+                        report = None
+                        if trigger == 'on_act':
+                            try:
+                                report = skillset.act(*arg_list)
+                            except:
+                                report = await skillset.act(*arg_list)
+                        if trigger == 'on_play':
+                            try:
+                                report = skillset.play(*arg_list)
+                            except:
+                                report = await skillset.play(*arg_list)
+                        if trigger == 'on_work':
+                            try:
+                                report = skillset.work(*arg_list)
+                            except:
+                                report = await skillset.work(*arg_list)
+                        if trigger == 'on_move':
+                            try:
+                                report = skillset.move(*arg_list)
+                            except:
+                                report = await skillset.move(*arg_list)
+                        if trigger == 'on_battle':
+                            try:
+                                report = skillset.battle(*arg_list)
+                            except:
+                                report = await skillset.battle(*arg_list)
+                        if trigger == 'on_attack':
+                            try:
+                                report = skillset.attack(*arg_list)
+                            except:
+                                report = await skillset.attack(*arg_list)
+                        if trigger == 'on_defend':
+                            try:
+                                report = skillset.defend(*arg_list)
+                            except:
+                                report = await skillset.defend(*arg_list)
+                        if trigger == 'on_death':
+                            try:
+                                report = skillset.death(*arg_list)
+                            except:
+                                report = await skillset.death(*arg_list)
+                        if trigger == 'on_harvest':
+                            try:
+                                report = skillset.harvest(*arg_list)
+                            except:
+                                report = await skillset.harvest(*arg_list)
+                        if trigger == 'on_refresh':
+                            try:
+                                report = skillset.refresh(*arg_list)
+                            except:
+                                report = await skillset.refresh(*arg_list)
+                        if report:
+                            return report
 
 
     def unitCanMove(self, dest_type, destination):

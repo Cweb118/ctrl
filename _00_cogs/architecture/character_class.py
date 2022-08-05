@@ -35,11 +35,11 @@ class Character():
                 hut = Building(building_kit)
                 self.player.inventory.addCard(hut, 'building')
 
-        self.briefing = character_briefs_dict['intro']+'\n'
-        self.briefing += character_briefs_dict['locations'][location_name]+'\n'
-        self.briefing += character_briefs_dict['factions'][faction_title]+'\n'
-        self.briefing += character_briefs_dict['characters'][char_id]+'\n'
-        self.briefing += character_briefs_dict['outro']+'\n'
+        #self.briefing = character_briefs_dict['intro']+'\n'
+        #self.briefing += character_briefs_dict['locations'][location_name]+'\n'
+        #self.briefing += character_briefs_dict['factions'][faction_title]+'\n'
+        #self.briefing += character_briefs_dict['characters'][char_id]+'\n'
+        #self.briefing += character_briefs_dict['outro']+'\n'
         #print(self.briefing)
 
 

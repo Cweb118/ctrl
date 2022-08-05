@@ -158,39 +158,43 @@ class District():
 
     def moveCheck(self, player):
         can_move = False
-        if self in player.location.paths:
+
+        if self in theJar['districts'][player.location].paths:
             can_move = player.modStat(theJar['resources']['Influence'], -1)
         return can_move
 
-    #TODO: Do
-    def canChat(self, player, location):
+
+    def canChat(self, player):
         #call within but just prior to player move and unit move iff player is not present
         can_chat = False
         can_interface = False
         local_card_list = []
-        for unit in player.inventory['unit']:
-            if unit.location == location.name:
+        for unit in player.inventory.slots['unit']:
+            print(unit, unit.location)
+            if unit.location == self.name:
                 can_interface = True
                 local_card_list.append(unit)
-        for building in player.inventory['building']:
-            if building.location == location.name:
+        for building in player.inventory.slots['building']:
+            if building.location == self.name:
                 can_interface = True
                 local_card_list.append(building)
         for card in local_card_list:
+            print('Local Card List: '+str(local_card_list))
             if 'Recon' in card.certs:
                 can_chat = True
         return can_chat, can_interface
-        pass
+
 
     async def movePlayer(self, player):
         #If player is already in a location, check if they can move. Otherwise, set it to true.
         if player.location:
+            player_loc = theJar['districts'][player.location]
             can_move = self.moveCheck(player)
             #If player is in location AND can move, remove them from the current location's player list.
             if can_move:
-                player.location.players.remove(player)
-                player.location.updateInterface()
-                player.location.civics.delPlayer(player)
+                player_loc.players.remove(player)
+                player_loc.updateInterface()
+                player_loc.civics.delPlayer(player)
         else:
             can_move = True
 
@@ -200,23 +204,23 @@ class District():
         return "Error: " + str(player) + " is unable to move to " + str(self)
     
     async def _movePlayer(self, player):
-
         #Check if player is already in a location. Player may not be in a region at the start of initialization.
         if player.location:
+            player_loc = theJar['districts'][player.location]
             #if player is being moved to a different region, remove permissions from old region channel and category.
-            if not player.location.region == self.region:
+            if not player_loc.region == self.region:
                 #Not sure how to adapt this to new channel system -cart
                 category = nextcord.utils.get(self.guild.categories, name=player.location.region)
                 await category.set_permissions(player.member, read_messages=False)
         
             #remove player from old district channel (after checking to make sure this needs to happen)
-            can_chat, can_interface = self.canChat(player, player.location)
+            can_chat, can_interface = player_loc.canChat(player)
             if not can_chat:
                 #remove from chat channel
-                await theJar['districts'][player.location].channel.removePlayer(player.member)
+                await player_loc.channel.removePlayer(player.member)
             if not can_interface:
                 #remove from interface
-                await theJar['districts'][player.location].interfaceChannel.removePlayer(player.member)
+                await player_loc.interfaceChannel.removePlayer(player.member)
         #This was just changed to make the player location a string instead of object- may break things -cart
         player.location = str(self)
         self.players.append(player)
