@@ -232,7 +232,7 @@ class Unit(Card):
                     except:
                         self.play_cost[mod_res_obj] = -value
             if trait['upkeep']:
-                for mod_upkeep in trait.trait_upkeep_dict.keys():
+                for mod_upkeep in trait['upkeep'].keys():
                     resource = theJar['resources'][mod_upkeep]
                     value = trait['upkeep'][mod_upkeep]
                     try:

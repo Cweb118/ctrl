@@ -65,7 +65,7 @@ class Commands(commands.Cog):
     async def move_f(self, ctx, name):
         player = theJar['players'][ctx.user.id]
         district = theJar['districts'][name]
-        report = district.movePlayer(player)
+        report = await district.movePlayer(player)
         await say(ctx,report)
 
 
@@ -372,7 +372,7 @@ class Commands(commands.Cog):
 
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):
-        await self.makeunit_f(ctx, traits)
+        await self.makeunit_f(ctx, traits.split(' '))
 
     async def makeunit_f(self, ctx: Interaction, traits):
         player = theJar['players'][ctx.user.id]
