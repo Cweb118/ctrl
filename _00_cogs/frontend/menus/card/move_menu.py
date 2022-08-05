@@ -24,7 +24,7 @@ def districtOptions(state):
     paths = district.paths
 
     options = []
-    options.append(SelectOption(district.name, value=district.name))
+    options.append(SelectOption(label=district.name, value=district.name))
 
     for path in paths:
         options.append(SelectOption(label=path.name, value=path.name))
