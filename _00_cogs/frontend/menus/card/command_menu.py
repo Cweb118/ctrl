@@ -86,6 +86,20 @@ class CommandMenu(Menu):
 
         return False
 
+    @Button(id='act', label='Act', style=ButtonStyle.success)
+    async def act(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError 
+
+        player = theJar['players'][state['player']]
+        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+        await Menus.actMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+
     @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
     async def cancel(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:

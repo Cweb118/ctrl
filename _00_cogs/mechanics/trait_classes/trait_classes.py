@@ -23,6 +23,15 @@ class Architect():
         self.triggers = ['on_act', 'on_harvest']
         self.subject = None
 
+        # Action Info
+        self.act_name = 'act'
+        self.act_params = [
+            ['Local Building',
+                ['current_location'],
+                ['building']
+            ]
+        ]
+
     def act(self, self_unit, local_target_building):
         can_copy = True
         for cert in local_target_building.certs:
@@ -69,6 +78,15 @@ class Scout():
         self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
         self.target_location = None
         self.can_go = False
+
+        # Action Info
+        self.act_name = 'act'
+        self.act_params = [
+            ['Adjacent Location',
+                ['current_location'],
+                ['adjacent_location']
+            ]
+        ]
 
     def act(self, self_unit, adjacent_target_location):
         self.target_location = adjacent_target_location
@@ -405,6 +423,10 @@ class Automata():
     def __init__(self):
         self.triggers = ['on_act']
 
+        # Action Info
+        self.act_name = 'act'
+        self.act_params = []
+
     def act(self, self_unit):
         inv = self_unit.inventory
         steam = theJar['resources']['Steam']
@@ -422,6 +444,15 @@ class Automata():
 class Barheim():
     def __init__(self):
         self.triggers = ['on_play', 'on_act', 'on_move']
+
+        # Action Info
+        self.act_name = 'act'
+        self.act_params = [
+            ['Local Industrialist Unit',
+                ['current_location'],
+                ['unit', lambda unit: unit.hasCert('Industrialist')]
+            ]
+        ]
 
     def reduce(self, building):
         if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
@@ -516,6 +547,15 @@ class Yavari():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act']
+
+        # Action Info
+        self.act_name = 'act'
+        self.act_params = [
+            ['Local Unit',
+                ['current_location'],
+                ['unit']
+            ]
+        ]
 
     def act(self, self_unit, local_target_unit):
         effect_trait_names = None

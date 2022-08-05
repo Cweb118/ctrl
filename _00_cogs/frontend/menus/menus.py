@@ -9,6 +9,9 @@ import _00_cogs.frontend.menus.district.district_menu as district_menu
 import _00_cogs.frontend.menus.district.travel_menu as travel_menu
 import _00_cogs.frontend.menus.district.interact_menu as interact_menu
 import _00_cogs.frontend.menus.card.move_menu as move_menu
+import _00_cogs.frontend.menus.card.actions.act_menu as act_menu
+import _00_cogs.frontend.menus.card.actions.adjacent_param_menu as adjacent_param_menu
+import _00_cogs.frontend.menus.card.actions.card_param_menu as card_param_menu
 
 cardsMenu = cards_menu.CardsMenu()
 cardMenu = cards_menu.CardMenu()
@@ -23,6 +26,10 @@ playMenu = play_menu.PlayMenu()
 manageMenu = manage_menu.ManageMenu()
 commandMenu = command_menu.CommandMenu()
 transferResourceMenu = transfer_resource_menu.TransferResourceMenu()
+actMenu = act_menu.ActMenu()
+adjacentParamMenu = adjacent_param_menu.AdjacentParamMenu()
+unitParamMenu = card_param_menu.UnitParamMenu()
+buildingParamMenu = card_param_menu.BuildingParamMenu()
 
 moveMenu = move_menu.MoveMenu()
 buildingMoveMenu = move_menu.BuildingMoveMenu()
