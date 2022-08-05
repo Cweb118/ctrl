@@ -19,6 +19,20 @@ class Region():
 
 
         self.createChannel.start()
+    
+    #saves channel and guild id for retrieval on reconstruction.
+    def __getstate__(self):
+        print(str(type(self.channel)))
+        return (self.name, self.districts, self.guild.id, self.channel.channel.id)
+        #return (self.name, self.districts, self.guild.id, self.channel)
+
+    def __setstate__(self, state):
+        self.name, self.districts, self.guild, self.channel = state
+    
+    def reconstruct(self, guild, channel):
+        self.guild = guild
+        self.channel = channel
+    
 
     #TODO: New one incoming, james will review and delete later
     #def __reduce__(self):
@@ -59,7 +73,7 @@ class Region():
 
 class District():
     def __init__(self, name, region_name, size, paths = [], guild = None):
-
+        print("Disctrict constructor running")
         self.name = name
         self.region = region_name
         self.paths = []
@@ -107,7 +121,39 @@ class District():
 
     #TODO: James review
     #def __reduce__(self):
-    #    return(self.__class__, (self.name, self.region, self.size, None, None, self.guildID, self.paths, self.inventory))
+    #    return(self.__class__, (self.name, self.region, self.size, self.paths, None, True))
+
+    def __getstate__(self):
+        # vars left out:
+        # self.voice = None
+        # self.channel = None
+        # self.interfaceChannel = None
+        # self.guild = guild
+        if self.voice:
+            return (self.name,
+            self.region,
+            self.paths,
+            self.players,
+            self.size,
+            self.civics,
+            self.inventory,
+            self.pathcap,
+            self.interfaceDirty,
+            self.channel.channel.id, self.interfaceChannel.channel.id, self.guild.id, self.voice.id)
+        return(self.name,
+        self.region,
+        self.paths,
+        self.players,
+        self.size,
+        self.civics,
+        self.inventory,
+        self.pathcap,
+        self.interfaceDirty,
+        self.channel.channel.id, self.interfaceChannel.channel.id, self.guild.id, self.voice)
+
+    def __setstate__(self, state):
+        self.name, self.region, self.paths, self.players, self.size, self.civics, self.inventory, self.pathcap, self.interfaceDirty = state
+
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):

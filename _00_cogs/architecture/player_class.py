@@ -56,9 +56,14 @@ class Player():
         self.squads = []
 
         self.interfaceDirty = False
+
+    def __getstate__(self):
+        return ()
+    def __setstate__(self, state):
+        pass
     #pickle
-    def __reduce__(self):
-        return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
+    #def __reduce__(self):
+    #    return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
     
     def reinstate(self, bot):
         self._guild = bot.get_guild(self._guildID)
