@@ -29,7 +29,7 @@ class PlayerCog(commands.Cog):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
             theJar['players'][member.id]=(Player(member))
-            if member.id == 169961433625264128:
+            if member.id == 161520114657656832:
                 charkit = character_kits_dict[member.id]
                 ch = Character()
                 await ch.init(*charkit)

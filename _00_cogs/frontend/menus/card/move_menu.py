@@ -74,7 +74,7 @@ class DistrictMoveMenu(Menu):
 
         district = theJar['districts'][state['district']]
 
-        await Menus.districtMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': state['district']})
+        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': state['district']})
         return False
 
     @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
@@ -83,9 +83,6 @@ class DistrictMoveMenu(Menu):
             raise StateError
 
         if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        if 'district' not in state:
             raise StateError
 
         await Menus.commandMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
@@ -125,7 +122,7 @@ class MoveMenu(Menu):
 
         district = theJar['districts'][state['district']]
 
-        can_move, result = card.moveUnit(player, 'district', district)
+        can_move, result = card.moveUnit('district', district)
 
         if result == '':
             result = 'Error'
@@ -228,7 +225,7 @@ class BuildingMoveMenu(Menu):
         if building is None:
             raise StateError
 
-        can_move, result = card.moveUnit(player, 'building', building)
+        can_move, result = card.moveUnit('building', building)
 
         if result == '':
             result = 'Error'

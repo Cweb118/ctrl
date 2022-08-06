@@ -12,6 +12,7 @@ import _00_cogs.frontend.menus.card.move_menu as move_menu
 import _00_cogs.frontend.menus.card.actions.act_menu as act_menu
 import _00_cogs.frontend.menus.card.actions.adjacent_param_menu as adjacent_param_menu
 import _00_cogs.frontend.menus.card.actions.card_param_menu as card_param_menu
+import _00_cogs.frontend.menus.card.actions.select_param_menu as select_param_menu
 
 cardsMenu = cards_menu.CardsMenu()
 cardMenu = cards_menu.CardMenu()
@@ -30,6 +31,7 @@ actMenu = act_menu.ActMenu()
 adjacentParamMenu = adjacent_param_menu.AdjacentParamMenu()
 unitParamMenu = card_param_menu.UnitParamMenu()
 buildingParamMenu = card_param_menu.BuildingParamMenu()
+selectParamMenu = select_param_menu.SelectParamMenu()
 
 moveMenu = move_menu.MoveMenu()
 buildingMoveMenu = move_menu.BuildingMoveMenu()

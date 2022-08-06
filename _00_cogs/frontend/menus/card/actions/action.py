@@ -6,9 +6,10 @@ import _00_cogs.frontend.menus.menus as Menus
 
 def getAction(card, act_id):
     if card.skillsets:
-        for skillset in card.skillsets:
-            if ('on_act' in skillset.triggers) and skillset.act_id == act_id:
-                return skillset
+        for trait in card.skillsets.values():
+            for skillset in trait:
+                if ('on_act' in skillset.triggers) and skillset.act_id == act_id:
+                    return skillset
     
     return None
 
@@ -42,7 +43,7 @@ async def resolveAction(interaction: Interaction, state):
 
     if param_num <= -1 and param_stage <= -1:
         if len(action.act_params) == 0:
-            await action.act(card)
+            action.act(card)
             return
         
         param_num = 0
@@ -76,6 +77,7 @@ async def resolveAction(interaction: Interaction, state):
                     raise StateError
 
                 player_id, card_id = raw_param_split
+                player_id = int(player_id)
 
                 if player_id not in theJar['players']:
                     raise StateError
@@ -90,53 +92,44 @@ async def resolveAction(interaction: Interaction, state):
 
             for i in range(len(action.act_params)):
                 param_opts = action.act_params[i]
-                last_type = param_opts[len(param_opts) - 1]
+                last_type = param_opts[len(param_opts) - 1][0]
 
-                raw_param = params[i]               
+                raw_param = params[i]     
 
                 if last_type == 'current_location' or last_type == 'adjacent_location':
                     parsed_params.append(parseDistrict(raw_param))
-                elif last_type == 'unit':\
+                elif last_type == 'unit':
                     parsed_params.append(parseCard('unit', raw_param))
                 elif last_type == 'building':
                     parsed_params.append(parseCard('building', raw_param))
+                elif last_type == 'select':
+                    parsed_params.append(raw_param) 
 
-            await action.act(card, *parsed_params)
+            action.act(card, *parsed_params)
             return
 
     param = action.act_params[param_num]
     param_type = param[param_stage + 1][0]
 
+    newState = {
+        'card': state['card'], 'card_type': state['card_type'],
+        'player': state['player'],
+        'action': state['action'],
+        'act_params': params, 'act_param': param_num, 'act_param_stage': param_stage
+    }
+
     if param_type == 'current_location':
         while len(params) <= param_num:
             params.append(None)
 
-        params[param_num] = card.location.title
+        params[param_num] = card.location.name
 
-        await resolveAction(interaction, {
-            'card': state['card'], 'card_type': state['card_type'],
-            'player': state['player'],
-            'action': state['action'],
-            'act_params': params, 'act_param': param_num, 'act_param_stage': param_stage
-        })
+        await resolveAction(interaction, newState)
     elif param_type == 'adjacent_location':
-        await Menus.adjacentParamMenu.show(interaction, newState={
-            'card': state['card'], 'card_type': state['card_type'],
-            'player': state['player'],
-            'action': state['action'],
-            'act_params': params, 'act_param': param_num, 'act_param_stage': param_stage
-        })
+        await Menus.adjacentParamMenu.show(interaction, newState=newState)
     elif param_type == 'unit':
-        await Menus.unitParamMenu.show(interaction, newState={
-            'card': state['card'], 'card_type': state['card_type'],
-            'player': state['player'],
-            'action': state['action'],
-            'act_params': params, 'act_param': param_num, 'act_param_stage': param_stage
-        })
+        await Menus.unitParamMenu.show(interaction, newState=newState)
     elif param_type == 'building':
-        await Menus.buildingParamMenu.show(interaction, newState={
-            'card': state['card'], 'card_type': state['card_type'],
-            'player': state['player'],
-            'action': state['action'],
-            'act_params': params, 'act_param': param_num, 'act_param_stage': param_stage
-        })
+        await Menus.buildingParamMenu.show(interaction, newState=newState)
+    elif param_type == 'select':
+        await Menus.selectParamMenu.show(interaction, newState=newState)

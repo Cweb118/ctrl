@@ -25,12 +25,13 @@ def actionOptions(state):
     options = []
 
     if card.skillsets:
-        for skillset in card.skillsets:
-            if 'on_act' in skillset.triggers:
-                id = skillset.act_id
-                name = skillset.act_name
+        for trait in card.skillsets.values():
+            for skillset in trait:
+                if 'on_act' in skillset.triggers:
+                    id = skillset.act_id
+                    name = skillset.act_name
 
-                options.append(SelectOption(label=id, value=name))
+                    options.append(SelectOption(label=name, value=id))
 
     return options
 

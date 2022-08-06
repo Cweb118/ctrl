@@ -65,7 +65,7 @@ def cardOptions(card_type):
 
         for card in cards:
             if filter(card):
-                options.append(SelectOption(label=card.owner.memberID + '|' + card.uniqueID, value=card.title))
+                options.append(SelectOption(label=card.title, value=str(card.owner.memberID) + '|' + str(card.uniqueID)))
 
         return options
 

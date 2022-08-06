@@ -26,7 +26,8 @@ class Architect():
         self.subject = None
 
         # Action Info
-        self.act_name = 'act'
+        self.act_id = 'Architect'
+        self.act_name = 'Survey'
         self.act_params = [
             ['Local Building',
                 ['current_location'],
@@ -57,8 +58,28 @@ class Pathfinder():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest']
-        self.action_name = 'Explore'
         self.report = None
+
+        # Action Info
+        self.act_id = 'Pathfinder'
+        self.act_name = 'Explore'
+        self.act_params = [
+            ['Current District', 
+                ['current_location']
+            ],
+            ['Direction',
+                ['select', [
+                    ('North', 'North'), 
+                    ('Northeast', 'Northeast'),
+                    ('East', 'East'),
+                    ('Southeast', 'Southeast'),
+                    ('South', 'South'),
+                    ('Southwest', 'Southwest'),
+                    ('West', 'West'),
+                    ('Northwest', 'Northwest')
+                ]]
+            ]
+        ]
 
     def act(self, self_unit, from_location, direction):
         self.report = "**Action: Explore**\n"+\
@@ -78,12 +99,12 @@ class Scout():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
-        self.action_name = 'Scout'
         self.target_location = None
         self.can_go = False
 
         # Action Info
-        self.act_name = 'act'
+        self.act_id = 'Scout'
+        self.act_name = 'Scout'
         self.act_params = [
             ['Adjacent Location',
                 ['current_location'],
@@ -456,10 +477,10 @@ class Aratori():
 class Automata():
     def __init__(self):
         self.triggers = ['on_act']
-        self.action_name = 'Refuel'
 
         # Action Info
-        self.act_name = 'act'
+        self.act_id = 'Automata'
+        self.act_name = 'Refuel'
         self.act_params = []
 
     def act(self, self_unit):
@@ -479,10 +500,10 @@ class Automata():
 class Barheim():
     def __init__(self):
         self.triggers = ['on_play', 'on_act', 'on_move']
-        self.action_name = 'Tutor'
 
         # Action Info
-        self.act_name = 'act'
+        self.act_id = 'Barheim'
+        self.act_name = 'Tutor'
         self.act_params = [
             ['Local Industrialist Unit',
                 ['current_location'],
@@ -583,10 +604,10 @@ class Yavari():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act']
-        self.action_name = 'Harmonize'
 
         # Action Info
-        self.act_name = 'act'
+        self.act_id = 'Yavari'
+        self.act_name = 'Harmonize'
         self.act_params = [
             ['Local Unit',
                 ['current_location'],
@@ -733,9 +754,28 @@ class Transport():
     #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest', 'on_refresh']
-        self.action_name = 'Transport'
         self.link_slots = 1
         self.links = []
+
+        # Action Info
+        self.act_id = 'Transport'
+        self.act_name = 'Transport'
+        self.act_params = [
+            [
+                'Local Building (Sender)',
+                ['current_location'],
+                ['building']
+            ],
+            [
+                'Local Building (Receiver)',
+                ['current_location'],
+                ['building']
+            ],
+            [
+                'Operation',
+                ['select', [('add', 'Add'), ('del', 'Delete')]]
+            ]
+        ]
 
     #Designates the buildings to link up (or unlink)
     def act(self, self_card, sender, receiver, operation):

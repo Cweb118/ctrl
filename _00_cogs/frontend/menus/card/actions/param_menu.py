@@ -46,9 +46,9 @@ class ParamMenu(Menu):
 
         param_name = action.act_params[param_num][0]
 
-        return ('Parameter: ' + param_name + '\n\n' + 'Please select ' + self.type_display)
+        return ('Parameter: ' + param_name + '\n\n' + 'Please select ' + self.type_display, [])
 
-    async def onParam(state, interaction: Interaction, param):
+    async def onParam(self, state, interaction: Interaction, param):
         if 'card' not in state or 'card_type' not in state:
             raise StateError
 
