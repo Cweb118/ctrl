@@ -26,6 +26,12 @@ class Faction():
     async def init(self):
         self.channel = await Channel(self.guild, self.title.replace(' ', '-').lower(), category_name='factions').init()
 
+    def __getstate__(self):
+        pass
+
+    def __setstate__(self):
+        pass
+
     async def addPlayer(self, player_obj):
         player_obj.addRep(self.title, 6)
         player_obj.faction = self.title
