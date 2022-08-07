@@ -7,41 +7,25 @@ from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
 from .channels_class import Channel
 
-class StateError(Exception):
-    pass
-
 class Player():
     def __init__(self, member, memberID = None, guildID = None, inventory = None, starter_location = None, faction = None):
         #flag to see if the player has been cast as a character once before
         self.cast = False
 
-        self._member = member
+        self.member = member
+        self.username = member.name
+        self.memberID = member.id
+        self.guildID = member.guild.id
+        self.guild = member.guild
 
-        #pickle stuff (rework soon):
-        if self._member != None:
-            self._username = member.display_name
-            self._memberID = member.id
-            self._guildID = member.guild.id
-        elif memberID != None and guildID != None:
-            self._username = None
-            self._memberID = memberID
-            self._guildID = guildID
-        else:
-            raise TypeError("Player must be constructed with a member object or memberID and guildID.")
-
-        if member != None:
-            self._guild = member.guild
-        else:
-            self._guild = None
-
-        self._channel = None
+        self.channel = None
         self.interfaceChannel = None
         self.createPrivateChannel.start()
 
         if inventory == None:
-            self._inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
+            self.inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
         else:
-            self._inventory = inventory
+            self.inventory = inventory
         self.location = starter_location #Location Instance (needs to lack _!)
         self._stats = {
             #instance:quantity
@@ -58,41 +42,36 @@ class Player():
         self.interfaceDirty = False
 
     def __getstate__(self):
-        return ()
+        return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
     def __setstate__(self, state):
-        pass
-    #pickle
-    #def __reduce__(self):
-    #    return(self.__class__, (None, self.memberID, self.guildID, self._inventory))
+        self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty = state
     
-    def reinstate(self, bot):
-        self._guild = bot.get_guild(self._guildID)
-        self._member = self._guild.get_member(self._memberID)
-        self._username = self._member.display_name
-
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guildID)
+        self.member = self.guild.get_member(self.memberID)
 
     @tasks.loop(seconds=1, count=1)
     async def createPrivateChannel(self):
-        if self._member == None or self._guild == None:
+        if self.member == None or self.guild == None:
             return
 
         interfaceOverwrites = {
-            self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
-            self._member: nextcord.PermissionOverwrite(read_messages=True)
+            self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
+            self.member: nextcord.PermissionOverwrite(read_messages=True)
         }
         overwrites = {
-            self._guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-            self._member: nextcord.PermissionOverwrite(read_messages=True)
+            self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
+            self.member: nextcord.PermissionOverwrite(read_messages=True)
         }
         topic = "Private Discussion"
 
-        interfaceName = self._member.name.replace(' ', '-').lower() + '_interface'
-        channelName = self._member.name.replace(' ', '-').lower()
+        interfaceName = self.member.name.replace(' ', '-').lower() + '_interface'
+        channelName = self.member.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self._guild, interfaceName, 'Interface', can_talk=False).init()
-        self._channel = await Channel(self._guild, channelName, 'Players').init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', can_talk=False).init()
+        self.channel = await Channel(self.guild, channelName, 'Players').init()
 
-        await asyncio.gather(self._channel.addPlayer(self._member), self.interfaceChannel.addPlayer(self._member))
+        await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member))
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
         #self.squadsMessage = None
@@ -113,7 +92,7 @@ class Player():
             #self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id})
         
         if (self.unitsMessage == None):
-            self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id, 'card_type': 'unit'})
+            self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'unit'})
         
         if (self.buildingsMessage == None):
             self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'building'})
@@ -178,16 +157,14 @@ class Player():
 
     @tasks.loop(seconds=1, count=1)
     async def __delPrivateChannel(self):
-        await self._channel.delete()
+        await self.channel.delete()
         await self.interfaceChannel.delete()
     
     def delPrivateChannel(self):
         self.__delPrivateChannel.start()
 
     def __str__(self):
-        if self._username == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._username
+        return self.username
 
     def report(self):
         report = ''
@@ -213,41 +190,27 @@ class Player():
 
     #ACCESSOR
 
-    @property
-    def member(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._member
+    # @property
+    # def member(self):
+    #     return self._member
 
-    @property
-    def guild(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._guild
+    # @property
+    # def guild(self):
+    #     return self._guild
 
-    @property
-    def channel(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._channel
-    @property
-    def memberID(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._memberID
-    @property
-    def guildID(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._guildID
-    @property
-    def inventory(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._inventory
+    # @property
+    # def channel(self):
+    #     return self._channel
+    # @property
+    # def memberID(self):
+    #     return self._memberID
+    # @property
+    # def guildID(self):
+    #     return self._guildID
+    # @property
+    # def inventory(self):
+    #     return self._inventory
 
-    #left for legacy support
-    def getChannelID(self):
-        if self._member == None or self._guild == None:
-            raise StateError("Player Object was not initialized before use.")
-        return self._channel.id
+    # #left for legacy support
+    # def getChannelID(self):
+    #     return self._channel.id
