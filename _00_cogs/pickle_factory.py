@@ -15,7 +15,7 @@ class PickleFactory(commands.Cog):
     @commands.command(name="save")
     async def save(self, ctx):
         for entry in theJar.keys():
-                print(f"\n\nPickling entry: {entry}...\n\n")
+                print(f"Pickling entry: {entry}...")
                 with open(f"{os.getcwd()}\\_01_pickle_jar\\{entry}.pkl", "wb") as file:
                     pickle.dump(theJar[entry], file)
         await ctx.send("Finished Saving!")
@@ -25,9 +25,20 @@ class PickleFactory(commands.Cog):
         for entry in theJar:
             try:
                 with open(f"{os.getcwd()}\\_01_pickle_jar\\{entry}.pkl", "rb") as file:
-                    theJar[entry] = pickle.load(file)
+                    temp = pickle.load(file)
+                    if entry == "districts":
+                        for district in temp.values():
+                            guild = self.bot.get_guild(district.channel.guild)
+                            channelObj = self.bot.get_channel(district.channel.channel)
+                            vcChannel = self.bot.get_channel(district.channel.VC_channel)
+                            district.channel.reconstruct(guild, channelObj, vcChannel)
+                    elif entry == "players":
+                        for player in temp.values():
+                            player.reconstruct(self.bot)
+                    theJar[entry] = temp
             except FileNotFoundError:
                 print(f"File \"{entry}\" not found.")
+        await ctx.send("Load Completed!")
 
     @commands.command(name="listDist")
     async def listdist(self, ctx):

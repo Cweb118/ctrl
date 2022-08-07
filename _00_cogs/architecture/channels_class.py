@@ -45,8 +45,12 @@ class Channel():
         return (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel)
     
     def __setstate__(self, state):
-        self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel.id = state
+        self.name, self.category_name, self.guild, self.VC_Mode, self.can_talk, self.channel, self.VC_channel = state
         
+    def reconstruct(self, guild, channel, vcChannel):
+        self.guild = guild
+        self.channel = channel
+        self.VC_channel = vcChannel
 
     async def delete(self):
         await self.channel.delete()
