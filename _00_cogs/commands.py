@@ -65,7 +65,7 @@ class Commands(commands.Cog):
     async def move_f(self, ctx, name):
         player = theJar['players'][ctx.user.id]
         district = theJar['districts'][name]
-        report = district.movePlayer(player)
+        report = await district.movePlayer(player)
         await say(ctx,report)
 
 
