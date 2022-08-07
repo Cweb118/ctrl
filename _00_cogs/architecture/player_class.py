@@ -152,7 +152,10 @@ class Player():
             self.reps[other_faction_title] = -3
 
     def relationCheck(self, other_faction_title):
-        rep = self.faction.repCheck(other_faction_title)
+        if other_faction_title == self.faction:
+            rep = 3
+        else:
+            rep = theJar['factions'][self.faction].repCheck(other_faction_title)
         return rep
 
     @tasks.loop(seconds=1, count=1)

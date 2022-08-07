@@ -57,7 +57,10 @@ class Faction():
             self.reps[other_faction_title] = -3
 
     def repCheck(self, other_faction_title):
-        rep = self.reps[other_faction_title]
+        if other_faction_title == self.title:
+            rep = 3
+        else:
+            rep = self.reps[other_faction_title]
         return rep
 
     def report(self):

@@ -79,3 +79,9 @@ class Channel():
         await self.channel.set_permissions(self.guild.default_role, send_messages=self.can_talk)
         if self.VC_channel:
             await self.VC_channel.set_permissions(self.guild.default_role, speak=self.can_talk)
+
+    async def send(self, embed=None):
+        await self.channel.send(embed=embed)
+
+    async def create_webhook(self, name=None):
+        await self.channel.create_webhook(name=name)

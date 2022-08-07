@@ -4,9 +4,9 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 
 g0_character_kits = {
     #The Cartographer (me)
-    161520114657656832:[161520114657656832, 1, 'Yavar', 'Yavari',
+    160020690051792898:[160020690051792898, 1, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},
-      'units':[['Yavari','Worker'],['Yavari','Worker']],
+      'units':[['Yavari','Worker'],['Yavari','Architect']],
       'buildings':[bk['harmonist_scout_guild'],bk['mother_tree']]}],
 
     #jamspinnle

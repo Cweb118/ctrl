@@ -393,7 +393,7 @@ class Unit(Card):
             report = "Error: This unit has not yet been played."
         return can_move, report
 
-    def moveUnit(self, dest_type, destination):
+    async def moveUnit(self, dest_type, destination):
         move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
         if can_move:
@@ -401,7 +401,7 @@ class Unit(Card):
             slotcap = destination.inventory.slotcap['unit']
             if slot_count < slotcap:
                 move_arg_list = [self, self.location, destination]
-                move_report = self.triggerSkill('on_move', move_arg_list)
+                move_report = await self.triggerSkill('on_move', move_arg_list)
 
                 destination.inventory.addCardToSlot(self, 'unit')
                 self.location.inventory.removeCardFromSlot(self, 'unit')
@@ -417,7 +417,7 @@ class Unit(Card):
             report += +"\n"+move_report
         return can_move, report
 
-    def harvest(self):
+    async def harvest(self):
         if self.status == "Played":
             #player = player_dict[self.owner.id]
             def_dinged = 0
@@ -439,7 +439,7 @@ class Unit(Card):
             hit, report_dict = self.die_set.roll_math(self.stats['Defense']+self.stats['Fortitude'])
 
             harvest_arg_list = [self, def_dinged, hit]
-            harvest_report = self.triggerSkill('on_harvest', harvest_arg_list)
+            harvest_report = await self.triggerSkill('on_harvest', harvest_arg_list)
 
             if hit:
                 health_report = self.setHealth(-1)
@@ -459,12 +459,13 @@ class Unit(Card):
             return report, title
 
 
-    def refresh(self):
+    async def refresh(self):
         if self.status == "Played":
+            title = 'Refresh Report'
             self.setStat('Endurance', self.statcaps['Endurance'])
             refresh_arg_list = [self]
-            refresh_report = self.triggerSkill('on_refresh', refresh_arg_list)
-            return refresh_report
+            refresh_report  = await self.triggerSkill('on_refresh', refresh_arg_list)
+            return refresh_report, title
 
 
     def addBuildingToUnitInv(self, kit_title):

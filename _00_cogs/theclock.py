@@ -30,9 +30,9 @@ class TheClock(commands.Cog):
             #for region in theJar['regions']:
                 #region.channel.unmuteChannel()
             for district in theJar['districts']:
-                district.channel.unmuteChannel()
+                await district.channel.unmuteChannel()
             for faction in theJar['factions']:
-                faction.channel.muteChannel()
+                await faction.channel.muteChannel()
 
             self.is_day = True
             self.need_production = True
@@ -41,8 +41,9 @@ class TheClock(commands.Cog):
             self.need_refresh = True
 
             for unit in theJar['played_cards']['unit']:
-                daybreak_report = unit.triggerSkill('on_daybreak', [unit])
-                #send daybreak_report to owner's channel
+                daybreak_report, title = await unit.triggerSkill('on_daybreak', [unit])
+                pm = unit.owner.channel
+                await say(ctx, daybreak_report, title=title, channel = pm)
 
         await say(ctx, "Day start protocol complete.")
 
@@ -84,10 +85,10 @@ class TheClock(commands.Cog):
             await say(ctx, "Night begins, initiating protocols.")
             #for region in theJar['regions']:
                 #region.channel.muteChannel()
-            for district in theJar['districts']:
-                district.channel.muteChannel()
-            for faction in theJar['factions']:
-                faction.channel.unmuteChannel()
+            for district in theJar['districts'].keys():
+                await theJar['districts'][district].channel.muteChannel()
+            for faction in theJar['factions'].keys():
+                await theJar['factions'][faction].channel.unmuteChannel()
         await say(ctx, "Night start protocol complete.")
 
 
@@ -96,16 +97,17 @@ class TheClock(commands.Cog):
         await self.harvest_f(ctx)
 
     async def harvest_f(self, ctx):
-        for unit in theJar['units']:
+        for unit in theJar['played_cards']['unit']:
             if unit.status == "Played":
-                report, title = unit.harvest()
-                #send to players private channel instead (as cn)
-                await say(ctx, report, title=title)
-        for building in theJar['buildings']:
+                report, title = await unit.harvest()
+                pm = unit.owner.channel
+                await say(ctx, report, title=title, channel = pm)
+        for building in theJar['played_cards']['building']:
             if building.status == "Played":
-                report, title = building.harvest()
-                #send to players private channel instead (as cn)
-                await say(ctx, report, title=title)
+                report, title = await building.harvest()
+                pm = building.owner.channel
+                if report:
+                    await say(ctx, report, title=title, channel = pm)
 
 
     @slash_command(name="refresh", guild_ids=guilds)
@@ -113,16 +115,16 @@ class TheClock(commands.Cog):
         await self.refresh_f(ctx)
 
     async def refresh_f(self, ctx):
-        for unit in theJar['units']:
+        for unit in theJar['played_cards']['unit']:
             if unit.status == "Played":
-                report, title = unit.refresh()
-                #send to players private channel instead (as cn)
-                await say(ctx, report, title=title)
-        for building in theJar['buildings']:
+                report, title = await unit.refresh()
+                pm = unit.owner.channel
+                await say(ctx, report, title=title, channel = pm)
+        for building in theJar['played_cards']['building']:
             if building.status == "Played":
-                report, title = building.refresh()
-                #send to players private channel instead (as cn)
-                await say(ctx, report, title=title)
+                report, title = await building.refresh()
+                pm = building.owner.channel
+                await say(ctx, report, title=title, channel = pm)
         for player_id in theJar['players'].keys():
             player = theJar['players'][player_id]
             player.modStatCap(theJar['resources']['Influence'], 1)
@@ -130,7 +132,8 @@ class TheClock(commands.Cog):
             district = theJar['districts'][district_id]
             if len(district.inventory.slots['unit']) or len(district.inventory.slots['building']) > 0:
                 report, title = district.civics.strReport()
-                await say(ctx, report, title=title)
+                dm = district.channel
+                await say(ctx, report, title=title, channel = dm)
 
 
     @slash_command(name="battle", guild_ids=guilds)
@@ -165,9 +168,10 @@ class TheClock(commands.Cog):
 
         for num in wave_ints:
             for building in waves[num]:
-                report = building.run()
+                report = await building.run()
                 if report:
-                    await say(ctx,report)
+                    pm = building.owner.channel
+                    await say(ctx, report, channel=pm)
 
 
 def setup(bot):

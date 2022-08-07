@@ -18,7 +18,7 @@ class Region():
         self.channel = None
 
 
-        self.createChannel.start()
+        #self.createChannel.start()
     
     #saves channel and guild id for retrieval on reconstruction.
     def __getstate__(self):
@@ -257,7 +257,7 @@ class District():
             #if player is being moved to a different region, remove permissions from old region channel and category.
             if not player_loc.region == self.region:
                 #Not sure how to adapt this to new channel system -cart
-                category = nextcord.utils.get(self.guild.categories, name=player.location.region)
+                category = nextcord.utils.get(self.guild.categories, name=player_loc.region)
                 await category.set_permissions(player.member, read_messages=False)
         
             #remove player from old district channel (after checking to make sure this needs to happen)
@@ -355,9 +355,10 @@ class Civics():
                 self.getCommander(player.faction)
 
     def addFaction(self, faction):
-        if faction not in self.factions:
-            self.factions.append(faction)
-            self.faction_stances[faction] = {'stance':'Stand'}
+        if faction:
+            if faction not in self.factions:
+                self.factions.append(faction)
+                self.faction_stances[faction] = {'stance':'Stand'}
 
     def delFaction(self, faction):
         if faction in self.factions:
@@ -479,12 +480,15 @@ class Civics():
 
     def strReport(self):
         counts = {}
+        print(self.factions)
         for faction in self.factions:
+            print(faction)
             fc = 0
             f_units = [x for x in self.location.inventory.slots['unit'] if x.owner.faction == faction]
             f_buildings = [x for x in self.location.inventory.slots['building'] if x.owner.faction == faction]
             f_cards = f_units+f_buildings
             for card in f_cards:
+                print(card)
                 if 'Combat' in card.certs:
                     fc += 1
             counts[faction] = fc

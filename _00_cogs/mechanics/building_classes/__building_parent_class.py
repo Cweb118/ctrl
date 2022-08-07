@@ -119,7 +119,7 @@ class Building(Card):
             else:
                 self.inventory.addResource(res_obj, gain)
 
-    def run(self):
+    async def run(self):
         if self.output:
             can_run, req_report = self.checkReqs()
             if can_run:
@@ -128,13 +128,13 @@ class Building(Card):
                 report = "**"+str(self) + "** has run successfully."
 
                 for skill in self.skillsets.keys():
-                    self_work_report = self.triggerSkill(self, skill)
+                    self_work_report = await self.triggerSkill(self, skill)
                     report += '\n\n' +self_work_report
 
                 for worker in self.inventory.slots['units']:
                     workers = self.inventory.slots['units']
                     work_arg_list = [self, worker, workers]
-                    worker_work_report = worker.triggerSkill('on_refresh', work_arg_list)
+                    worker_work_report = await worker.triggerSkill('on_refresh', work_arg_list)
                     report += '\n\n' +worker_work_report
 
             else:
@@ -365,21 +365,27 @@ class Building(Card):
                         if report:
                             return report
 
-    def harvest(self):
+    async def harvest(self):
         report = ''
+        title = ''
         harvest_arg_list = [self, None, None]
-        harvest_report = self.triggerSkill('on_harvest', harvest_arg_list)
+        harvest_report = await self.triggerSkill('on_harvest', harvest_arg_list)
         if harvest_report:
             report += harvest_report
-        return report
+        else:
+            report = None
+        return report, title
 
-    def refresh(self):
+    async def refresh(self):
         report = ''
+        title = ''
         refresh_arg_list = [self]
-        refresh_report = self.triggerSkill('on_refresh', refresh_arg_list)
+        refresh_report = await self.triggerSkill('on_refresh', refresh_arg_list)
         if refresh_report:
             report += refresh_report
-        return report
+        else:
+            report = None
+        return report, title
 
     def setStat(self, stat, quantity):
         self.stats[stat] += quantity
@@ -427,7 +433,7 @@ class Building(Card):
         info_rep['title'] = '-- Info:'
         info_rep['value'] = "- Status: "+str(self.status)+\
                  "\n- Location: "+str(self.location)+\
-                 "\n- Traits: "+str(self.trait_list)
+                 "\n- Worker Requirements: "+str(self.certs)
         fields.append(info_rep)
 
         stats_rep = {'inline':True}
