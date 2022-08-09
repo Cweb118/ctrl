@@ -122,7 +122,7 @@ class MoveMenu(Menu):
 
         district = theJar['districts'][state['district']]
 
-        can_move, result = card.moveUnit('district', district)
+        can_move, result = await card.moveUnit('district', district)
 
         if result == '':
             result = 'Error'

@@ -10,6 +10,7 @@ from _00_cogs.architecture.kits.faction_kits import faction_kits_dict
 from _00_cogs.architecture.kits.character_kits import character_kits_dict
 from _00_cogs.architecture.player_class import Player
 from _00_cogs.architecture.locations_class import Region, District
+from _00_cogs.mechanics.resource_class import resource_kits_dict, Resource
 from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from nextcord import slash_command
@@ -24,6 +25,7 @@ guilds = [588095612436742173, 778448646642728991]
 class PlayerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print(theJar)
 
     async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
@@ -84,6 +86,9 @@ class PlayerCog(commands.Cog):
         await init_factions(faction_kits_dict, ctx.guild)
         #print(theJar['factions'])
         await TheMap(self.bot).reloadMap(ctx.guild)
+        for key in resource_kits_dict.keys():
+            kit = resource_kits_dict[key]
+            Resource(*kit)
         await asyncio.sleep(1)
         await self.playerInit(ctx)
 

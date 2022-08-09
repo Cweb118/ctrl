@@ -38,6 +38,7 @@ class PickleFactory(commands.Cog):
                     theJar[entry] = temp
             except FileNotFoundError:
                 print(f"File \"{entry}\" not found.")
+        print(theJar)
         await ctx.send("Load Completed!")
 
     @commands.command(name="listDist")

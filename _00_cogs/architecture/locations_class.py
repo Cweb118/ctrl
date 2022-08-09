@@ -22,7 +22,10 @@ class Region():
     
     #saves channel and guild id for retrieval on reconstruction.
     def __getstate__(self):
-        return (self.name, self.districts, self.guild.id, self.channel.channel.id)
+        if self.channel:
+            return (self.name, self.districts, self.guild.id, self.channel.channel.id)
+        else:
+            return (self.name, self.districts, self.guild.id, None)
         #return (self.name, self.districts, self.guild.id, self.channel)
 
     def __setstate__(self, state):
@@ -207,7 +210,6 @@ class District():
 
     def moveCheck(self, player):
         can_move = False
-
         if self in theJar['districts'][player.location].paths:
             can_move = player.modStat(theJar['resources']['Influence'], -1)
         return can_move
