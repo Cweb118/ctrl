@@ -64,7 +64,7 @@ class Building(Card):
         report = "**"+str(self)+"** has run successfully."
         if self.input:
             for res in self.input:
-                res_obj = theJar['resources'][res]
+                res_obj = res
                 needed = self.input[res]
                 have = self.inventory.resources[res_obj]
                 if have < needed:
@@ -73,7 +73,7 @@ class Building(Card):
 
         if self.output:
             for res in self.output:
-                res_obj = theJar['resources'][res]
+                res_obj = res
                 given = self.output[res]
                 have = self.inventory.resources[res_obj]
                 max = self.inventory.cap['resource']
@@ -83,7 +83,7 @@ class Building(Card):
 
         if self.catalyst:
             for res in self.catalyst:
-                res_obj = theJar['resources'][res]
+                res_obj = res
                 needed = self.catalyst[res]
                 have = self.inventory.resources[res_obj]
                 if have < needed:
@@ -104,13 +104,13 @@ class Building(Card):
     def doInput(self):
         if self.input:
             for res in self.input:
-                res_obj = theJar['resources'][res]
+                res_obj = res
                 needed = self.input[res]
                 self.inventory.addResource(res_obj, -needed)
 
     def doOutput(self):
         for res in self.output:
-            res_obj = theJar['resources'][res]
+            res_obj = res
             gain = self.output[res]
             if len(self.links) > 0:
                 link_give = self.links[0].inventory.addResource(res_obj, gain)
@@ -131,11 +131,12 @@ class Building(Card):
                     self_work_report = await self.triggerSkill(self, skill)
                     report += '\n\n' +self_work_report
 
-                for worker in self.inventory.slots['units']:
-                    workers = self.inventory.slots['units']
+                for worker in self.inventory.slots['unit']:
+                    workers = self.inventory.slots['unit']
                     work_arg_list = [self, worker, workers]
-                    worker_work_report = await worker.triggerSkill('on_refresh', work_arg_list)
-                    report += '\n\n' +worker_work_report
+                    worker_work_report = await worker.triggerSkill('on_work', work_arg_list)
+                    if worker_work_report:
+                        report += '\n\n' +worker_work_report
 
             else:
                 report = req_report
@@ -167,7 +168,7 @@ class Building(Card):
                         self.statcaps[mod_stat] = 0
             if trait['play_cost']:
                 for mod_res in trait['play_cost'].keys():
-                    mod_res_obj = theJar['resources'][mod_res]
+                    mod_res_obj = mod_res
                     value = trait['play_cost'][mod_res_obj]
                     try:
                         self.play_cost[mod_res_obj] += value
@@ -221,7 +222,7 @@ class Building(Card):
                         self.statcaps[mod_stat] = 0
             if trait['play_cost']:
                 for mod_res in trait['play_cost'].keys():
-                    mod_res_obj = theJar['resources'][mod_res]
+                    mod_res_obj = mod_res
                     value = trait['play_cost'][mod_res_obj]
                     try:
                         self.play_cost[mod_res_obj] += -value
@@ -424,8 +425,8 @@ class Building(Card):
         if location == 'None':
             location = 'Hand'
 
-        rep = self.title+"("+location+")\n  "
-        rep += "Workers: "+str(self.inventory.slots['unit'])+"/"+str(self.inventory.slotcap['unit'])
+        rep = self.title+" ("+location+")\n  "
+        rep += "Workers: "+str(len(self.inventory.slots['unit']))+"/"+str(self.inventory.slotcap['unit'])
         return rep
 
     def report(self):

@@ -22,7 +22,7 @@ class Character():
         self.buildings = inventory_kit['buildings']
 
         for resource_name in self.resources.keys():
-            self.player.inventory.addResource(theJar['resources'][resource_name],self.resources[resource_name])
+            self.player.inventory.addResource(resource_name,self.resources[resource_name])
         if len(self.units) > 0:
             for unit in self.units:
                 man = Unit()

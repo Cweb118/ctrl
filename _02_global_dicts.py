@@ -1,7 +1,7 @@
 theJar = {
     'districts': {},
     'regions': {},
-    'resources': {},
+    'resources': [],
     'players': {},
     'played_cards':{'unit':[], 'building':[]},
     'traits': {},

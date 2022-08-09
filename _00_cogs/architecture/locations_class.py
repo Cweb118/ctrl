@@ -204,13 +204,13 @@ class District():
             can_path = False
         if can_path:
             if target not in self.paths:
-                self.paths.append(target)
+                self.paths.append(target.name)
             if self not in target.paths:
-                target.paths.append(self)
+                target.paths.append(self.name)
 
     def moveCheck(self, player):
         can_move = False
-        if self in theJar['districts'][player.location].paths:
+        if self.name in theJar['districts'][player.location].paths:
             can_move = player.modStat('Influence', -1)
         return can_move
 

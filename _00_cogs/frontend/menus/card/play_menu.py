@@ -62,7 +62,7 @@ class PlayMenu(Menu):
 
         player = theJar['players'][state['player']] 
 
-        await Menus.buildingPlayMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': player.location.name})
+        await Menus.buildingPlayMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': player.location})
         return False
 
     @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)

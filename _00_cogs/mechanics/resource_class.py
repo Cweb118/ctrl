@@ -6,7 +6,7 @@ class Resource():
         self.description = description
         self.type = type #Fluid, Solid, Energy, Abstract
 
-        theJar['resources'][title] = self
+        #theJar['resources'][title] = self
 
     def report(self):
         report = "Resource: "+self.title+\
@@ -38,6 +38,7 @@ resource_kits_dict = {
 }
 
 for key in resource_kits_dict.keys():
-    if key not in theJar['resources'].keys():
-        kit = resource_kits_dict[key]
-        res = Resource(*kit)
+    if key not in theJar['resources']:
+        theJar['resources'].append(key)
+        #kit = resource_kits_dict[key]
+        #res = Resource(*kit)

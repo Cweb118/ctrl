@@ -115,17 +115,6 @@ class CardMenu(Menu):
         await Menus.playMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
         return False
 
-    @Button(id='manage', label='Manage', style=ButtonStyle.success)
-    async def manage(self, state, interaction: Interaction):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        await Menus.manageMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
-        return False
-
     @Button(id='command', label='Command', style=ButtonStyle.success, includeFun=canCommandCard)
     async def command(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:
@@ -135,6 +124,17 @@ class CardMenu(Menu):
             raise StateError
 
         await Menus.commandMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+
+    @Button(id='manage', label='Manage', style=ButtonStyle.success)
+    async def manage(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError
+
+        await Menus.manageMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
         return False
 
     @Button(id='link', label='Link', style=ButtonStyle.success, includeFun=lambda state: 'card_type' in state and state['card_type'] == 'building')

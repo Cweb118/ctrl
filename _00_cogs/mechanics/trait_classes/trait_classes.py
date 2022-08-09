@@ -685,7 +685,7 @@ class Morale():
 class Gatherer():
     def __init__(self):
         self.triggers = ['on_move']
-        self.loot = theJar['resources']['Food']
+        self.loot = 'Food'
 
     def move(self, self_unit, from_location, to_location):
         #self_unit.owner.updatePerms(from_location, to_location
@@ -714,12 +714,12 @@ class Gatherer():
         res_yield = res_per_hit[hits]
         self_unit.inventory.addResource(self.loot,res_yield)
 
-        food_ct = self_unit.inventory.resources[theJar['resources']['Food']]
-        water_ct = self_unit.inventory.resources[theJar['resources']['Water']]
+        food_ct = self_unit.inventory.resources['Food']
+        water_ct = self_unit.inventory.resources['Water']
         if food_ct > water_ct:
-            self.loot = theJar['resources']['Water']
+            self.loot = 'Water'
         else:
-            self.loot = theJar['resources']['Food']
+            self.loot = 'Food'
 
         report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
         return report

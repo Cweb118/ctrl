@@ -28,8 +28,8 @@ class Inventory():
         self.resources = {
             #instance:quantity
         }
-        for key in theJar['resources'].keys():
-            resource = theJar['resources'][key]
+        for key in theJar['resources']:
+            resource = key
             try:
                 self.resources[resource]
             except:
@@ -119,7 +119,7 @@ class Inventory():
                         can_add = True
         return can_add
 
-    def addResource(self, resource, quantity): #resource here is an INSTANCE
+    def addResource(self, resource, quantity):
         new_val = self.resources[resource] + quantity
         can_add = self.canAddMath(resource, quantity)
         if can_add == True:
@@ -136,7 +136,7 @@ class Inventory():
                 if status2:
                     self.addResource(resource, -quantity)
                     taker_inv.addResource(resource, quantity)
-                    report = str(taker_inv.inv_owner)+" has recieved "+str(quantity)+" "+str(resource)+' from '+str(self.inv_owner)
+                    report = str(taker_inv.inv_owner)+" has received "+str(quantity)+" "+str(resource)+' from '+str(self.inv_owner)
                 else:
                     report = "Error: Destination has insufficient space."
             else:

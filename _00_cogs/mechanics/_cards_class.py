@@ -45,7 +45,7 @@ class Card():
                 if self.play_cost:
                     for key in self.play_cost.keys():
                         cost = self.play_cost[key]
-                        if player.inventory.resources[theJar['resources'][key]] < cost:
+                        if player.inventory.resources[key] < cost:
                             report = "Error: You lack the required resources to play this card."
                             can_play = False
                 if player._stats['Influence'] == 0:
@@ -155,12 +155,12 @@ class Card():
                 player.modStat('Influence', -1)
             if self.play_cost:
                 for key in self.play_cost.keys():
-                    player.inventory.addResource(theJar['resources'][key], -self.play_cost[key])
+                    player.inventory.addResource(key, -self.play_cost[key])
             target_obj.inventory.addCardToSlot(self, card_type)
-            self.location = target_obj
+            self.location = str(target_obj)
             theJar['played_cards'][card_type].append(self)
             if card_type == 'building':
-                self.location.civics.getGovernor(player.faction)
+                target_obj.civics.getGovernor(player.faction)
             self.title += " ("+str(self.owner)+")"
 
             play_report = None

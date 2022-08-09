@@ -86,9 +86,6 @@ class PlayerCog(commands.Cog):
         await init_factions(faction_kits_dict, ctx.guild)
         #print(theJar['factions'])
         await TheMap(self.bot).reloadMap(ctx.guild)
-        for key in resource_kits_dict.keys():
-            kit = resource_kits_dict[key]
-            Resource(*kit)
         await asyncio.sleep(1)
         await self.playerInit(ctx)
 

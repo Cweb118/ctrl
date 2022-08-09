@@ -16,7 +16,7 @@ def travelOptions(state):
     options = []
 
     for path in paths:
-        options.append(SelectOption(label=path.name, value=path.name))
+        options.append(SelectOption(label=path, value=path))
 
     return options
 

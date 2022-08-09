@@ -150,15 +150,14 @@ class Unit(Card):
                         self.statcaps[mod_stat] = 0
             if trait['play_cost']:
                 for mod_res in trait['play_cost'].keys():
-                    mod_res_obj = theJar['resources'][mod_res]
-                    value = trait['play_cost'][mod_res_obj]
+                    value = trait['play_cost'][mod_res]
                     try:
-                        self.play_cost[mod_res_obj] += value
+                        self.play_cost[mod_res] += value
                     except:
-                        self.play_cost[mod_res_obj] = value
+                        self.play_cost[mod_res] = value
             if trait['upkeep']:
                 for mod_upkeep in trait['upkeep'].keys():
-                    resource = theJar['resources'][mod_upkeep]
+                    resource = mod_upkeep
                     value = trait['upkeep'][mod_upkeep]
                     try:
                         self.upkeep[resource] += value
@@ -225,15 +224,14 @@ class Unit(Card):
                         self.statcaps[mod_stat] = 0
             if trait['play_cost']:
                 for mod_res in trait['play_cost'].keys():
-                    mod_res_obj = theJar['resources'][mod_res]
-                    value = trait['play_cost'][mod_res_obj]
+                    value = trait['play_cost'][mod_res]
                     try:
-                        self.play_cost[mod_res_obj] += -value
+                        self.play_cost[mod_res] += -value
                     except:
-                        self.play_cost[mod_res_obj] = -value
+                        self.play_cost[mod_res] = -value
             if trait['upkeep']:
                 for mod_upkeep in trait['upkeep'].keys():
-                    resource = theJar['resources'][mod_upkeep]
+                    resource = mod_upkeep
                     value = trait['upkeep'][mod_upkeep]
                     try:
                         self.upkeep[resource] += -value
@@ -291,26 +289,6 @@ class Unit(Card):
             if trait['type'] == type:
                 trait_name_list.append(trait_name)
         return trait_name_list
-
-    def hasCert(self, cert_name):
-        has = False
-        if cert_name in self.certs:
-            has = True
-        return has
-
-    def addCert(self, cert_name):
-        if not cert_name in self.certs:
-            self.certs.append(cert_name)
-
-    def delCert(self, cert_name):
-        if cert_name in self.certs:
-            remove = True
-            for trait_name in self.traits:
-                trait = self.getTrait(trait_name)
-                if cert_name in trait['certs']:
-                    remove = False
-            if remove:
-                self.certs.remove(cert_name)
 
     async def triggerSkill(self, trigger, arg_list):
         if self.skillsets:
@@ -372,6 +350,25 @@ class Unit(Card):
                         if report:
                             return report
 
+    def hasCert(self, cert_name):
+        has = False
+        if cert_name in self.certs:
+            has = True
+        return has
+
+    def addCert(self, cert_name):
+        if not cert_name in self.certs:
+            self.certs.append(cert_name)
+
+    def delCert(self, cert_name):
+        if cert_name in self.certs:
+            remove = True
+            for trait_name in self.traits:
+                trait = self.getTrait(trait_name)
+                if cert_name in trait['certs']:
+                    remove = False
+            if remove:
+                self.certs.remove(cert_name)
 
     def unitCanMove(self, dest_type, destination):
         can_move = False
@@ -396,6 +393,10 @@ class Unit(Card):
     async def moveUnit(self, dest_type, destination):
         move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
+        print(destination, dest_type)
+        print(self.location)
+        print(self.location.paths)
+        print(can_move)
         if can_move:
             slot_count = len(destination.inventory.slots['unit'])
             slotcap = destination.inventory.slotcap['unit']
@@ -491,12 +492,12 @@ class Unit(Card):
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            if not first:
-                rep += ', '
+            #if not first:
+                #rep += ', '
 
             rep += str(key)[0]+" "+str(value)+"/"+str(cap)+", "
-            first = False
-            
+            #first = False
+        rep = rep[:-2]
         return rep
 
 
@@ -510,7 +511,7 @@ class Unit(Card):
         info_rep['title'] = '-- Info:'
         info_rep['value'] =  "\n- Status: "+str(self.status)+\
                              "\n- Location: "+str(self.location)+\
-                             "\n- Traits: "+str(self.traits)
+                             "\n- Certs: "+str(self.certs)
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
         for key in self.upkeep.keys():

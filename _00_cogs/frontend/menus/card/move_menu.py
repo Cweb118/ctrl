@@ -27,7 +27,8 @@ def districtOptions(state):
     options.append(SelectOption(label=district.name, value=district.name))
 
     for path in paths:
-        options.append(SelectOption(label=path.name, value=path.name))
+
+        options.append(SelectOption(label=path, value=path))
 
     return options
 
@@ -225,7 +226,7 @@ class BuildingMoveMenu(Menu):
         if building is None:
             raise StateError
 
-        can_move, result = card.moveUnit('building', building)
+        can_move, result = await card.moveUnit('building', building)
 
         if result == '':
             result = 'Error'
