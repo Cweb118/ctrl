@@ -47,10 +47,10 @@ class Channel():
     def __setstate__(self, state):
         self.name, self.category_name, self.guild, self.VC_Mode, self.can_talk, self.channel, self.VC_channel = state
         
-    def reconstruct(self, guild, channel, vcChannel):
+    def reconstruct(self, guild):
         self.guild = guild
-        self.channel = channel
-        self.VC_channel = vcChannel
+        self.channel = nextcord.utils.get(self.guild.text_channels, name=self.name)
+        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, name=self.name)
 
     async def delete(self):
         await self.channel.delete()

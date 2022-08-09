@@ -34,6 +34,7 @@ class Region():
     def reconstruct(self, guild, channel):
         self.guild = guild
         self.channel = channel
+        self.channel.reconstruct(self.guild)
     
 
     #TODO: New one incoming, james will review and delete later
