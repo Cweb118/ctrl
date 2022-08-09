@@ -48,7 +48,7 @@ class Card():
                         if player.inventory.resources[theJar['resources'][key]] < cost:
                             report = "Error: You lack the required resources to play this card."
                             can_play = False
-                if player._stats[theJar['resources']['Influence']] == 0:
+                if player._stats['Influence'] == 0:
                     report = "Error: You lack the required influence."
                     can_play = False
                 if card_type == 'building':
@@ -151,9 +151,8 @@ class Card():
 
         if can_play:
             self.toggleStatus()
-            if card_type == 'unit':
-                if player_type == 'player':
-                    player.modStat(theJar['resources']['Influence'], -1)
+            if player_type == 'player':
+                player.modStat('Influence', -1)
             if self.play_cost:
                 for key in self.play_cost.keys():
                     player.inventory.addResource(theJar['resources'][key], -self.play_cost[key])
@@ -163,8 +162,8 @@ class Card():
             if card_type == 'building':
                 self.location.civics.getGovernor(player.faction)
             self.title += " ("+str(self.owner)+")"
-            play_report = None
 
+            play_report = None
             play_arg_list = [self, target_obj]
             play_report = await self.triggerSkill('on_play', play_arg_list)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)

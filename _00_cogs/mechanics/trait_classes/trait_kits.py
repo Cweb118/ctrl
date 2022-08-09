@@ -234,7 +234,7 @@ trait_kits_dict = {
         'type': 'class',
         'certs': ['Architect'],
         'skillsets': [Architect()],
-        'inv_args': {'cap': {'resource': 2}, 'cont': 2},
+        'inv_args': {'cap': {'resource': 2, 'building':3}, 'cont': 2},
         'play_cost': None,
         'stats': {'Attack': 0, 'Health': 1, 'Defense': 6, 'Endurance': 1, 'Fortitude': 3, 'Initiative': 10, 'Taunt': -10},
         'upkeep': {'Food': 1, 'Water': 1},

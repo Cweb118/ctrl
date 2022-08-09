@@ -127,7 +127,8 @@ class TheClock(commands.Cog):
                 await say(ctx, report, title=title, channel = pm)
         for player_id in theJar['players'].keys():
             player = theJar['players'][player_id]
-            player.modStatCap(theJar['resources']['Influence'], 1)
+            player.modStatCap('Influence', 1)
+            player.modStat('Influence',player._statcaps['Influence']-player._stats('Influence'))
         for district_id in theJar['districts'].keys():
             district = theJar['districts'][district_id]
             if len(district.inventory.slots['unit']) or len(district.inventory.slots['building']) > 0:

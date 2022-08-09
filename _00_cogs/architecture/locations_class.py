@@ -211,7 +211,7 @@ class District():
     def moveCheck(self, player):
         can_move = False
         if self in theJar['districts'][player.location].paths:
-            can_move = player.modStat(theJar['resources']['Influence'], -1)
+            can_move = player.modStat('Influence', -1)
         return can_move
 
 
@@ -381,7 +381,7 @@ class Civics():
         metrics = []
         alg_building_count = 0
         for cand in candidates:
-            inf = cand._statcaps[theJar['resources']['Influence']]
+            inf = cand._statcaps['Influence']
             buildings = [x for x in cand.inventory.cards['building'] if x.location == self.location]
             metric = {'gov':cand, 'inf': inf, 'buildings': len(buildings)}
             metrics.append(metric)
@@ -412,7 +412,7 @@ class Civics():
         #squad_count = 0
         combatant_count = 0
         for cand in candidates:
-            inf = cand._statcaps[theJar['resources']['Influence']]
+            inf = cand._statcaps['Influence']
             #squads = [x for x in cand.squads if x.location == self.location]
             #metric = {'cmd':cand, 'inf': inf, 'squads': len(squads)}
             #squad_count += len(squads)

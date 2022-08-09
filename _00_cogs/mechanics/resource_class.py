@@ -18,7 +18,6 @@ class Resource():
         return str(self.title)
 
 resource_kits_dict = {
-    'Influence':("Influence", "A representation of your favor with the people.", "Abstract"),
     'Water':("Water", "Its wet and refreshing.", "Fluid"),
     'Food':("Food", "A mere morsel, but it will do.", "Solid"),
     'Wood':("Wood", "Hardwood. Its easy to work with, but not as strong.", "Solid"),
@@ -36,11 +35,9 @@ resource_kits_dict = {
     'Vessel':("Vessel", "A glowing glass box resembling a lantern, containing the most valuable thing in all of Aporia.", "Solid"),
     'Heart':("Heart", "A clockwork heart, keeping time in order to stabilize its anomalous purpose.", "Solid"),
     'Hive':("Hive", "A swarm of particles bound to The Interface.", "Solid"),
-
-
-
 }
 
 for key in resource_kits_dict.keys():
-    kit = resource_kits_dict[key]
-    res = Resource(*kit)
+    if key not in theJar['resources'].keys():
+        kit = resource_kits_dict[key]
+        res = Resource(*kit)

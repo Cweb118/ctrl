@@ -15,7 +15,7 @@ class Character():
         self.faction = theJar['factions'][faction_title]
 
         await self.location.movePlayer(self.player)
-        self.player.modStat(theJar['resources']['Influence'], 1)
+        self.player.modStat('Influence', 1)
 
         self.resources = inventory_kit['resources']
         self.units = inventory_kit['units']

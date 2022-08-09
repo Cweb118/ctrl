@@ -29,11 +29,11 @@ class Player():
         self.location = starter_location #Location Instance (needs to lack _!)
         self._stats = {
             #instance:quantity
-            theJar['resources']['Influence']:20
+            'Influence':20
         }
         self._statcaps = {
             #instance:cap
-            theJar['resources']['Influence']:20
+            'Influence':20
         }
         self.faction = faction
         self.reps = {}

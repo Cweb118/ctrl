@@ -39,16 +39,18 @@ class Architect():
         can_copy = True
         for cert in local_target_building.certs:
             if cert not in self_unit.certs:
-                can_copy = False
+                can_copy = True
         if can_copy:
             self.subject = local_target_building
             report = 'This unit begins their study...'
         else:
             report = 'This unit lacks the required knowledge...'
+        print(report)
+        return report
 
     def harvest(self, self_unit, def_lost, hit):
         if self.subject:
-            if self_unit.stats['Endurance'] == 0:
+            if self_unit.stats['Endurance'] != 0:
                 if self_unit.location != self.subject.location:
                     status, bldg = self_unit.addBuildingToUnitInv(self.subject.title)
 
@@ -83,17 +85,21 @@ class Pathfinder():
 
     def act(self, self_unit, from_location, direction):
         self.report = "**Action: Explore**\n"+\
-                 "Player: "+self_unit.owner+"\n"+\
-                 "From Location: "+from_location+"\n"+\
+                 "Player: "+str(self_unit.owner)+"\n"+\
+                 "From Location: "+str(from_location)+"\n"+\
                  "Direction: "+direction+"\n"
+        print(self.report)
+        return self.report
 
     async def harvest(self, self_unit, def_lost, hit):
-        explore_channel = "get the explore channel from the jar which was made on game start"
         can_go = True
         if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
             can_go = False
+            report = '**Your '+str(self_unit) + '** lacks the Endurance to Explore...'
         if can_go:
             await say(None, self.report, channel=theJar['control']['explore-log'])
+            report = '**Your '+str(self_unit) + '** ventures out...'
+        return report
 
 class Scout():
     #TODO: TEST
