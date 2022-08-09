@@ -120,12 +120,12 @@ async def on_interaction(interaction: Interaction):
     #print('update?')
     for id, player in theJar['players'].items():
         #print('update????????')
-        if player.interfaceDirty:
+        #if player.interfaceDirty:
             #print('updating interface...')
             allInterfaceUpdates.append(player.doInterfaceUpdate())
 
     for id, district in theJar['districts'].items():
-        if district.interfaceDirty:
+        #if district.interfaceDirty:
             allInterfaceUpdates.append(district.doInterfaceUpdate())
 
     await asyncio.gather(*allInterfaceUpdates)

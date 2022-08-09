@@ -178,6 +178,8 @@ class District():
 
         if self.interfaceMessage == None:
             self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+        else:
+            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
         self.interfaceDirty = False
 
@@ -189,7 +191,7 @@ class District():
         self.interfaceDirty = False
 
         if hasattr(self, 'interfaceMessage'):
-            await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
     def setPath(self, target):
         can_path = True

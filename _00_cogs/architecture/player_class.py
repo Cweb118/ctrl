@@ -95,7 +95,7 @@ class Player():
         if (self.infoMessage == None):
             self.infoMessage = await Menus.playerInfoMenu.send(self.interfaceChannel.channel, state={'player': self.member.id})
         else:
-            Menus.playerInfoMenu.update(self.infoMessage, newState={'player': self.member.id})
+            self.infoMessage = await Menus.playerInfoMenu.update(self.infoMessage, newState={'player': self.member.id})
 
         #if (self.squadsMessage == None):
             #self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id})
@@ -103,12 +103,12 @@ class Player():
         if (self.unitsMessage == None):
             self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'unit'})
         else:
-            Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'})
+            self.unitsMessage = await Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'})
         
         if (self.buildingsMessage == None):
             self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'building'})
         else:
-            Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
+            self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
         self.interfaceDirty = False
 
@@ -120,16 +120,14 @@ class Player():
 
         allUpdates = []
 
-        if self.infoMessage:
-            allUpdates.append(Menus.playerInfoMenu.update(self.infoMessage, newState={'player': self.member.id}))
+        if hasattr(self, 'infoMessage') and self.infoMessage:
+            self.infoMessage = await Menus.playerInfoMenu.update(self.infoMessage, newState={'player': self.member.id})
 
         #allUpdates.append(Menus.squadsMenu.update(self.squadsMessage, newState={'player': self._member.id}))
-        if self.unitsMessage:
-            allUpdates.append(Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'}))
-        if self.buildingsMessage:
-            allUpdates.append(Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'}))
-
-        await asyncio.gather(*allUpdates)  
+        if hasattr(self, 'unitsMessage') and self.unitsMessage:
+            self.unitsMessage = await Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'})
+        if hasattr(self, 'buildingsMessage') and self.buildingsMessage:
+            self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
     def modStat(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
         new_val = self._stats[stat] + quantity

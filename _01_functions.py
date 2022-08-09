@@ -1,7 +1,25 @@
 import time
 import nextcord
 from _00_cogs.sudo import Sudo, sudo_profiles
+from collections.abc import Collection, Mapping
 
+def recursive_map(data, func):
+    apply = lambda x: recursive_map(x, func)
+    if isinstance(data, str):
+        return func(data)
+    elif isinstance(data, Mapping):
+        return type(data)({k: apply(v) for k, v in data.items()})
+    elif isinstance(data, Collection):
+        return type(data)(apply(v) for v in data)
+    else:
+        return func(data)
+
+def strip_newlines(line):
+    if isinstance(line, str):
+        while line.endswith('\n'):
+            line = line[:-1]
+
+    return line
 
 def createEmbed(msg, title=None, color=None, fields=None):
     if not title:
