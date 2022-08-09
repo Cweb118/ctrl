@@ -29,9 +29,7 @@ class PickleFactory(commands.Cog):
                     if entry == "districts":
                         for district in temp.values():
                             guild = self.bot.get_guild(district.channel.guild)
-                            channelObj = self.bot.get_channel(district.channel.channel)
-                            vcChannel = self.bot.get_channel(district.channel.VC_channel)
-                            district.channel.reconstruct(guild, channelObj, vcChannel)
+                            district.channel.reconstruct(guild)
                     elif entry == "players":
                         for player in temp.values():
                             player.reconstruct(self.bot)
