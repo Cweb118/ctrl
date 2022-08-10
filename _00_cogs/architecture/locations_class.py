@@ -286,7 +286,7 @@ class District():
 
     def report(self):
         title = "-----"+str(self)+"-----\n"
-        report = "*The "+str(self.region)+" Region*\n\n"
+        report = "*"+str(self.region)+"*\n\n"
         fields = []
 
         player_rep = {'inline':True}

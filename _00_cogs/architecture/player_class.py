@@ -204,6 +204,8 @@ class Player():
         stats_rep['value'] = stats_rep['value'][:-1]
         fields.append(stats_rep)
 
+        inv_report, inv_title, inv_fields = self.inventory.report()
+        fields += inv_fields
         return report, title, fields
 
     #ACCESSOR
