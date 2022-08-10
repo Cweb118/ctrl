@@ -41,7 +41,7 @@ class CommandMenu(Menu):
         if card is None:
             raise StateError
 
-        await Menus.districtMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
         return False
 
     @Button(id='gather', label='Gather', style=ButtonStyle.success)

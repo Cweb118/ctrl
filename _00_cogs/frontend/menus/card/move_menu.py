@@ -7,6 +7,65 @@ from _01_functions import *
 from _02_global_dicts import theJar
 import _00_cogs.frontend.menus.menus as Menus
 
+class MoveMenu(Menu):
+    def __init__(self):
+        super().__init__('movemenu')
+
+    def render(self, state):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError
+
+        player = theJar['players'][state['player']]
+        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+        if card is None:
+            raise StateError
+
+        return ('Where do you want to move the ' + card.title + ' card?', [])
+
+    @Button(id='district', label='Adjacent District', style=ButtonStyle.success)
+    async def district(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError
+
+        player = theJar['players'][state['player']]
+        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+        if card is None:
+            raise StateError
+
+        
+        await Menus.districtMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+    
+    @Button(id='building', label='Local Building', style=ButtonStyle.success)
+    async def building(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError
+
+        await Menus.buildingMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+
+    @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
+    async def cancel(self, state, interaction: Interaction):
+        if 'card' not in state or 'card_type' not in state:
+            raise StateError
+
+        if 'player' not in state or state['player'] not in theJar['players']:
+            raise StateError
+
+        await Menus.commandMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
+        return False
+
 def districtOptions(state):
     if 'card' not in state or 'card_type' not in state:
         raise StateError
@@ -20,14 +79,12 @@ def districtOptions(state):
     if card is None:
         raise StateError
 
-    district = card.location
+    district = theJar['districts'][str(card.location)]
     paths = district.paths
 
     options = []
-    options.append(SelectOption(label=district.name, value=district.name))
 
     for path in paths:
-
         options.append(SelectOption(label=path, value=path))
 
     return options
@@ -49,7 +106,7 @@ class DistrictMoveMenu(Menu):
         if card is None:
             raise StateError
 
-        return ('Where do you want to move the ' + card.title + ' card?', [])
+        return ('To what district do you want to move the ' + card.title + ' card?', [])
         
     @UnlimitedSelect(id='district', optionsFun=districtOptions)
     async def district(self, state, interaction: Interaction):
@@ -75,54 +132,6 @@ class DistrictMoveMenu(Menu):
 
         district = theJar['districts'][state['district']]
 
-        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': state['district']})
-        return False
-
-    @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
-    async def cancel(self, state, interaction: Interaction):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        await Menus.commandMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
-
-class MoveMenu(Menu):
-    def __init__(self):
-        super().__init__('movemenu')
-
-    def render(self, state):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        player = theJar['players'][state['player']]
-        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
-
-        if card is None:
-            raise StateError
-
-        return ('Where do you want to move the ' + card.title + ' card?', [])
-
-    @Button(id='district', label='District', style=ButtonStyle.success)
-    async def district(self, state, interaction: Interaction):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        player = theJar['players'][state['player']]
-        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
-
-        if card is None:
-            raise StateError
-
-        district = theJar['districts'][state['district']]
-
         can_move, result = await card.moveUnit('district', district)
 
         if result == '':
@@ -134,22 +143,6 @@ class MoveMenu(Menu):
             await interaction.followup.send(content=result, ephemeral=True)
 
         return False
-    
-    @Button(id='building', label='Building', style=ButtonStyle.success)
-    async def building(self, state, interaction: Interaction):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        if 'district' not in state:
-            raise StateError
-
-        player = theJar['players'][state['player']] 
-
-        await Menus.buildingMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': state['district']})
-        return False
 
     @Button(id='cancel', label='Cancel', style=ButtonStyle.danger)
     async def cancel(self, state, interaction: Interaction):
@@ -159,14 +152,22 @@ class MoveMenu(Menu):
         if 'player' not in state or state['player'] not in theJar['players']:
             raise StateError
 
-        await Menus.cardMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
-        return False
+        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
 
 def travelOptions(state):
-    if 'district' not in state or state['district'] not in theJar['districts']:
+    if 'card' not in state or 'card_type' not in state:
         raise StateError
 
-    district = theJar['districts'][state['district']]
+    if 'player' not in state or state['player'] not in theJar['players']:
+        raise StateError
+
+    player = theJar['players'][state['player']]
+    card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
+
+    if card is None:
+        raise StateError
+
+    district = theJar['districts'][str(card.location)]
     buildings = district.inventory.slots['building']
 
     options = []
@@ -205,9 +206,6 @@ class BuildingMoveMenu(Menu):
         if 'building' not in state:
             return False
 
-        if 'district' not in state or state['district'] not in theJar['districts']:
-            raise StateError
-
         if 'card' not in state or 'card_type' not in state:
             raise StateError
 
@@ -220,7 +218,7 @@ class BuildingMoveMenu(Menu):
         if card is None:
             raise StateError
 
-        district = theJar['districts'][state['district']]
+        district = theJar['districts'][str(card.location)]
         building = district.inventory.getSlotCardByUniqueID('building', state['building'])
 
         if building is None:
@@ -246,7 +244,4 @@ class BuildingMoveMenu(Menu):
         if 'player' not in state or state['player'] not in theJar['players']:
             raise StateError
 
-        if 'district' not in state:
-            raise StateError
-
-        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player'], 'district': state['district']})
+        await Menus.moveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})

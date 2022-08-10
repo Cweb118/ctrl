@@ -64,7 +64,7 @@ def adjacentOptions(state):
 
     for path in paths:
         if filter(path):
-            options.append(SelectOption(label=path.name, value=path.name))
+            options.append(SelectOption(label=path, value=path))
 
     return options
 

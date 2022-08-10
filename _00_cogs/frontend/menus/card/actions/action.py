@@ -3,6 +3,7 @@ from nextcord import Interaction
 from _02_global_dicts import theJar
 from _00_cogs.frontend.state_error import StateError
 import _00_cogs.frontend.menus.menus as Menus
+from _00_cogs.frontend.menu import Menu, MenuView
 
 def getAction(card, act_id):
     if card.skillsets:
@@ -43,7 +44,8 @@ async def resolveAction(interaction: Interaction, state):
 
     if param_num <= -1 and param_stage <= -1:
         if len(action.act_params) == 0:
-            action.act(card)
+            report = action.act(card)
+            await interaction.edit_original_message(content=report, view=MenuView())
             return
         
         param_num = 0
@@ -105,7 +107,8 @@ async def resolveAction(interaction: Interaction, state):
                 elif last_type == 'select':
                     parsed_params.append(raw_param) 
 
-            action.act(card, *parsed_params)
+            report = action.act(card, *parsed_params)
+            await interaction.edit_original_message(content=report, view=MenuView())
             return
 
     param = action.act_params[param_num]
@@ -122,7 +125,7 @@ async def resolveAction(interaction: Interaction, state):
         while len(params) <= param_num:
             params.append(None)
 
-        params[param_num] = card.location.name
+        params[param_num] = str(card.location)
 
         await resolveAction(interaction, newState)
     elif param_type == 'adjacent_location':
