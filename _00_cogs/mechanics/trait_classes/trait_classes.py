@@ -120,6 +120,8 @@ class Scout():
 
     def act(self, self_unit, adjacent_target_location):
         self.target_location = adjacent_target_location
+        report = 'Scouting expedition planned for '+str(adjacent_target_location)+'...'
+        return report
 
     def harvest(self, self_unit, def_lost, hit):
         self.can_go = True
@@ -136,6 +138,11 @@ class Scout():
             player = self_unit.owner
             report = self.target_location.report()
             await say(None, report, channel=player.channel)
+        else:
+            if self.target_location:
+                player = self_unit.owner
+                report = str(self_unit)+' was unable to scout '+str(self.target_location)
+                await say(None, report, channel=player.channel)
 
 
 class Sentry():
@@ -792,10 +799,17 @@ class Transport():
             pair = (sender, receiver)
             if len(self.links) < self.link_slots:
                 self.links.append(pair)
+                report = 'Link Established: '+pair[0]+" > "+pair[1]
+            else:
+                report = 'Link Failed: This unit already has an assignment'
         if operation == 'del':
             pair = (sender, receiver)
             if pair in self.links:
                 self.links.remove(pair)
+                report = 'Link Decommissioned: '+pair[0]+" > "+pair[1]
+            else:
+                report = 'Error: Link not found'
+        return report
 
     #This engages the links
     def harvest(self, self_card, def_lost, hit_status):
@@ -803,7 +817,7 @@ class Transport():
             sender = link[0]
             receiver = link[1]
             if self_card.location == sender.location == receiver.location:
-                sender.addlink(receiver)
+                sender.addLink(receiver)
 
     #This cleanses them
     def refresh(self, self_card):
@@ -811,7 +825,7 @@ class Transport():
             sender = link[0]
             receiver = link[1]
             if self_card.location == sender.location == receiver.location:
-                sender.dellink(receiver)
+                sender.delLink(receiver)
 
 class Mend():
     #TODO: TEST

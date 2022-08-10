@@ -29,10 +29,10 @@ class TheClock(commands.Cog):
             await say(ctx, "Day begins, initiating protocols.")
             #for region in theJar['regions']:
                 #region.channel.unmuteChannel()
-            for district in theJar['districts']:
-                await district.channel.unmuteChannel()
-            for faction in theJar['factions']:
-                await faction.channel.muteChannel()
+            for district in theJar['districts'].keys():
+                await theJar['districts'][district].channel.unmuteChannel()
+            for faction in theJar['factions'].keys():
+                await theJar['factions'][faction].channel.muteChannel()
 
             self.is_day = True
             self.need_production = True

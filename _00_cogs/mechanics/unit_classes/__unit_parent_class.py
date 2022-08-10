@@ -379,13 +379,14 @@ class Unit(Card):
         if self.status == 'Played':
             if self.stats['Endurance'] > 0:
                 if dest_type == 'district':
-                    if destination in self.location.paths:
+                    if str(destination) in theJar['districts'][self.location].paths:
+                        print('ding !')
                         can_move = True
                 if dest_type == 'unit':
-                    if self.location == destination.location:
+                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
                         can_move = True
                 if dest_type == 'building':
-                    if self.location == destination.location:
+                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
                         can_move = True
             else:
                 report = "Error: This unit does not have the Endurance."
@@ -397,19 +398,18 @@ class Unit(Card):
         move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
         print(destination, dest_type)
-        print(self.location)
-        print(self.location.paths)
+        location = theJar['districts'][self.location]
         print(can_move)
         if can_move:
             slot_count = len(destination.inventory.slots['unit'])
             slotcap = destination.inventory.slotcap['unit']
             if slot_count < slotcap:
-                move_arg_list = [self, self.location, destination]
+                move_arg_list = [self, location, destination]
                 move_report = await self.triggerSkill('on_move', move_arg_list)
 
                 destination.inventory.addCardToSlot(self, 'unit')
-                self.location.inventory.removeCardFromSlot(self, 'unit')
-                self.location = destination
+                location.inventory.removeCardFromSlot(self, 'unit')
+                self.location = str(destination)
                 self.setStat('Endurance', -1)
 
                 report = "Unit moved successfully."
@@ -560,7 +560,7 @@ class Squad():
             self.rank = None
             self.owner = self.units[0].owner
             self.owner.squads.append(self)
-            self.allegiance = self.owner.allegiance
+            self.faction = self.owner.faction
             self.location.civics.squad_list.append(self)
             self.location.civics.addPlayer(self.owner)
             self.setPriority(self.priority)
