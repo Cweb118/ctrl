@@ -399,7 +399,6 @@ class Building(Card):
             self.stats[stat] = self.statcaps[stat]
         return self.stats[stat]
 
-
     def setHealth(self, quantity):
         self.setStat('Health', quantity)
         if self.stats['Health'] <= 0:

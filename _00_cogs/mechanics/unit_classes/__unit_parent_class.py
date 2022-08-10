@@ -288,7 +288,10 @@ class Unit(Card):
             trait = self.getTrait(trait_name)
             if trait['type'] == type:
                 trait_name_list.append(trait_name)
-        return trait_name_list
+        if len(trait_name_list) > 0:
+            return trait_name_list
+        else:
+            return None
 
     async def triggerSkill(self, trigger, arg_list):
         if self.skillsets:
@@ -447,7 +450,7 @@ class Unit(Card):
             else:
                 health_report = "Your **"+str(self)+'** has sustained no damage.'
 
-            title = "-----"+str(self)+" Upkeep Results-----"
+            title = "-----"+str(self)+" Harvest Report-----"
             report = "- Rolled: "+str(self.die_set)+" ("+str(self)+")\n"+\
                      "- Rolls: "+str(report_dict['rolls'])+"\n"+\
                      "- Defense + Fortitude: "+str(report_dict['threshold'])+"\n"+\
@@ -455,19 +458,20 @@ class Unit(Card):
                      def_report+"\n"+health_report
             if harvest_report:
                 report += "\n"+harvest_report
-
-
             return report, title
-
 
     async def refresh(self):
         if self.status == "Played":
-            title = 'Refresh Report'
+            title = "-----"+str(self)+" Refresh Report-----"
+            report = ''
             self.setStat('Endurance', self.statcaps['Endurance'])
             refresh_arg_list = [self]
             refresh_report  = await self.triggerSkill('on_refresh', refresh_arg_list)
-            return refresh_report, title
-
+            if refresh_report:
+                report += refresh_report
+            else:
+                report = None
+            return report, title
 
     def addBuildingToUnitInv(self, kit_title):
         can_add = self.inventory.capMathCard('building')
@@ -483,19 +487,18 @@ class Unit(Card):
         location = str(self.location)
         if location == 'None':
             location = 'Hand'
-
         rep = self.title+" ("+location+")\n"
         rep += '  '
-
         first = True
-
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
+            if key != 'Initiative' or 'Taunt':
+                rep += str(key)[0]+" "+str(value)+"/"+str(cap)+", "
+            else:
+                rep += str(key)[0]+" "+str(value)+", "
             #if not first:
                 #rep += ', '
-
-            rep += str(key)[0]+" "+str(value)+"/"+str(cap)+", "
             #first = False
         rep = rep[:-2]
         return rep
@@ -511,7 +514,9 @@ class Unit(Card):
         info_rep['title'] = '-- Info:'
         info_rep['value'] =  "\n- Status: "+str(self.status)+\
                              "\n- Location: "+str(self.location)+\
-                             "\n- Certs: "+str(self.certs)
+                             "\n- Certs: "+str(self.certs)+\
+                             "\n- Skills: "+str(self.skillsets)+\
+                             "\n- Effects: "+str(self.getTraitbyType('effect'))
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
         for key in self.upkeep.keys():
@@ -526,7 +531,11 @@ class Unit(Card):
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            stats_rep['value'] += "- "+str(key)+" "+str(value)+"/"+str(cap)+"\n"
+            if key != 'Initiative' or 'Taunt':
+                stats_rep['value'] += "- "+str(key)+" "+str(value)+"/"+str(cap)+"\n"
+            else:
+                stats_rep['value'] += "- "+str(key)+" "+str(value)+"\n"
+
         stats_rep['value'] = stats_rep['value'][:-1]
         fields.append(stats_rep)
 

@@ -101,7 +101,8 @@ class TheClock(commands.Cog):
             if unit.status == "Played":
                 report, title = await unit.harvest()
                 pm = unit.owner.channel
-                await say(ctx, report, title=title, channel = pm)
+                if report:
+                    await say(ctx, report, title=title, channel = pm)
         for building in theJar['played_cards']['building']:
             if building.status == "Played":
                 report, title = await building.harvest()
@@ -119,12 +120,14 @@ class TheClock(commands.Cog):
             if unit.status == "Played":
                 report, title = await unit.refresh()
                 pm = unit.owner.channel
-                await say(ctx, report, title=title, channel = pm)
+                if report:
+                    await say(ctx, report, title=title, channel = pm)
         for building in theJar['played_cards']['building']:
             if building.status == "Played":
                 report, title = await building.refresh()
                 pm = building.owner.channel
-                await say(ctx, report, title=title, channel = pm)
+                if report:
+                    await say(ctx, report, title=title, channel = pm)
         for player_id in theJar['players'].keys():
             player = theJar['players'][player_id]
             player.modStatCap('Influence', 1)
