@@ -539,14 +539,16 @@ class Barheim():
             if self_unit.stats['Endurance'] == self_unit.statcaps['Endurance']:
                 self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
                 local_industrialist_target_unit.addTrait('Charged')
+                report = str(local_industrialist_target_unit)+' has become Charged.'
             else:
-                print('Unit lacks endurance!')
+                report = str(self_unit)+' lacks endurance!'
         else:
-            print('target unit is already charged!')
+            report = str(local_industrialist_target_unit)+' is already charged!'
+        return report
 
 class Eelaki():
     def __init__(self):
-        self.triggers = ['on_play']
+        self.triggers = []
     #PASS
     #Somehow decide a target; they get a big buff (defence or dodge idk)
 
@@ -559,7 +561,7 @@ class Loyavasi():
 
 class Otavan():
     def __init__(self):
-        self.triggers = ['on_play']
+        self.triggers = []
 
 class Prismari():
     def __init__(self):
@@ -599,11 +601,11 @@ class Rivenborne():
 
 class Tevaru():
     def __init__(self):
-        self.triggers = ['on_play']
+        self.triggers = []
 
 class Xinn():
     def __init__(self):
-        self.triggers = ['on_play']
+        self.triggers = []
 
 
 class Yavari():
@@ -631,13 +633,14 @@ class Yavari():
                 for effect_trait in effect_trait_names:
                     if not local_target_unit.hasTrait(effect_trait):
                         local_target_unit.addTrait(effect_trait)
-                        print('Target was given '+effect_trait+' successfully.')
+                        report = str(local_target_unit)+' was given '+str(effect_trait)+' successfully.'
                     else:
-                        print('Target already has '+effect_trait+'!')
+                        report = str(local_target_unit)+' already has '+str(effect_trait)+'!'
             else:
-                print('Unit lacks endurance!')
+                report = str(self_unit)+' lacks full endurance!'
         else:
-            print('User unit does not possess any effect traits!')
+            report = str(self_unit)+' does not possess any effect traits!'
+        return report
 
 
 #----------effects----------
