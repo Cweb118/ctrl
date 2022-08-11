@@ -27,7 +27,7 @@ class CommandMenu(Menu):
 
         return ('What orders do you want to give the ' + card.title + ' card?', [])
 
-    @Button(id='move', label='Move', style=ButtonStyle.success)
+    @Button(id='move', label='Move', style=ButtonStyle.success, includeFun=lambda state: 'card_type' in state and state['card_type'] == 'unit')
     async def move(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:
             raise StateError
