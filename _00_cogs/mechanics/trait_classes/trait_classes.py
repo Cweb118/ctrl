@@ -37,15 +37,20 @@ class Architect():
 
     def act(self, self_unit, local_target_building):
         can_copy = True
+        if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
+            report = 'Your **'+str(self_unit)+'** is not fully rested...'
+            can_copy = False
+        c = 0
         for cert in local_target_building.certs:
             if cert not in self_unit.certs:
-                can_copy = True
+                 c += 1
+        if c < len(local_target_building.certs)/2:
+            report = 'Your **'+str(self_unit)+'** lacks the required knowledge...'
+            can_copy = False
         if can_copy:
+            self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
             self.subject = local_target_building
-            report = 'This unit begins their study...'
-        else:
-            report = 'This unit lacks the required knowledge...'
-        print(report)
+            report = 'Your **'+str(self_unit)+'**  begins their study...'
         return report
 
     def harvest(self, self_unit, def_lost, hit):
@@ -151,14 +156,19 @@ class Sentry():
     def __init__(self):
         self.triggers = ['on_harvest']
 
-    def harvest(self, self_unit, f, hit):
-        report = "**Action: Sentry**\n"+\
-                 "Player: "+self_unit.owner+"\n"+\
-                 "Current Location: "+self_unit.location+"\n"+\
-                 "Adj Locations: "+self_unit.location.paths+"\n"
-        #say to explore channel(report)
-        print(report)
-
+    async def harvest(self, self_unit, f, hit):
+        player = self_unit.owner
+        if self_unit.stats['Endurance'] >= self_unit.statcaps['Endurance']:
+            location = theJar['districts'][self_unit.location]
+            adj_locs = [theJar['districts'][x] for x in location.paths]
+            report = "Your **"+str(self_unit)+" watches as night falls, making the following observations..."
+            await say(None, report, channel=player.channel)
+            for adj_loc in adj_locs:
+                report = adj_loc.report()
+                await say(None, report, channel=player.channel)
+        else:
+            report = "Your **"+str(self_unit)+" is not fully rested for their watch..."
+            await say(None, report, channel=player.channel)
 class Recon():
     def __init__(self):
         self.triggers = ['on_move', 'on_death']
@@ -513,6 +523,7 @@ class Automata():
 class Barheim():
     def __init__(self):
         self.triggers = ['on_play', 'on_act', 'on_move']
+        self.reduced = False
 
         # Action Info
         self.act_id = 'Barheim'
@@ -525,11 +536,13 @@ class Barheim():
         ]
 
     def reduce(self, building):
-        if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']:
+        if len(building.inventory.slots['unit']) < building.inventory.slotcap['unit']-1:
+            self.reduced = True
             building.inventory.slotcap['unit'] += -1
 
     def unreduce(self, building):
-        building.inventory.slotcap['unit'] += 1
+        if self.reduced:
+            building.inventory.slotcap['unit'] += 1
 
     def play(self, self_unit, location):
         if type(location).__name__.lower() == 'building':
@@ -618,7 +631,7 @@ class Xinn():
 class Yavari():
     #TODO: TEST
     def __init__(self):
-        self.triggers = ['on_act']
+        self.triggers = ['on_play', 'on_act']
 
         # Action Info
         self.act_id = 'Yavari'
@@ -629,6 +642,10 @@ class Yavari():
                 ['unit']
             ]
         ]
+
+    def play(self, self_unit):
+        if not self_unit.hasTrait('Harmony'):
+            self_unit.addTrait('Harmony')
 
     def act(self, self_unit, local_target_unit):
         effect_trait_names = None
@@ -642,11 +659,11 @@ class Yavari():
                         local_target_unit.addTrait(effect_trait)
                         report = str(local_target_unit)+' was given '+str(effect_trait)+' successfully.'
                     else:
-                        report = str(local_target_unit)+' already has '+str(effect_trait)+'!'
+                        report = str(local_target_unit)+' already has '+str(effect_trait)+'...'
             else:
-                report = str(self_unit)+' lacks full endurance!'
+                report = str(self_unit)+' is not fully rested...'
         else:
-            report = str(self_unit)+' does not possess any effect traits!'
+            report = str(self_unit)+' does not possess any effect traits...'
         return report
 
 
@@ -662,7 +679,7 @@ class Harmony():
         if def_lost > 0:
             def_regen = int(round(def_lost/2-0.1, 0))
             self_unit.setStat('Defense', def_regen)
-            health_rep = "The "+str(self_unit)+" steels itself. "+str(def_regen)+" defence was regained."
+            health_rep = "The "+str(self_unit)+" steels itself. "+str(def_regen)+" defense was regained."
         return health_rep
 
 

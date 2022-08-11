@@ -378,7 +378,7 @@ trait_kits_dict = {
         'title': 'Harmony',
         'description': 'One who is attuned to the Melding.',
         'type': 'effect',
-        'certs': ['Harmony'],
+        'certs': ['Harmonist'],
         'skillsets': [Harmony()],
         'inv_args': None,
         'play_cost': None,

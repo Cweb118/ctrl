@@ -515,7 +515,7 @@ class Unit(Card):
         info_rep['value'] =  "\n- Status: "+str(self.status)+\
                              "\n- Location: "+str(self.location)+\
                              "\n- Certs: "+str(self.certs)+\
-                             "\n- Skills: "+str(self.skillsets)+\
+                             "\n- Skills: "+str([str(x) for x in self.skillsets])+\
                              "\n- Effects: "+str(self.getTraitbyType('effect'))
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
