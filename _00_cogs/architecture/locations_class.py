@@ -76,7 +76,7 @@ class Region():
 
 class District():
     def __init__(self, name, region_name, size, paths = [], guild = None):
-        print("Disctrict constructor running")
+        print("District constructor running")
         self.name = name
         self.region = region_name
         self.paths = []
