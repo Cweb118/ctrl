@@ -26,6 +26,7 @@ class Building(Card):
 
         self.traits = []
         self.skillsets = {}
+        #This is a hot mess because its trying to do this by trait but it only gets one singular mechanics arg from the kit
         self.logic_args = bk['mechanics_args']
         self.certs = bk['worker_req']
 
@@ -109,38 +110,52 @@ class Building(Card):
                 self.inventory.addResource(res_obj, -needed)
 
     def doOutput(self):
-        for res in self.output:
-            res_obj = res
-            gain = self.output[res]
-            if len(self.links) > 0:
-                link_give = self.links[0].inventory.addResource(res_obj, gain)
-                if not link_give:
+        if self.output:
+            for res in self.output:
+                res_obj = res
+                gain = self.output[res]
+                if len(self.links) > 0:
+                    link_give = self.links[0].inventory.addResource(res_obj, gain)
+                    if not link_give:
+                        self.inventory.addResource(res_obj, gain)
+                else:
                     self.inventory.addResource(res_obj, gain)
-            else:
-                self.inventory.addResource(res_obj, gain)
 
     async def run(self):
-        if self.output:
-            can_run, req_report = self.checkReqs()
-            if can_run:
-                self.doInput()
-                self.doOutput()
-                report = "**"+str(self) + "** has run successfully."
+        can_run, req_report = self.checkReqs()
+        if can_run:
+            self.doInput()
+            self.doOutput()
+            report = "**"+str(self) + "** has run successfully."
 
-                for skill in self.skillsets.keys():
-                    self_work_report = await self.triggerSkill(self, skill)
-                    report += '\n\n' +self_work_report
+            for trait in self.traits:
+                print(trait)
+                self_work_report = await self.triggerWorkSkill(trait)
+                report += '\n\n' +self_work_report
 
-                for worker in self.inventory.slots['unit']:
-                    workers = self.inventory.slots['unit']
-                    work_arg_list = [self, worker, workers]
-                    worker_work_report = await worker.triggerSkill('on_work', work_arg_list)
-                    if worker_work_report:
-                        report += '\n\n' +worker_work_report
+            for worker in self.inventory.slots['unit']:
+                workers = self.inventory.slots['unit']
+                work_arg_list = [self, worker, workers]
+                worker_work_report = await worker.triggerSkill('on_work', work_arg_list)
+                if worker_work_report:
+                    report += '\n\n' +worker_work_report
 
-            else:
-                report = req_report
+        else:
+            report = req_report
+        return report
+
+    async def triggerWorkSkill(self, trait_name):
+        skillset = self.skillsets[trait_name]
+        print(skillset)
+        if 'on_work' in skillset.triggers:
+            logic_args = self.logic_args[trait_name]
+            work_args = [self, self.inventory.slots['units']]+logic_args
+            try:
+                report = await skillset.work(work_args)
+            except:
+                report = skillset.work(work_args)
             return report
+
 
     def addLink(self, receiver_building):
         if len(self.links) == 0:
@@ -299,75 +314,6 @@ class Building(Card):
             if remove:
                 self.certs.remove(cert_name)
 
-    async def triggerWorkSkill(self, trait_name):
-        skillset = self.skillsets[trait_name]
-        logic_args = self.logic_args[trait_name]
-        work_args = [self, self.inventory.slots['units']]+logic_args
-        try:
-            report = await skillset.work(work_args)
-        except:
-            report = skillset.work(work_args)
-        return report
-
-    async def triggerSkill(self, trigger, arg_list):
-        if self.skillsets:
-            for skillset_name in self.skillsets.keys():
-                skillsets = self.skillsets[skillset_name]
-                for skillset in skillsets:
-                    if trigger in skillset.triggers:
-                        report = None
-                        if trigger == 'on_act':
-                            try:
-                                report = await skillset.act(*arg_list)
-                            except:
-                                report = skillset.act(*arg_list)
-                        if trigger == 'on_play':
-                            try:
-                                report = await skillset.play(*arg_list)
-                            except:
-                                report = skillset.play(*arg_list)
-                        if trigger == 'on_work':
-                            try:
-                                report = await skillset.work(*arg_list)
-                            except:
-                                report = skillset.work(*arg_list)
-                        if trigger == 'on_move':
-                            try:
-                                report = await skillset.move(*arg_list)
-                            except:
-                                report = skillset.move(*arg_list)
-                        if trigger == 'on_battle':
-                            try:
-                                report = await skillset.battle(*arg_list)
-                            except:
-                                report = skillset.battle(*arg_list)
-                        if trigger == 'on_attack':
-                            try:
-                                report = await skillset.attack(*arg_list)
-                            except:
-                                report = skillset.attack(*arg_list)
-                        if trigger == 'on_defend':
-                            try:
-                                report = await skillset.defend(*arg_list)
-                            except:
-                                report = skillset.defend(*arg_list)
-                        if trigger == 'on_death':
-                            try:
-                                report = await skillset.death(*arg_list)
-                            except:
-                                report = skillset.death(*arg_list)
-                        if trigger == 'on_harvest':
-                            try:
-                                report = await skillset.harvest(*arg_list)
-                            except:
-                                report = skillset.harvest(*arg_list)
-                        if trigger == 'on_refresh':
-                            try:
-                                report = await skillset.refresh(*arg_list)
-                            except:
-                                report = skillset.refresh(*arg_list)
-                        if report:
-                            return report
 
     async def harvest(self):
         report = ''

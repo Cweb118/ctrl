@@ -136,7 +136,7 @@ class Unit(Card):
                         self.race = trait_name
                         self.regenName()
                 else:
-                    self.effects.append(trait.trait_title)
+                    self.effects.append(trait['title'])
             if trait['certs']:
                 for cert in trait['certs']:
                     self.addCert(cert)
@@ -293,66 +293,6 @@ class Unit(Card):
         else:
             return None
 
-    async def triggerSkill(self, trigger, arg_list):
-        if self.skillsets:
-            for skillset_name in self.skillsets.keys():
-                skillsets = self.skillsets[skillset_name]
-                for skillset in skillsets:
-                    if trigger in skillset.triggers:
-                        report = None
-                        if trigger == 'on_act':
-                            try:
-                                report = await skillset.act(*arg_list)
-                            except:
-                                report = skillset.act(*arg_list)
-                        if trigger == 'on_play':
-                            try:
-                                report = await skillset.play(*arg_list)
-                            except:
-                                report = skillset.play(*arg_list)
-                        if trigger == 'on_work':
-                            try:
-                                report = await skillset.work(*arg_list)
-                            except:
-                                report = skillset.work(*arg_list)
-                        if trigger == 'on_move':
-                            try:
-                                report = await skillset.move(*arg_list)
-                            except:
-                                report = skillset.move(*arg_list)
-                        if trigger == 'on_battle':
-                            try:
-                                report = await skillset.battle(*arg_list)
-                            except:
-                                report = skillset.battle(*arg_list)
-                        if trigger == 'on_attack':
-                            try:
-                                report = await skillset.attack(*arg_list)
-                            except:
-                                report = skillset.attack(*arg_list)
-                        if trigger == 'on_defend':
-                            try:
-                                report = await skillset.defend(*arg_list)
-                            except:
-                                report = skillset.defend(*arg_list)
-                        if trigger == 'on_death':
-                            try:
-                                report = await skillset.death(*arg_list)
-                            except:
-                                report = skillset.death(*arg_list)
-                        if trigger == 'on_harvest':
-                            try:
-                                report = await skillset.harvest(*arg_list)
-                            except:
-                                report = skillset.harvest(*arg_list)
-                        if trigger == 'on_refresh':
-                            try:
-                                report = await skillset.refresh(*arg_list)
-                            except:
-                                report = skillset.refresh(*arg_list)
-                        if report:
-                            return report
-
     def hasCert(self, cert_name):
         has = False
         if cert_name in self.certs:
@@ -493,7 +433,7 @@ class Unit(Card):
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            if key != 'Initiative' or 'Taunt':
+            if value != cap:
                 rep += str(key)[0]+" "+str(value)+"/"+str(cap)+", "
             else:
                 rep += str(key)[0]+" "+str(value)+", "
@@ -531,7 +471,7 @@ class Unit(Card):
         for key in self.stats.keys():
             value = self.stats[key]
             cap = self.statcaps[key]
-            if key != 'Initiative' or 'Taunt':
+            if value != cap:
                 stats_rep['value'] += "- "+str(key)+" "+str(value)+"/"+str(cap)+"\n"
             else:
                 stats_rep['value'] += "- "+str(key)+" "+str(value)+"\n"

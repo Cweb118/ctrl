@@ -611,7 +611,7 @@ class Rivenborne():
     def __init__(self):
         self.triggers = ['on_play', 'on_refresh']
 
-    def play(self, self_unit):
+    def play(self, self_unit, location):
         if not self_unit.hasTrait('Charged'):
             self_unit.addTrait('Charged')
     def refresh(self, self_unit):
@@ -643,7 +643,7 @@ class Yavari():
             ]
         ]
 
-    def play(self, self_unit):
+    def play(self, self_unit, location):
         if not self_unit.hasTrait('Harmony'):
             self_unit.addTrait('Harmony')
 
@@ -661,7 +661,7 @@ class Yavari():
                     else:
                         report = str(local_target_unit)+' already has '+str(effect_trait)+'...'
             else:
-                report = str(self_unit)+' is not fully rested...'
+                report = "**"+str(self_unit)+'** is not fully rested...'
         else:
             report = str(self_unit)+' does not possess any effect traits...'
         return report
@@ -805,7 +805,7 @@ class Transport():
                 ['building']
             ],
             [
-                'Operation',
+                'Operation (Expends/Restores full Endurance)',
                 ['select', [('add', 'Add'), ('del', 'Delete')]]
             ]
         ]
@@ -815,20 +815,46 @@ class Transport():
         if operation == 'add':
             pair = (sender, receiver)
             if len(self.links) < self.link_slots:
-                self.links.append(pair)
-                report = 'Link Established: '+pair[0]+" > "+pair[1]
+                try:
+                    if self_card.stats['Endurance'] == self_card.statcaps['Endurance']:
+                        self_card.modStat('Endurance', -self_card.statcaps['Endurance'])
+                        can_add = True
+                    else:
+                        can_add = False
+                except:
+                    can_add = True
+                if can_add:
+                    self.links.append(pair)
+                    sender = pair[0]
+                    receiver = pair[1]
+                    if self_card.location == sender.location == receiver.location:
+                        sender.addLink(receiver)
+                    report = 'Link Established: '+str(pair[0])+" > "+str(pair[1])
+                else:
+                    report = "**"+str(self_card)+'** is not fully rested...'
             else:
                 report = 'Link Failed: This unit already has an assignment'
+
         if operation == 'del':
             pair = (sender, receiver)
             if pair in self.links:
+                try:
+                    if self_card.stats['Endurance'] == 0:
+                        self_card.modStat('Endurance', self_card.statcaps['Endurance'])
+                except:
+                    pass
                 self.links.remove(pair)
+                sender = pair[0]
+                receiver = pair[1]
+                if self_card.location == sender.location == receiver.location:
+                    sender.delLink(receiver)
                 report = 'Link Decommissioned: '+pair[0]+" > "+pair[1]
             else:
                 report = 'Error: Link not found'
         return report
 
     #This engages the links
+    #OOP: It does it too late in the order of operations lol. Moved to above
     def harvest(self, self_card, def_lost, hit_status):
         for link in self.links:
             sender = link[0]
@@ -915,8 +941,10 @@ class Train():
 
     def work(self, self_building, subject_units, new_trait):
         for unit in subject_units:
+            print(unit)
             if new_trait.type == 'class':
                 class_traits = unit.getTraitbyType('class')
+                print(class_traits)
                 unit.delTrait(class_traits[0])
             unit.addTrait(new_trait)
 
