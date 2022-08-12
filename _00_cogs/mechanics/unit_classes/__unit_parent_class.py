@@ -485,27 +485,28 @@ class Unit(Card):
 
 
 class Squad():
-    def __init__(self, units):
+    def __init__(self, units, leader):
         self.units = None
+        self.leader = leader
 
         if len(units) < 5:
             self.units = units
 
-            self.location = self.units[0].location
+            self.location = theJar['districts'][self.leader.location]
 
             for unit in self.units:
                 unit.squad = self
 
             self.priority = 1
             self.rank = None
-            self.owner = self.units[0].owner
+            self.owner = self.leader.owner
             self.owner.squads.append(self)
             self.faction = self.owner.faction
             self.location.civics.squad_list.append(self)
             self.location.civics.addPlayer(self.owner)
             self.setPriority(self.priority)
 
-            self.nick = self.units[0].title +"'s Squad"
+            self.nick = self.leader.title +"'s Squad"
 
             self.uniqueID = str(theJar['nextUniqueID'])
             theJar['nextUniqueID'] += 1
@@ -526,7 +527,8 @@ class Squad():
             priority = 99
         if priority < 0:
             priority = 1
-        self.setRank(priority)
+        #TODO Temp
+        #self.setRank(priority)
         self.priority = priority
 
     def setRank(self, newpriority):
@@ -598,5 +600,10 @@ class Squad():
         info_rep['value'] = info_rep['value'][:-2]
         fields.append(info_rep)
         return report, title, fields
+
+    def dissolve(self):
+        self.location.civics.delPlayer(self.owner)
+        self.location.civics.delSquad(self)
+        self.owner.squads.remove(self)
 
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building

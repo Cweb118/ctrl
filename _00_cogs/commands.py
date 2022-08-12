@@ -382,7 +382,7 @@ class Commands(commands.Cog):
 
     @commands.command(name="squad", guild_ids=guilds)
     async def squad_c(self, ctx, squad_id):
-        player = theJar['players'][ctx.user.id]
+        player = theJar['players'][ctx.author.id]
         squad = player.squads[int(squad_id)-1]
         report, title, fields = squad.report()
         await say(ctx, report, title=title, fields=fields)
@@ -418,8 +418,33 @@ class Commands(commands.Cog):
 
     @commands.command(name="createsquad", guild_ids=guilds)
     async def createsquad(self, ctx, *args):
+        player = theJar['players'][ctx.author.id]
+        unitList = list(args)
+        leader = player.inventory.getCard('unit', unitList[0])
+
+        units = []
+        for unit in unitList:
+            units.append(player.inventory.getCard('unit', unit))
+
+        Squad(units, leader)
+
+    @commands.command(name='listsquads', guild_ids=guilds)
+    async def listsquads(self, ctx):
+        player = theJar['players'][ctx.author.id]
+        squads = 'Squads: \n'
+
+        for squad in player.squads:
+            squads += str(player.squads.index(squad)) + ': ' + squad.nick + "\n"
+
+        await ctx.send(squads)
+
+    @commands.command(name='delsquad', guild_ids=guilds)
+    async def delsquad(self, ctx, arg):
+        player = theJar['players'][ctx.author.id]
+        player.squads.pop(int(arg))
 
 def setup(bot):
     bot.add_cog(Commands(bot))
 
-
+#TODO
+# access squads via UID
