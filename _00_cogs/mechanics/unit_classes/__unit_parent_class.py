@@ -497,6 +497,7 @@ class Squad():
             for unit in self.units:
                 unit.squad = self
 
+            self.maxSize = 4
             self.priority = 1
             self.rank = None
             self.owner = self.leader.owner
@@ -514,9 +515,16 @@ class Squad():
             print('Units list too long!')
 
     def addUnit(self, unit):
-        if len(self.units) < 4:
+        if len(self.units) < self.maxSize:
             self.units.append(unit)
             unit.squad = self
+        else:
+            return 'fail'
+
+    def removeUnit(self, unit):
+        # TODO if unit == leader, what?
+        self.units.remove(unit)
+        unit.squad = None
 
     def setNick(self, nick):
         self.nick = nick
@@ -527,7 +535,7 @@ class Squad():
             priority = 99
         if priority < 0:
             priority = 1
-        #TODO Temp
+        #TODO Temp commented out
         #self.setRank(priority)
         self.priority = priority
 
@@ -549,6 +557,7 @@ class Squad():
         self.location.civics.getCommander(self.allegiance)
 
     def moveSquad(self, dest_type, destination):
+        # TODO rewrite squad movement, destination needs to be within reach of the slowest person
         squad_move = True
         checks = []
         for unit in self.units:
@@ -580,8 +589,13 @@ class Squad():
         return self.nick
 
     def drop_rep(self):
-        strng = self.nick+"("+str(len(self.units))+"/4)"
+        strng = self.nick+"("+str(len(self.units))+"/" + str(self.maxSize) + ")"
         return strng
+
+    def set_max_size(self, val):
+        if val < self.maxSize:
+            return 'fail'
+        self.maxSize = val
 
     def report(self):
         fields = []
@@ -611,7 +625,7 @@ class Squad():
         targetFac = theJar['factions'][target.owner.faction]
 
         if ownFac.repCheck(targetFac.title()) >= 1:
-            return 'Friendly'
+            return 'fail'
         else:
             self.target = target
 
