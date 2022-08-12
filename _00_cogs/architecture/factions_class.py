@@ -63,6 +63,9 @@ class Faction():
             rep = self.reps[other_faction_title]
         return rep
 
+    def title(self):
+        return self.title
+
     def report(self):
         reps = self.reps
         report = self.title+" Standings:\n"

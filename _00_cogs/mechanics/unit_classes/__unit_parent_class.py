@@ -505,7 +505,7 @@ class Squad():
             self.location.civics.squad_list.append(self)
             self.location.civics.addPlayer(self.owner)
             self.setPriority(self.priority)
-
+            self.target = None
             self.nick = self.leader.title +"'s Squad"
 
             self.uniqueID = str(theJar['nextUniqueID'])
@@ -605,5 +605,15 @@ class Squad():
         self.location.civics.delPlayer(self.owner)
         self.location.civics.delSquad(self)
         self.owner.squads.remove(self)
+
+    def set_target(self, target):
+        ownFac = theJar['factions'][self.owner.faction]
+        targetFac = theJar['factions'][target.owner.faction]
+
+        if ownFac.repCheck(targetFac.title()) >= 1:
+            return 'Friendly'
+        else:
+            self.target = target
+
 
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building

@@ -443,6 +443,12 @@ class Commands(commands.Cog):
         player = theJar['players'][ctx.author.id]
         player.squads.pop(int(arg))
 
+    @commands.command(name='testtarget', guild_ids=guilds)
+    async def testtarget(self, ctx):
+        player = theJar['players'][ctx.author.id]
+        squad = player.squads[0]
+        squad.set_target(squad)
+
 def setup(bot):
     bot.add_cog(Commands(bot))
 
