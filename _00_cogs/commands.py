@@ -475,6 +475,9 @@ class Commands(commands.Cog):
         report, title, fields = civ.report()
         await say(ctx, report, title=title, fields=fields)
 
+    @commands.command(name="createsquad", guild_ids=guilds)
+    async def createsquad(self, ctx, *args):
+
 def setup(bot):
     bot.add_cog(Commands(bot))
 
