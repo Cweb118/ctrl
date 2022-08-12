@@ -31,6 +31,89 @@ class Card():
         if self.status == "DEAD":
             self.status = "Held"
 
+    async def triggerPlaySkill(self, arg_list):
+        if self.skillsets:
+            report = None
+            played_skills = []
+            play_skills = ['doot']
+            while play_skills != played_skills:
+                try:
+                    play_skills.remove('doot')
+                except:
+                    pass
+                for skillset_name in self.skillsets.keys():
+                    skillsets = self.skillsets[skillset_name]
+                    for skillset in skillsets:
+                        if 'on_play' in skillset.triggers:
+                            play_skills.append(skillset)
+                if len(play_skills) > 0:
+                    for skill in play_skills:
+                        if skill not in played_skills:
+                            try:
+                                report = await skill.play(*arg_list)
+                            except:
+                                report = skill.play(*arg_list)
+                            played_skills.append(skill)
+            if report:
+                return report
+
+    async def triggerSkill(self, trigger, arg_list):
+        report = None
+        if self.skillsets:
+            for skillset_name in self.skillsets.keys():
+                skillsets = self.skillsets[skillset_name]
+                for skillset in skillsets:
+                    if trigger in skillset.triggers:
+                        report = None
+                        if trigger == 'on_act':
+                            try:
+                                report = await skillset.act(*arg_list)
+                            except:
+                                report = skillset.act(*arg_list)
+                        if trigger == 'on_work':
+                            try:
+                                report = await skillset.work(*arg_list)
+                            except:
+                                report = skillset.work(*arg_list)
+                        if trigger == 'on_move':
+                            try:
+                                report = await skillset.move(*arg_list)
+                            except:
+                                report = skillset.move(*arg_list)
+                        if trigger == 'on_battle':
+                            try:
+                                report = await skillset.battle(*arg_list)
+                            except:
+                                report = skillset.battle(*arg_list)
+                        if trigger == 'on_attack':
+                            try:
+                                report = await skillset.attack(*arg_list)
+                            except:
+                                report = skillset.attack(*arg_list)
+                        if trigger == 'on_defend':
+                            try:
+                                report = await skillset.defend(*arg_list)
+                            except:
+                                report = skillset.defend(*arg_list)
+                        if trigger == 'on_death':
+                            try:
+                                report = await skillset.death(*arg_list)
+                            except:
+                                report = skillset.death(*arg_list)
+                        if trigger == 'on_harvest':
+                            try:
+                                report = await skillset.harvest(*arg_list)
+                            except:
+                                report = skillset.harvest(*arg_list)
+                        if trigger == 'on_refresh':
+                            try:
+                                report = await skillset.refresh(*arg_list)
+                            except:
+                                report = skillset.refresh(*arg_list)
+            if report:
+                return report
+
+
     def playerPlayCheck(self, player, target_obj):
         report = '...'
         can_play = False
@@ -165,7 +248,7 @@ class Card():
 
             play_report = None
             play_arg_list = [self, target_obj]
-            play_report = await self.triggerSkill('on_play', play_arg_list)
+            play_report = await self.triggerPlaySkill(play_arg_list)
             report = str(player)+"\'s **"+str(self)+'** has been played to '+str(target_obj)
             if play_report:
                 report += "\n"+play_report

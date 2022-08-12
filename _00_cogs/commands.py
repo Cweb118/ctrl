@@ -111,12 +111,12 @@ class Commands(commands.Cog):
         building_child = player.inventory.getCard('building', int(building_child_number))
         building_parent = player.inventory.getCard('building', int(building_parent_number))
         building_parent.addLink(building_child)
-
+    """
     @slash_command(name="playcard", guild_ids=guilds)
     async def playcard_c(self, ctx: Interaction, card_type, card_number, target_type, target):
-        await self._playcard_c(ctx, card_type, card_number, target_type, target)
+        await self.playcard_f(ctx, card_type, card_number, target_type, target)
 
-    async def _playcard_c(self, ctx: Interaction, card_type, card_number, target_type, target):
+    async def playcard_f(self, ctx: Interaction, card_type, card_number, target_type, target):
         player = theJar['players'][ctx.user.id]
         card = player.inventory.cards[card_type][int(card_number)-1]
         targ = None
@@ -127,11 +127,11 @@ class Commands(commands.Cog):
         elif target_type == 'building':
             targ = player.inventory.cards[target_type][int(target)-1]
         if targ:
-            can_play, report = card.playCard(player, targ)
+            can_play, report = await card.playCard(player, targ)
         else:
             report = 'Error: Invalid location.'
         await say(ctx,report)
-
+    """
     @commands.command(name="unplaycard", guild_ids=guilds)
     async def unplaycard_c(self, ctx, card_type, card_number):
         player = theJar['players'][ctx.user.id]
@@ -214,82 +214,23 @@ class Commands(commands.Cog):
     @slash_command(name="play", guild_ids=guilds)
     async def play_c(self, ctx: Interaction):
         player = theJar['players'][ctx.user.id]
-        #player.inventory.addCard(Building(*building_kits_dict['wooden_wall']), 'building')
         #player.inventory.addCard(Building(*building_kits_dict['mother_tree']), 'building')
         #player.inventory.addCard(Building(*building_kits_dict['bountiful_field']), 'building')
-        #player.addCard(building_kits_dict['mother_tree'], 'building')
-        #player.addCard(building_kits_dict['bountiful_field'], 'building')
-        await self.makeunit_f(ctx, ['Aratori'])
-        await self.makeunit_f(ctx, ['Prismari'])
-        await self.makeunit_f(ctx, ['Warrior'])
-        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
-        #await self.cardrep_c(ctx, 'unit', 1)
-        #await self.cardrep_c(ctx, 'unit', 2)
-        #await self.cardrep_c(ctx, 'unit', 3)
-        #await self.cardrep_c(ctx, 'unit', 4)
-        man = player.inventory.getCard('unit', 4)
-        man.delTrait('Aratori')
-        #await self.cardrep_c(ctx, 'unit', 4)
-        man.addTrait('Prismari')
-        #await self.cardrep_c(ctx, 'unit', 4)
-        #await self._makeunit_c(ctx, ['Ranger', 'Aratori'])
-        #await self._makeunit_c(ctx, ['Guardian', 'Aratori'])
-        #await self._makeunit_c(ctx, ['Alchemist', 'Otavan'])
-        #await self._makeunit_c(ctx, ['Worker', 'Automata'])
 
-        #await self.makefab_c(ctx, "Tim the Bandit King", 'Home', 'Bandits')
-        await self.move_f(ctx, 'Home')
+        #await self._makeunit_f(ctx, ['Ranger', 'Aratori'])
+        #await self._makeunit_f(ctx, ['Guardian', 'Aratori'])
+        #await self._makeunit_f(ctx, ['Alchemist', 'Otavan'])
+        #await self._makeunit_f(ctx, ['Worker', 'Automata'])
 
-        #await self._playcard_c(ctx, 'building', 1, 'district', 'Home')
-        #await self._playcard_c(ctx, 'building', 2, 'district', 'Home')
-        #await self._playcard_c(ctx, 'building', 3, 'district', 'Home')
-        #await self.playcard_c(ctx, 'building', 2, 'district', 'Home')
+        await self.playcard_f(ctx, 'building', 3, 'district', 'Yavar')
+        #await self.playcard_f(ctx, 'building', 2, 'district', 'Yavar')
+
         #await self.link_c(ctx, 2, 1)
-        #await self._playcard_c(ctx, 'unit', 4, 'district', 'Home')
-        #await self.cardnick_c(ctx, 'unit', 4, 'Tim')
-        #await self._playcard_c(ctx, 'unit', 3, 'district', 'Home')
-        #await self.cardnick_c(ctx, 'unit', 3, 'Tom')
-        #await self.playcard_c(ctx, 'unit', 3, 'district', 'Home')
-        #await self.cardnick_c(ctx, 'unit', 3, 'Tem')
-
-        #await self.joinsquad_c(ctx, 2, 1)
-        #await self.playcard_c(ctx, 'unit', 4, 'district', 'Home')
-        #await self.cardnick_c(ctx, 'unit', 4, 'Bob')
-        #await self.playcard_c(ctx, 'unit', 5, 'district', 'Home')
-        #await self.cardnick_c(ctx, 'unit', 5, 'B0b')
-
-    @slash_command(name="cartplay", guild_ids=guilds)
-    async def cartplay_c(self, ctx: Interaction):
-        player = theJar['players'][ctx.user.id]
-        #player.faction = 'Bandit'
-        await self.move_f(ctx, 'Home')
-        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
-        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
-        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
-        await self.makeunit_f(ctx, ['Warrior', 'Aratori'])
-        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
-        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
-        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
-        await self.makeunit_f(ctx, ['Ranger', 'Aratori'])
-        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
-        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
-        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
-        await self.makeunit_f(ctx, ['Guardian', 'Aratori'])
-        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
-        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
-        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
-        await self.makeunit_f(ctx, ['Knight', 'Aratori'])
-        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
-        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
-        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
-        await self.makeunit_f(ctx, ['Alchemist', 'Aratori'])
-        i = 1
-        while i < 21:
-            await self._playcard_c(ctx, 'unit', i, 'district', 'Home')
-            i += 1
-        await self.joinsquad_c(ctx, 5, 1)
-        await self.joinsquad_c(ctx, 10, 1)
-        await self.joinsquad_c(ctx, 15, 1)
+        await self.playcard_f(ctx, 'unit', 1, 'building', 3)
+        #await self.playcard_f(ctx, 'unit', 2, 'building', 1)
+        #await self.playcard_f(ctx, 'unit', 3, 'building', 2)
+        #await self.playcard_f(ctx, 'unit', 4, 'building', 2)
+        #await self.playcard_f(ctx, 'unit', 5, 'district', 'Yavar')
 
     @commands.command(name="makefab", guild_ids=guilds)
     async def makefab_c(self, ctx, name, region, alg):
