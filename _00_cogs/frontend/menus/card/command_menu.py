@@ -58,8 +58,8 @@ class CommandMenu(Menu):
         if card is None:
             raise StateError
 
-        if type(theJar['districts'][card.location]).__name__ == 'District':
-            await Menus.transferResourceMenu.show(interaction, reply=True, newState={'src_type': 'district', 'src_district': card.location, 'dest_type': 'card', 'dest_card': state['card'], 'dest_card_type': state['card_type'], 'dest_player': state['player']})
+        if type(card.location).__name__ == 'District':
+            await Menus.transferResourceMenu.show(interaction, reply=True, newState={'src_type': 'district', 'src_district': card.location.name, 'dest_type': 'card', 'dest_card': state['card'], 'dest_card_type': state['card_type'], 'dest_player': state['player']})
         else:
             await Menus.transferResourceMenu.show(interaction, reply=True, newState={'src_type': 'card', 'src_card': card.location.uniqueID, 'src_card_type': 'building', 'src_player': state['player'], 'dest_type': 'card', 'dest_card': state['card'], 'dest_card_type': state['card_type'], 'dest_player': state['player']})
         

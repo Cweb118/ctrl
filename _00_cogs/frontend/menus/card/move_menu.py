@@ -79,7 +79,7 @@ def districtOptions(state):
     if card is None:
         raise StateError
 
-    district = theJar['districts'][str(card.location)]
+    district = card.location
     paths = district.paths
 
     options = []
@@ -167,7 +167,7 @@ def travelOptions(state):
     if card is None:
         raise StateError
 
-    district = theJar['districts'][str(card.location)]
+    district = card.location
     buildings = district.inventory.slots['building']
 
     options = []
@@ -218,7 +218,7 @@ class BuildingMoveMenu(Menu):
         if card is None:
             raise StateError
 
-        district = theJar['districts'][str(card.location)]
+        district = card.location
         building = district.inventory.getSlotCardByUniqueID('building', state['building'])
 
         if building is None:

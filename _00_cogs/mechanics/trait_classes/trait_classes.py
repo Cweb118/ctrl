@@ -135,7 +135,7 @@ class Scout():
         if self_unit.stats['Endurance'] < 2:
             self.can_go = False
         if self.target_location:
-            if self.target_location not in self_unit.location.paths:
+            if self.target_location.name not in self_unit.location.paths:
                 self.can_go = False
 
     async def daybreak(self, self_unit):
@@ -159,7 +159,7 @@ class Sentry():
     async def harvest(self, self_unit, f, hit):
         player = self_unit.owner
         if self_unit.stats['Endurance'] >= self_unit.statcaps['Endurance']:
-            location = theJar['districts'][self_unit.location]
+            location = self_unit.location
             adj_locs = [theJar['districts'][x] for x in location.paths]
             report = "Your **"+str(self_unit)+" watches as night falls, making the following observations..."
             await say(None, report, channel=player.channel)
@@ -927,7 +927,7 @@ class Ward():
     def work(self, self_building, subject_units, range):
         report = "**Action: Ward**\n"+\
                  "Player: "+self_building.owner+"\n"+\
-                 "Current Location: "+self_building.location+"\n"
+                 "Current Location: "+self_building.location.name+"\n"
         if range > 0:
             report += "Adj Locations: "+self_building.location.paths+"\n"
         #say to explore channel(report)

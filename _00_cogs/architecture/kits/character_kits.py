@@ -9,6 +9,12 @@ g0_character_kits = {
       'units':[['Yavari','Pathfinder'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
       'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
 
+    #Ginger_Walnut
+    161520114657656832:[161520114657656832, 1, 'Yavar', 'Yavari',
+     {'resources':{'Food':10,'Water':10,'Wood':10},
+      'units':[['Yavari','Pathfinder'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
+      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
+
     #jamspinnle
     143574434874130432:[143574434874130432, 1, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10},

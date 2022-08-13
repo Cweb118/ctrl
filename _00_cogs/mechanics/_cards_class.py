@@ -172,7 +172,7 @@ class Card():
                             report = "Error: You are not currently present at the designated location."
                             can_play = False
                     else:
-                        if player.location != target_obj.location:
+                        if player.location != str(target_obj.location):
                             report = "Error: You are not currently present at the designated location."
                             can_play = False
                     if target_type == 'building':
@@ -243,7 +243,7 @@ class Card():
                 for key in self.play_cost.keys():
                     player.inventory.addResource(key, -self.play_cost[key])
             target_obj.inventory.addCardToSlot(self, card_type)
-            self.location = str(target_obj)
+            self.location = target_obj
             theJar['played_cards'][card_type].append(self)
             if card_type == 'building':
                 target_obj.civics.getGovernor(player.faction)
@@ -272,3 +272,45 @@ class Card():
             report = str(self)+' has been unplayed from '+str(target_obj)
         return report
 
+    @property
+    def location(self):
+        if self._location_type == None or self._location == None:
+            return None
+        elif self._location_type == 'District':
+            return theJar['districts'][self._location]
+        elif self._location_type == 'Building' or self._location_type == 'Unit':
+            card_type = self._location_type.lower()
+
+            for player in theJar['players'].values():
+                card = player.inventory.getCardByUniqueID(card_type, self._location)
+                if card != None:
+                    return card
+        else:
+            print('[Location Getter] Unknown location type on card: ' + str(self._location_type))
+            return self._location
+
+    @location.setter
+    def location(self, value):
+        location_type = type(value).__name__
+        if location_type == 'NoneType':
+            self._location_type = None
+            self._location = None
+        elif location_type == 'District':
+            self._location_type = location_type
+            self._location = value.name
+        elif location_type == 'Building' or location_type == 'Unit':
+            self._location_type = location_type
+            self._location = str(value.uniqueID)
+        else:
+            print('[Location Setter] Unknown location type on card: ' + str(location_type))
+            self._location_type = location_type
+            self._location = str(value)
+
+    @property
+    def district(self):
+        location = self.location
+
+        while type(location).__name__ != 'District':
+            location = location.location
+
+        return location

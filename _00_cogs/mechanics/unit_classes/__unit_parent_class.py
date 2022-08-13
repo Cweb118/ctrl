@@ -319,14 +319,14 @@ class Unit(Card):
         if self.status == 'Played':
             if self.stats['Endurance'] > 0:
                 if dest_type == 'district':
-                    if str(destination) in theJar['districts'][self.location].paths:
+                    if str(destination) in self.location.paths:
                         print('ding !')
                         can_move = True
                 if dest_type == 'unit':
-                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
+                    if self.location == destination.location:
                         can_move = True
                 if dest_type == 'building':
-                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
+                    if self.location == destination.location:
                         can_move = True
             else:
                 report = "Error: This unit does not have the Endurance."
@@ -338,7 +338,7 @@ class Unit(Card):
         move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
         print(destination, dest_type)
-        location = theJar['districts'][self.location]
+        location = self.location
         print(can_move)
         if can_move:
             slot_count = len(destination.inventory.slots['unit'])
@@ -349,7 +349,7 @@ class Unit(Card):
 
                 destination.inventory.addCardToSlot(self, 'unit')
                 location.inventory.removeCardFromSlot(self, 'unit')
-                self.location = str(destination)
+                self.location = destination
                 self.setStat('Endurance', -1)
 
                 report = "Unit moved successfully."
