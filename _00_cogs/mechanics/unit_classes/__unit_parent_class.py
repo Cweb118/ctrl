@@ -319,8 +319,10 @@ class Unit(Card):
         if self.status == 'Played':
             if self.stats['Endurance'] > 0:
                 if dest_type == 'district':
-                    if str(destination) in self.location.paths:
+                    if str(destination) in self.district.paths:
                         print('ding !')
+                        can_move = True
+                    elif destination == self.district and self.location != self.district: # Only allow moving into your current district if you are in a card in your district
                         can_move = True
                 if dest_type == 'unit':
                     if self.location == destination.location:
