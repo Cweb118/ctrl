@@ -29,14 +29,14 @@ class PickleFactory(commands.Cog):
                     if entry == "districts":
                         for district in temp.values():
                             guild = self.bot.get_guild(district.channel.guild)
-                            district.channel.reconstruct(guild)
+                            district.reconstruct(guild)
                     elif entry == "players":
                         for player in temp.values():
                             player.reconstruct(self.bot)
                     theJar[entry] = temp
+                    
             except FileNotFoundError:
                 print(f"File \"{entry}\" not found.")
-        print(theJar)
         await ctx.send("Load Completed!")
 
     @commands.command(name="listDist")

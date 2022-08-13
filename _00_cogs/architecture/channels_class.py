@@ -49,8 +49,8 @@ class Channel():
         
     def reconstruct(self, guild):
         self.guild = guild
-        self.channel = nextcord.utils.get(self.guild.text_channels, name=self.name)
-        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, name=self.name)
+        self.channel = nextcord.utils.get(self.guild.text_channels, id=self.channel)
+        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, id=self.VC_channel)
 
     async def delete(self):
         await self.channel.delete()
