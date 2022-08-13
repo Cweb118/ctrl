@@ -495,8 +495,8 @@ building_kits_dict = {
         'cat_dict':None
     },
 
-    'aquaduct':{
-        'title':'Aquaduct',
+    'aqueduct':{
+        'title':'Aqueduct',
         'description':'A constructed passage through which water can flow',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, None, None],
@@ -722,5 +722,82 @@ building_kits_dict = {
             'cat_dict':{'Vessel':1},
         },
 
+
+    # Industrialist:
+
+    'industrialist_ranger_barracks':{
+        'title':'Industrialist Ranger Barracks',
+        'description':'A training grounds for Rangers',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[1, 1, None, None, 1, None],
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Ranger'],
+        'play_cost': {'Stone':2},
+        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
+        'worker_req':['Industrialist'],
+        'input_dict':None,
+        'output_dict':None,
+        'cat_dict':None
+    },
+
+    'industrialist_alchemist_barracks':{
+        'title':'Industrialist Alchemist Barracks',
+        'description':'A training grounds for Rangers',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[1, 1, None, None, 1, None],
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Alchemist'],
+        'play_cost': {'Stone':2, 'Metal':1, 'Water':1},
+        'stats':{'attack':0, 'health':3, 'defense':4, 'size':1},
+        'worker_req':['Industrialist'],
+        'input_dict':{'Heart':1},
+        'output_dict':None,
+        'cat_dict':None
+    },
+
+    'industrialist_scout_guild':{
+        'title':'Industrialist Scouting Guild',
+        'description':'A training grounds for Scouts',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[None, None, None, None, 1, None],
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Scout'],
+        'play_cost': {'Stone':2},
+        'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
+        'worker_req':['Industrialist'],
+        'input_dict':None,
+        'output_dict':None,
+        'cat_dict':None
+    },
+
+    'industrialist_engineering_guild':{
+        'title':'Industrialist Engineering Guild',
+        'description':'A training grounds for Engineers',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[None, None, None, None, 1, None],
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Engineer'],
+        'play_cost': {'Stone':2},
+        'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
+        'worker_req':['Industrialist'],
+        'input_dict':None,
+        'output_dict':None,
+        'cat_dict':None
+    },
+
+    'mechanized_excavator':{
+        'title':'Mechanized Excavator',
+        'description':'A series of apparatus which allows for significantly more harvesting of minerals.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[5, 3, None, None, 3, None],
+        'mechanics': None, #aka traits
+        'mechanics_args': None,
+        'play_cost': {'Metal':3, 'Heart':1},
+        'stats':{'attack':0, 'health':4, 'defense':2, 'size':1},
+        'worker_req':['Engineer'],
+        'input_dict':None,
+        'output_dict':{'Stone':3, 'Coal':2,'Ore':2},
+        'cat_dict':None
+    },
 
     }
