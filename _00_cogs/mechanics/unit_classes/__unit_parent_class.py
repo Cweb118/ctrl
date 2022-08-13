@@ -156,15 +156,19 @@ class Unit(Card):
                     except:
                         self.play_cost[mod_res] = value
             if trait['upkeep']:
-                for mod_upkeep in trait['upkeep'].keys():
-                    resource = mod_upkeep
-                    value = trait['upkeep'][mod_upkeep]
-                    try:
-                        self.upkeep[resource] += value
-                    except:
-                        self.upkeep[resource] = value
-                    if self.upkeep[resource] < 0:
-                        self.upkeep[resource] = 0
+                for resource in trait['upkeep'].keys():
+                    add = True
+                    if 'Inorganic' in self.certs:
+                        if resource == 'Food' or 'Water':
+                            add = False
+                    if add:
+                        value = trait['upkeep'][resource]
+                        try:
+                            self.upkeep[resource] += value
+                        except:
+                            self.upkeep[resource] = value
+                        if self.upkeep[resource] < 0:
+                            self.upkeep[resource] = 0
             if trait['inv_args']:
                 inv = self.inventory
                 for key in trait['inv_args'].keys():
@@ -385,6 +389,7 @@ class Unit(Card):
             hit, report_dict = self.die_set.roll_math(self.stats['Defense']+self.stats['Fortitude'])
 
             harvest_arg_list = [self, def_dinged, hit]
+            print('triggering harvest')
             harvest_report = await self.triggerSkill('on_harvest', harvest_arg_list)
 
             if hit:
@@ -461,10 +466,13 @@ class Unit(Card):
                              "\n- Effects: "+str(self.getTraitbyType('effect'))
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
-        for key in self.upkeep.keys():
-            value = self.upkeep[key]
-            info_rep['value'] += str(value)+" "+str(key) +", "
-        info_rep['value'] = info_rep['value'][:-2]
+        if len(self.upkeep.keys()) > 1:
+            for key in self.upkeep.keys():
+                value = self.upkeep[key]
+                info_rep['value'] += str(value)+" "+str(key) +", "
+            info_rep['value'] = info_rep['value'][:-2]
+        else:
+            info_rep['value'] += 'None'
         fields.append(info_rep)
 
         stats_rep = {'inline':True}

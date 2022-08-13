@@ -27,7 +27,7 @@ class Building(Card):
         self.traits = []
         self.skillsets = {}
         #This is a hot mess because its trying to do this by trait but it only gets one singular mechanics arg from the kit
-        self.logic_args = bk['mechanics_args']
+        self.operations = bk['mechanics']
         self.certs = bk['worker_req']
 
         self.input = bk['input_dict']
@@ -38,7 +38,7 @@ class Building(Card):
         self.priority = priority
 
         if bk['mechanics']:
-            for trait_name in bk['mechanics']:
+            for trait_name in bk['mechanics'].keys():
                 self.addTrait(trait_name)
 
     # def addBuilding(self, card_kit_id, inv_owner, owner_type):
@@ -148,7 +148,7 @@ class Building(Card):
         skillset = self.skillsets[trait_name]
         print(skillset)
         if 'on_work' in skillset.triggers:
-            logic_args = self.logic_args[trait_name]
+            logic_args = self.operations[trait_name]
             work_args = [self, self.inventory.slots['units']]+logic_args
             try:
                 report = await skillset.work(work_args)
@@ -219,7 +219,7 @@ class Building(Card):
                 self.die_list = new_set
                 self.die_set = Dice(new_set)
             if trait['skillsets']:
-                self.skillsets[trait_name] = trait['skillsets']
+                self.operations[trait_name] = trait['skillsets']
 
     def delTrait(self, trait_name):
         if self.hasTrait(trait_name):

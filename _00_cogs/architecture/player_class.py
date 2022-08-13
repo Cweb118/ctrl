@@ -131,7 +131,7 @@ class Player():
         if hasattr(self, 'buildingsMessage') and self.buildingsMessage:
             self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
-    def modStat(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
+    def modStat(self, stat, quantity):
         new_val = self._stats[stat] + quantity
         can_add = False
         if self._statcaps[stat]:
@@ -142,7 +142,7 @@ class Player():
             self._stats[stat] = new_val
         return can_add
 
-    def modStatCap(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
+    def modStatCap(self, stat, quantity):
         new_val = self._stats[stat] + quantity
         new_cap = self._statcaps[stat] + quantity
         can_add = False
