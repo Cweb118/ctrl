@@ -6,8 +6,6 @@ building_kits_dict = {
 
 
 
-
-
     # Village:
 
     'woodland_ranger_barracks':{

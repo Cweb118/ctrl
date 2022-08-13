@@ -6,7 +6,7 @@ g0_character_kits = {
     #The Cartographer (me)
     160020690051792898:[160020690051792898, 1, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10,'Wood':10},
-      'units':[['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
+      'units':[['Yavari','Pathfinder'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
       'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
 
     #jamspinnle
