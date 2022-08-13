@@ -155,6 +155,7 @@ class TheClock(commands.Cog):
         await self.produce_f(ctx)
 
     async def produce_f(self, ctx):
+        print(theJar['played_cards']['building'])
         wave_ints = []
         for building in theJar['played_cards']['building']:
             priority = building.priority
@@ -172,6 +173,7 @@ class TheClock(commands.Cog):
 
         for num in wave_ints:
             for building in waves[num]:
+                print(building)
                 report = await building.run()
                 if report:
                     pm = building.owner.channel
