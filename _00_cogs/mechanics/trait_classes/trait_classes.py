@@ -531,7 +531,7 @@ class Barheim():
         self.act_params = [
             ['Local Industrialist Unit',
                 ['current_location'],
-                ['unit', lambda unit: unit.hasCert('Industrialist')]
+                ['industrialist_unit']
             ]
         ]
 
