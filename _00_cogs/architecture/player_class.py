@@ -49,6 +49,7 @@ class Player():
     def reconstruct(self, bot):
         self.guild = bot.get_guild(self.guildID)
         self.member = self.guild.get_member(self.memberID)
+        self.interfaceChannel.reconstruct(self.guild)
         self.channel.reconstruct(self.guild)
 
     @tasks.loop(seconds=1, count=1)

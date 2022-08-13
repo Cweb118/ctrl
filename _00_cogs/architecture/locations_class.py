@@ -157,8 +157,10 @@ class District():
     def __setstate__(self, state):
         self.name, self.region, self.paths, self.players, self.size, self.civics, self.inventory, self.pathcap, self.interfaceDirty, self.channel, self.interfaceChannel, self.guild, self.voice = state
     
-    def reconstruct(self):
-        pass
+    def reconstruct(self, guild):
+        self.guild = guild
+        self.channel.reconstruct(guild)
+        self.interfaceChannel.reconstruct(guild)
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
