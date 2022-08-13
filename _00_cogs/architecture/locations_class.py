@@ -225,11 +225,11 @@ class District():
         local_card_list = []
         for unit in player.inventory.slots['unit']:
             print(unit, unit.location)
-            if unit.location == self.name:
+            if unit.location.name == self.name:
                 can_interface = True
                 local_card_list.append(unit)
         for building in player.inventory.slots['building']:
-            if building.location == self.name:
+            if building.location.name == self.name:
                 can_interface = True
                 local_card_list.append(building)
         for card in local_card_list:
