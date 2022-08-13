@@ -130,4 +130,4 @@ dmypy.json
 keys.py
 
 .vscode/launch.json
-_01_pickle_jar/*.pkl
+_01_pickle_jar/*
