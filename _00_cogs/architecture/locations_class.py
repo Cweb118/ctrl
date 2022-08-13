@@ -31,10 +31,10 @@ class Region():
     def __setstate__(self, state):
         self.name, self.districts, self.guild, self.channel = state
     
-    def reconstruct(self, guild, channel):
-        self.guild = guild
-        self.channel = channel
-        self.channel.reconstruct(self.guild)
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guild)
+        if self.channel != None:
+            self.channel.reconstruct(self.guild)
     
 
     #TODO: New one incoming, james will review and delete later
@@ -157,10 +157,10 @@ class District():
     def __setstate__(self, state):
         self.name, self.region, self.paths, self.players, self.size, self.civics, self.inventory, self.pathcap, self.interfaceDirty, self.channel, self.interfaceChannel, self.guild, self.voice = state
     
-    def reconstruct(self, guild):
-        self.guild = guild
-        self.channel.reconstruct(guild)
-        self.interfaceChannel.reconstruct(guild)
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guild)
+        self.channel.reconstruct(self.guild)
+        self.interfaceChannel.reconstruct(self.guild)
 
     @tasks.loop(seconds=1, count=1)
     async def createChannel(self):
