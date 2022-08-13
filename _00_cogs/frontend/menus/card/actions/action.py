@@ -134,7 +134,7 @@ async def resolveAction(interaction: Interaction, state):
     elif param_type == 'unit':
         await Menus.unitParamMenu.show(interaction, newState=newState)
     elif param_type == 'industrialist_unit':
-        newState['cert_filter'] = 'industrialist'
+        newState['cert_filter'] = 'Industrialist'
 
         await Menus.unitParamMenu.show(interaction, newState=newState)
     elif param_type == 'building':
