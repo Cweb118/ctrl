@@ -30,7 +30,7 @@ class PlayerCog(commands.Cog):
     async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
-            theJar['players'][member.id]=(Player(member))
+            theJar['players'][member.id]=(await Player(member).init())
             if member.id == 160020690051792898:
                 charkit = character_kits_dict[member.id]
                 ch = Character()
@@ -96,12 +96,12 @@ class PlayerCog(commands.Cog):
             #player.inventory.addResource(theJar['resources']['Metal'], 10)
             #player.inventory.addResource(theJar['resources']['Wood'], 10)
 
-        #Region("Range", guild=ctx.guild)
+        #await Region("Range", guild=ctx.guild).init()
         #name, region_name, size, paths=None
-        #District('Home', 'Range', 'huge', guild=ctx.guild)
-        #District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild)
-        #District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
-        #District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
+        #await District('Home', 'Range', 'huge', guild=ctx.guild).init()
+        #await District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild).init()
+        #await District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild).init()
+        #await District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild).init()
 
         report = "Initialization Complete."
         await say(ctx,report)

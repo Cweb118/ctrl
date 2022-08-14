@@ -39,9 +39,9 @@ class TheMap(commands.Cog):
         theJar['control']['explore-log'] = ex
         for key in self.district_map.keys():
             if self.district_map[key][1] not in theJar['regions'].keys():
-                Region(self.district_map[key][1], guild=guild)
+                await Region(self.district_map[key][1], guild=guild).init()
             if key not in theJar['districts'].keys():
-                District(*self.district_map[key], guild=guild)
+                await District(*self.district_map[key], guild=guild).init()
 
 
 
