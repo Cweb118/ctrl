@@ -18,7 +18,7 @@ class Region():
         self.channel = None
     
     #This is essentially the create channel.
-    async def __init__(self):
+    async def init(self):
         return #Remove to enable channel creation.
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
