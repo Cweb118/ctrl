@@ -22,7 +22,7 @@ class PickleFactory(commands.Cog):
         if not os.path.isdir(f"{os.getcwd()}\\_01_pickle_jar\\backups"):
             os.makedirs(f"{os.getcwd()}\\_01_pickle_jar\\backups")
     
-    def autosave(self):
+    def autosave():
         BACKUP_FREQUENCY = 5 #in minutes
         LATEST_SAVE = f"{os.getcwd()}\\_01_pickle_jar\\latest.pkl"
         BACKUP_DIR = f"{os.getcwd()}\\_01_pickle_jar\\backups"
