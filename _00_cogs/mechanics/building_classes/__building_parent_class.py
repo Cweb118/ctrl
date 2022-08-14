@@ -95,11 +95,11 @@ class Building(Card):
                     else:
                         can_run = False
                     report = "Error: **"+str(self)+"** lacks required catalytic resources."
-
-        if self.inventory.slotcap['unit'] > 0:
-            if len(self.inventory.slots['unit']) != self.inventory.slotcap['unit']:
-                can_run = False
-                report = "Error: **"+str(self)+"** lacks required workers."
+        if self.inventory.slotcap['unit']:
+            if self.inventory.slotcap['unit'] > 0:
+                if len(self.inventory.slots['unit']) != self.inventory.slotcap['unit']:
+                    can_run = False
+                    report = "Error: **"+str(self)+"** lacks required workers."
         return can_run, report
 
     def doInput(self):
@@ -219,6 +219,7 @@ class Building(Card):
                 self.die_list = new_set
                 self.die_set = Dice(new_set)
             if trait['skillsets']:
+                self.skillsets[trait_name] = trait['skillsets']
                 self.operations[trait_name] = trait['skillsets']
 
     def delTrait(self, trait_name):
@@ -382,7 +383,7 @@ class Building(Card):
         info_rep['title'] = '-- Info:'
         info_rep['value'] = "- Status: "+str(self.status)+\
                  "\n- Location: "+str(self.location)+\
-                 "\n- Worker Requirements: "+str(self.certs)
+                 "\n- Operations: "+str(self.operations.keys())
         fields.append(info_rep)
 
         stats_rep = {'inline':True}
@@ -396,11 +397,11 @@ class Building(Card):
         fields.append(stats_rep)
 
         req_rep = {'inline':False}
-        req_rep['title'] = "-- Worker Requirements:"
+        req_rep['title'] = "-- Operations:"
         req_rep['value'] = ''
         if self.certs:
-            for req in self.certs:
-                req_rep['value'] += "- "+str(req)+"\n"
+            for cert in self.certs():
+                req_rep['value'] += "- "+str(cert)+"\n"
             req_rep['value'] = req_rep['value'][:-1]
         else:
             req_rep['value'] = "- None"

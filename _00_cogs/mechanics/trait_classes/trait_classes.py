@@ -45,24 +45,30 @@ class Architect():
             if cert not in self_unit.certs:
                  c += 1
         if c < len(local_target_building.certs)/2:
-            report = 'Your **'+str(self_unit)+'** lacks the required knowledge...'
+            report = 'Your **'+str(self_unit)+'** lacks the knowledge required...'
             can_copy = False
         if can_copy:
             self_unit.setStat('Endurance', -self_unit.statcaps['Endurance'])
             self.subject = local_target_building
             report = 'Your **'+str(self_unit)+'**  begins their study...'
+            self.report = "**Action: Survey**\n"+\
+                     "Player: "+str(self_unit.owner)+"\n"+\
+                     "Unit: "+str(self_unit)+"\n"+\
+                     "Building: "+local_target_building+"\n"
         return report
 
-    def harvest(self, self_unit, def_lost, hit):
+    async def harvest(self, self_unit, def_lost, hit):
+        #TODO: This is broken!
         if self.subject:
+            await say(None, self.report, channel=theJar['control']['explore-log'])
             if self_unit.stats['Endurance'] != 0:
-                if self_unit.location != self.subject.location:
-                    status, bldg = self_unit.addBuildingToUnitInv(self.subject.title)
+                if self_unit.location == self.subject.location:
+                    status, bldg = self_unit.addBuildingToUnitOwnerInv(self.subject.title)
+                    print(status, bldg)
 
 
 
 class Pathfinder():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest']
         self.report = None
@@ -93,7 +99,6 @@ class Pathfinder():
                  "Player: "+str(self_unit.owner)+"\n"+\
                  "From Location: "+str(from_location)+"\n"+\
                  "Direction: "+direction+"\n"
-        print(self.report)
         return self.report
 
     async def harvest(self, self_unit, def_lost, hit):
@@ -107,7 +112,6 @@ class Pathfinder():
         return report
 
 class Scout():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
         self.target_location = None
@@ -141,17 +145,16 @@ class Scout():
     async def daybreak(self, self_unit):
         if self.can_go:
             player = self_unit.owner
-            report = self.target_location.report()
-            await say(None, report, channel=player.channel)
+            report, title, fields = self.target_location.report()
+            await say(None, report, title=title, fields=fields, channel=player.channel)
         else:
             if self.target_location:
                 player = self_unit.owner
-                report = str(self_unit)+' was unable to scout '+str(self.target_location)
+                report = "[Scout] **"+str(self_unit)+'** was unable to scout '+str(self.target_location)
                 await say(None, report, channel=player.channel)
 
 
 class Sentry():
-    #TODO: TEST
     #Shouldn't this be a passive vision of adj interfaces?
     def __init__(self):
         self.triggers = ['on_harvest']
@@ -161,14 +164,15 @@ class Sentry():
         if self_unit.stats['Endurance'] >= self_unit.statcaps['Endurance']:
             location = self_unit.location
             adj_locs = [theJar['districts'][x] for x in location.paths]
-            report = "Your **"+str(self_unit)+" watches as night falls, making the following observations..."
-            await say(None, report, channel=player.channel)
+            report = "[Sentry] Your **"+str(self_unit)+"** watches as night falls, making the following observations..."
             for adj_loc in adj_locs:
-                report = adj_loc.report()
-                await say(None, report, channel=player.channel)
+                locrep, title, fields = adj_loc.report()
+                await say(None, locrep, title=title, fields=fields, channel=player.channel)
         else:
-            report = "Your **"+str(self_unit)+" is not fully rested for their watch..."
-            await say(None, report, channel=player.channel)
+            report = "[Sentry] Your **"+str(self_unit)+"** is not fully rested for their watch..."
+        return report
+
+
 class Recon():
     def __init__(self):
         self.triggers = ['on_move', 'on_death']
@@ -626,7 +630,6 @@ class Xinn():
 
 
 class Yavari():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_play', 'on_act']
 

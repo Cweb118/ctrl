@@ -746,4 +746,19 @@ building_kits_dict = {
         'cat_dict':None
     },
 
+
+    'kinetika_trolly':{
+        'title':'Kinetika Trolly',
+        'description':'Monorail for dangling cargo used to quickly distribute goods.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[None, None, None, None, None, None],
+        'mechanics': {'Transport': None}, #aka traits
+        'play_cost': {'Metal':2},
+        'stats':{'attack':0, 'health':1, 'defense':1, 'size':1},
+        'worker_req':None,
+        'input_dict':None,
+        'output_dict':None,
+        'cat_dict':None
+    },
+
     }

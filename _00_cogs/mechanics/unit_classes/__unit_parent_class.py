@@ -424,7 +424,14 @@ class Unit(Card):
         can_add = self.inventory.capMathCard('building')
         if can_add == True:
             kit = [k for k, v in building_kits_dict.items() if v['title'] == kit_title]
-            bldg = self.inventory.cards['building'].append(Building(*building_kits_dict[kit]))
+            bldg = self.inventory.addCard(Building(*building_kits_dict[kit]), 'building')
+        return can_add, bldg
+
+    def addBuildingToUnitOwnerInv(self, kit_title):
+        can_add = self.inventory.capMathCard('building')
+        if can_add == True:
+            kit = [k for k, v in building_kits_dict.items() if v['title'] == kit_title]
+            bldg = self.owner.inventory.addCard(Building(*building_kits_dict[kit]), 'building')
         return can_add, bldg
 
     def __str__(self):

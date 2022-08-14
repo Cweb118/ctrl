@@ -222,14 +222,14 @@ class Commands(commands.Cog):
         #await self._makeunit_f(ctx, ['Alchemist', 'Otavan'])
         #await self._makeunit_f(ctx, ['Worker', 'Automata'])
 
-        await self.playcard_f(ctx, 'building', 3, 'district', 'Yavar')
-        #await self.playcard_f(ctx, 'building', 2, 'district', 'Yavar')
+        await self.playcard_f(ctx, 'building', 1, 'district', 'Yavar')
+        await self.playcard_f(ctx, 'building', 2, 'district', 'Yavar')
 
         #await self.link_c(ctx, 2, 1)
-        await self.playcard_f(ctx, 'unit', 1, 'building', 3)
-        #await self.playcard_f(ctx, 'unit', 2, 'building', 1)
-        #await self.playcard_f(ctx, 'unit', 3, 'building', 2)
-        #await self.playcard_f(ctx, 'unit', 4, 'building', 2)
+        await self.playcard_f(ctx, 'unit', 1, 'building', 1)
+        await self.playcard_f(ctx, 'unit', 2, 'building', 1)
+        await self.playcard_f(ctx, 'unit', 3, 'building', 2)
+        await self.playcard_f(ctx, 'unit', 4, 'building', 2)
         #await self.playcard_f(ctx, 'unit', 5, 'district', 'Yavar')
 
     @commands.command(name="makefab", guild_ids=guilds)

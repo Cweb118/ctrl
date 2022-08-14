@@ -5,9 +5,9 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 g0_character_kits = {
     #The Cartographer (me)
     160020690051792898:[160020690051792898, 1, 'Yavar', 'Yavari',
-     {'resources':{'Food':10,'Water':10,'Wood':10,'Steam':10},
-      'units':[['Automata','Sentry'],['Yavari','Laborer'],['Barheim','Laborer'],['Barheim','Warrior'],['Barheim','Engineer']],
-      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
+     {'resources':{'Food':10,'Water':10,'Wood':10,'Metal':10},
+      'units':[['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer']],
+      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['kinetika_trolly']]}],
 
     #Ginger_Walnut
     161520114657656832:[161520114657656832, 1, 'Yavar', 'Yavari',
