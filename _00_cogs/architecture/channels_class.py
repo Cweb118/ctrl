@@ -2,13 +2,12 @@ import operator
 from _02_global_dicts import theJar
 import nextcord
 import time, asyncio
-from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
 
 class Channel():
     #on instantiation, create channel or check if it already exists.
-    def __init__(self, guild, channel_name, category_name = None, VC_Mode = False, can_talk = True):
+    def __init__(self, guild, channel_name, category_name = None, VC_Mode = True, can_talk = True):
         self.name = channel_name.replace(' ', '-').lower()
         self.category_name = category_name
         self.guild = guild

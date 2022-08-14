@@ -6,20 +6,23 @@ g0_character_kits = {
     #The Cartographer (me)
     160020690051792898:[160020690051792898, 0, 'Yavar', 'Yavari',
      {'resources':{'Food':10,'Water':10,'Wood':10,'Metal':10},
-      'units':[['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer']],
-      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['kinetika_trolly']]}],
+      'stats':{'Influence':20},
+      'units':[['Loyavasi','Scout']],
+      'buildings':[]}],
 
     #Cody, Uranu
-    155172173089210368:[155172173089210368, 0, 'Yavar', 'Uranu',
+    155172173089210368:[155172173089210368, 0, 'The Overlook', 'Yavari',
      {'resources':{'Food':10,'Water':10,'Wood':10},
-      'units':[['Yavari','Pathfinder'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
-      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
+      'stats':{'Influence':20},
+      'units':[],
+      'buildings':[]}],
 
     #Dan, Xinn
-    90231355677364224:[90231355677364224, 0, 'Yavar', 'Xinn',
+    90231355677364224:[90231355677364224, 0, 'The Caves', 'Xinn',
      {'resources':{'Food':10,'Water':10,'Wood':10},
-      'units':[['Yavari','Pathfinder'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Laborer'],['Yavari','Courier']],
-      'buildings':[bk['mother_tree'],bk['bountiful_field'],bk['harmonist_scout_guild']]}],
+      'stats':{'Influence':20},
+      'units':[],
+      'buildings':[]}],
 
 
 
@@ -82,7 +85,7 @@ g0_casting_components = {
             'intro':"You find yourselves at a crossroads, a pivotal moment in Aporia's history. Two factions, traditionally isolationists, seek each other out in times of need.",
             'locations':{
                 'Yavar':'Your home is in the Dominion of Yavar, a tranquil place on the western coast where the Yavari people have lived for centuries.',
-                'Barheim':'Your home is in the City of Baraheim, a thriving refuge for your people and the global capital of industry and innovation.',
+                'The Core':'Your home is in the City of Baraheim, a thriving refuge for your people and the global capital of industry and innovation.',
             },
             'factions':{
                 'Yavari':'You have heard tales of great inovation in the City of Baraheim, the likes of which will change the world. You have decided it most prudent to reach out to the northern historically known isolationists to attempt to reach a trade deal for some of their breakthroughs.',
@@ -100,6 +103,25 @@ g0_casting_components = {
             },
             'outro':'Good luck!',
 }
+
+"""
+Unit Actions:
+Survey (Architect): Submits a request for a building type to control. Unit ought to have non-zero endurance. Unit ought to have at least half of that buildings working requirements as certs. Requests are processed during the night phase.
+Overclock (Automata): Unit consumes 3 steam for a boost in Endurance equal to their cap.
+Harmonize (Yavari): Pass your current effects to another unit (consumes all End)
+Explore (Pathfinder): Submits a directional exploration request to control.
+Scout (Scout): Scouts a location, requires 2 End
+Inspire (Barheim): Charges Industrialist unit (not relevant to this playtest)
+Transport (Various): Links two buildings together, routing the output of one into the input of the other.
+
+Unit Passives:
+Sentry (Sentry): Gets a report on adj districts (needs full End)
+Recon (Recon Units): Provides access to chat if units are present
+Overtime (Barheim): Works two slots in a building instead of one
+Inorganic (Automata): Does not have upkeep
+Harmony (Harmonist): Protects unit from defense loss at upkeep (known bug: triggers twice)
+"""
+
 
 character_kits_dict = g0_character_kits
 character_briefs_dict = g0_casting_components

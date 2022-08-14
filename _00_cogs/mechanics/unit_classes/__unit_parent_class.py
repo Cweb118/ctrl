@@ -364,7 +364,7 @@ class Unit(Card):
         else:
             report = "Error: This destination is too far."
         if move_report:
-            report += +"\n"+move_report
+            report += "\n"+move_report
         return can_move, report
 
     async def harvest(self):

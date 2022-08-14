@@ -720,11 +720,11 @@ class Gatherer():
         #self_unit.owner.updatePerms(from_location, to_location
 
         loc_size_pass_bars = {
-            'tiny': 1,
-            'small': 2,
-            'medium': 3,
-            'large': 4,
-            'huge': 5,
+            'tiny': 2,
+            'small': 3,
+            'medium': 4,
+            'large': 5,
+            'huge': 6,
         }
 
         res_per_hit = {
@@ -736,7 +736,7 @@ class Gatherer():
             5:9,
         }
         to_loc_bar = loc_size_pass_bars[to_location.size]
-        s, report = self_unit.dice.roll_math(to_loc_bar)
+        s, report = self_unit.die_set.roll_math(to_loc_bar)
         hits = report['hit_count']
         if hits > 5:
             hits = 5

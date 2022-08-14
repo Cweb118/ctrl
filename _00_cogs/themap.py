@@ -13,6 +13,9 @@ class TheMap(commands.Cog):
             'The Core':['The Core', 'The City of Barheim', 'large', []],
             'The Threshold':['The Threshold', 'The City of Barheim', 'small', ['The Core']],
 
+            'The Caves':['The Caves', 'Levyt Cliffside', 'medium', []],
+
+            'The Overlook':['The Overlook', 'Levyt Cliffside', 'small', []],
 
             'The Shores':['The Shores', 'Levyt Cliffside', 'medium', []],
             'Yavar':['Yavar', 'Yavari Domain', 'huge', ['The Shores']],
@@ -24,8 +27,10 @@ class TheMap(commands.Cog):
             'The Threshold':['The Threshold', 'The City of Barheim', 'small', ['The Foot of Barheim', 'The Core']],
 
             'The Foot of Barheim':['The Foot of Barheim', 'Greven Taiga', 'small', ['The Frigid Quiet', 'The Threshold']],
-            #'The Frigid Quiet':['The Frigid Quiet', 'Greven Taiga', 'large', ['The Treeline', 'The Foot of Barheim']],
+            'The Frigid Quiet':['The Frigid Quiet', 'Greven Taiga', 'large', ['The Treeline', 'The Foot of Barheim']],
             'The Treeline':['The Treeline', 'Greven Taiga', 'medium', ['The Overlook', 'The Frigid Quiet']],
+
+            'The Caves':['The Caves', 'Levyt Cliffside', 'medium', ['The Overlook', 'The Treeline']],
 
             'The Overlook':['The Overlook', 'Levyt Cliffside', 'small', ['The Rise','The Treeline']],
             'The Rise':['The Rise', 'Levyt Cliffside', 'tiny', ['The Shores','The Overlook']],
@@ -39,9 +44,9 @@ class TheMap(commands.Cog):
         theJar['control']['explore-log'] = ex
         for key in self.district_map.keys():
             if self.district_map[key][1] not in theJar['regions'].keys():
-                Region(self.district_map[key][1], guild=guild)
+                await Region(self.district_map[key][1], guild=guild).init()
             if key not in theJar['districts'].keys():
-                District(*self.district_map[key], guild=guild)
+                await District(*self.district_map[key], guild=guild).init()
 
 
 
