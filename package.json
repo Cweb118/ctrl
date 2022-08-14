@@ -1,0 +1,35 @@
+{
+	"name": "ctrl",
+	"description": "",
+	"version": "1.0.0",
+	"dependencies": {
+		"@discordjs/builders": "^0.8.2",
+		"@discordjs/rest": "^0.1.0-canary.0",
+		"@types/async-lock": "^1.1.3",
+		"@types/axios": "^0.14.0",
+		"@types/seedrandom": "^3.0.1",
+		"@types/sharp": "^0.30.1",
+		"async-lock": "^1.3.0",
+		"axios": "^0.26.1",
+		"discord-api-types": "^0.31.1-next.bc6e97f.1649094949",
+		"discord.js": "^14.0.0-dev.1649160496-402514f",
+		"esm": "^3.2.25",
+		"seedrandom": "^3.0.5",
+		"sharp": "^0.30.3",
+		"underscore": "^1.13.1"
+	},
+	"scripts": {
+		"start": "ts-node src/core.ts",
+		"dev": "nodemon src/core.ts"
+	},
+	"nodemonConfig": {
+		"ignore": [
+			"save.json",
+			"save-last.json"
+		]
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.14",
+		"ts-node": "^10.9.1"
+	}
+}
