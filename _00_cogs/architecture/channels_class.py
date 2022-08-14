@@ -53,15 +53,8 @@ class Channel():
         
     def reconstruct(self, guild):
         self.guild = guild
-        self.channel = nextcord.utils.get(self.guild.text_channels, id=self.channel)
-        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, id=self.VC_channel)
-
-        if self.channel == None:
-            print('Could not find: ' + self.name)
-            print('With id: ' + self.channel)
-        elif self.VC_channel == None:
-            print('Could not find voice: ' + self.name)
-            print('With ID: ' + self.VC_channel)
+        self.channel = nextcord.utils.get(self.guild.text_channels, name=self.channel)
+        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, name=self.VC_channel)
 
     async def delete(self):
         await self.channel.delete()
