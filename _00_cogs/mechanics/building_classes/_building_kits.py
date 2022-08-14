@@ -395,13 +395,13 @@ building_kits_dict = {
         'title':'Mother Tree',
         'description':'A kind tree who drinks from the deep',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[4, 1, None, None, 2, None],
+        'inv_args':[4, 1, None, None, 1, None],
         'mechanics': None, #aka traits
         'play_cost': {'Food':3,'Water':2},
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Laborer', 'Harmonist'],
         'input_dict':None,
-        'output_dict':{'Water':2},
+        'output_dict':{'Water':3},
         'cat_dict':None
     },
 
@@ -429,7 +429,7 @@ building_kits_dict = {
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':2},
         'worker_req':['Worker', 'Harmonist'],
         'input_dict':{'Water':2},
-        'output_dict':{'Food':4},
+        'output_dict':{'Food':5},
         'cat_dict':None
     },
 
@@ -732,6 +732,49 @@ building_kits_dict = {
         'cat_dict':None
     },
 
+    'steam_boiler':{
+        'title':'Steam Boiler',
+        'description':'A facility for turning water into steam.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[7, 3, None, None, 1, None],
+        'mechanics': None, #aka traits
+        'play_cost': {'Metal':3},
+        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
+        'worker_req':['Worker'],
+        'input_dict': {'Water':2, 'Coal':1},
+        'output_dict':{'Steam':2},
+        'cat_dict':None
+    },
+
+    'sifting_facility':{
+        'title':'Sifting Facility',
+        'description':'A facility for gleaning ore from stone.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[7, 3, None, None, 3, None],
+        'mechanics': None, #aka traits
+        'play_cost': {'Metal':2},
+        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
+        'worker_req':['Worker'],
+        'input_dict': {'Stone':3},
+        'output_dict':{'Ore':2},
+        'cat_dict': {'Water':2}
+    },
+
+    'metal_refinery':{
+        'title':'Metal Refinery',
+        'description':'A facility for turning unprocessed ore into sturdy metal.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[5, 3, None, None, 1, None],
+        'mechanics': None, #aka traits
+        'play_cost': {'Metal':2},
+        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
+        'worker_req':['Worker'],
+        'input_dict': {'Ore':3, 'Steam':1},
+        'output_dict':{'Metal':2},
+        'cat_dict':None
+    },
+
+
     'mechanized_excavator':{
         'title':'Mechanized Excavator',
         'description':'A series of apparatus which allows for significantly more harvesting of minerals.',
@@ -739,13 +782,42 @@ building_kits_dict = {
         'inv_args':[5, 3, None, None, 3, None],
         'mechanics': None, #aka traits
         'play_cost': {'Metal':3, 'Heart':1},
-        'stats':{'attack':0, 'health':4, 'defense':2, 'size':1},
+        'stats':{'attack':0, 'health':4, 'defense':2, 'size':2},
         'worker_req':['Engineer'],
-        'input_dict':None,
+        'input_dict': {'Steam':4},
         'output_dict':{'Stone':3, 'Coal':2,'Ore':2},
         'cat_dict':None
     },
 
+
+    'automata_forge':{
+        'title':'Automata Forge',
+        'description':'The place where new Automata are born.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[3, 4, None, None, 4, None],
+        'mechanics': None, #aka traits
+        'play_cost': {'Metal':5},
+        'stats':{'attack':0, 'health':2, 'defense':5, 'size':2},
+        'worker_req':['Engineer'],
+        'input_dict':{'Heart':1, 'Vessel':1, 'Metal':2, 'Steam':2},
+        'output_dict':None,
+        'cat_dict':None
+    },
+
+
+    'kardiahorologist':{
+        'title':'Kardiahorologist',
+        'description':'A highly secure workshop wherein the miraculous clockwork Hearts are made.',
+        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
+        'inv_args':[5, 3, None, None, 2, None],
+        'mechanics': None, #aka traits
+        'play_cost': {'Metal':4},
+        'stats':{'attack':0, 'health':4, 'defense':3, 'size':1},
+        'worker_req':['Engineer'],
+        'input_dict':{'Metal':3, 'Steam':2},
+        'output_dict':{'Heart':1},
+        'cat_dict':None
+    },
 
     'kinetika_trolly':{
         'title':'Kinetika Trolly',
