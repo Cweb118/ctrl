@@ -16,9 +16,21 @@ class Region():
         self.districts = districts
         self.guild = guild
         self.channel = None
+    
+    #This is essentially the create channel.
+    async def __init__(self):
+        return #Remove to enable channel creation.
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
+        category = nextcord.utils.get(self.guild.categories, name=self.name)
 
-        #self.createChannel.start()
+        if not category:
+            category = await self.guild.create_category(self.name)
+
+        self.channel = await Channel(self.guild, self.name, self.name).init()
+
+        #Remove?
+        #await self.channel.addPlayer(playerRole)
     
     #saves channel and guild id for retrieval on reconstruction.
     def __getstate__(self):
@@ -59,19 +71,19 @@ class Region():
         return report
 
 
-    @tasks.loop(seconds=1, count=1)
-    async def createChannel(self):
-        playerRole = nextcord.utils.get(self.guild.roles, name="player")
+    # @tasks.loop(seconds=1, count=1)
+    # async def createChannel(self):
+    #     playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
-        category = nextcord.utils.get(self.guild.categories, name=self.name)
+    #     category = nextcord.utils.get(self.guild.categories, name=self.name)
 
-        if not category:
-            category = await self.guild.create_category(self.name)
+    #     if not category:
+    #         category = await self.guild.create_category(self.name)
 
-        self.channel = await Channel(self.guild, self.name, self.name).init()
+    #     self.channel = await Channel(self.guild, self.name, self.name).init()
 
-        #Remove?
-        #await self.channel.addPlayer(playerRole)
+    #     #Remove?
+    #     #await self.channel.addPlayer(playerRole)
 
 
 class District():
@@ -122,9 +134,32 @@ class District():
 
         self.interfaceDirty = False
 
-    #TODO: James review
-    #def __reduce__(self):
-    #    return(self.__class__, (self.name, self.region, self.size, self.paths, None, True))
+    #This is the create channel location
+    async def init(self):
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
+        #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
+        await asyncio.sleep(.25)
+
+        interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+        channelName = self.name.replace(' ', '-').lower()
+
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+        self.channel = await Channel(self.guild, channelName, self.region).init()
+
+        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+        self.interfaceMessage = None
+
+        for interfaceMessage in interfaceMessages:
+            if interfaceMessage.author.id == theJar['client']:
+                self.interfaceMessage = interfaceMessage
+                break
+
+        if self.interfaceMessage == None:
+            self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+        else:
+            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+
+        self.interfaceDirty = False
 
     def __getstate__(self):
         # vars left out:
@@ -162,32 +197,32 @@ class District():
         self.channel.reconstruct(self.guild)
         self.interfaceChannel.reconstruct(self.guild)
 
-    @tasks.loop(seconds=1, count=1)
-    async def createChannel(self):
-        playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
-        await asyncio.sleep(.25)
+    # @tasks.loop(seconds=1, count=1)
+    # async def createChannel(self):
+    #     playerRole = nextcord.utils.get(self.guild.roles, name="player")
+    #     #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
+    #     await asyncio.sleep(.25)
 
-        interfaceName = self.name.replace(' ', '-').lower() + '_interface'
-        channelName = self.name.replace(' ', '-').lower()
+    #     interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+    #     channelName = self.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
-        self.channel = await Channel(self.guild, channelName, self.region).init()
+    #     self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+    #     self.channel = await Channel(self.guild, channelName, self.region).init()
 
-        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
-        self.interfaceMessage = None
+    #     interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+    #     self.interfaceMessage = None
 
-        for interfaceMessage in interfaceMessages:
-            if interfaceMessage.author.id == theJar['client']:
-                self.interfaceMessage = interfaceMessage
-                break
+    #     for interfaceMessage in interfaceMessages:
+    #         if interfaceMessage.author.id == theJar['client']:
+    #             self.interfaceMessage = interfaceMessage
+    #             break
 
-        if self.interfaceMessage == None:
-            self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
-        else:
-            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+    #     if self.interfaceMessage == None:
+    #         self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+    #     else:
+    #         self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
-        self.interfaceDirty = False
+    #     self.interfaceDirty = False
 
     # Ginger: Updates the interface message
     def updateInterface(self):
