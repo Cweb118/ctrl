@@ -382,8 +382,11 @@ class Building(Card):
         info_rep = {'inline':True}
         info_rep['title'] = '-- Info:'
         info_rep['value'] = "- Status: "+str(self.status)+\
-                 "\n- Location: "+str(self.location)+\
-                 "\n- Operations: "+str(self.operations.keys())
+                 "\n- Location: "+str(self.location)
+        if self.operations:
+             info_rep['value'] +="\n- Operations: "+str(self.operations.keys())
+        else:
+            info_rep['value'] +="\n- Operations: None"
         fields.append(info_rep)
 
         stats_rep = {'inline':True}
@@ -397,7 +400,7 @@ class Building(Card):
         fields.append(stats_rep)
 
         req_rep = {'inline':False}
-        req_rep['title'] = "-- Operations:"
+        req_rep['title'] = "-- Worker Requirements:"
         req_rep['value'] = ''
         if self.certs:
             for cert in self.certs():
