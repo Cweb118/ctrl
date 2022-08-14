@@ -40,6 +40,11 @@ class Channel():
         return self
 
     def __getstate__(self):
+        if (self.guild == None or self.channel == None):
+            print('Has none: ' + self.name)
+            print(self.guild)
+            print(self.channel)
+
         if self.VC_channel is not None:
             return (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel.id)
         return (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel)
@@ -51,6 +56,11 @@ class Channel():
         self.guild = guild
         self.channel = nextcord.utils.get(self.guild.text_channels, id=self.channel)
         self.VC_channel = nextcord.utils.get(self.guild.voice_channels, id=self.VC_channel)
+
+        if self.channel == None:
+            print('Could not find: ' + self.name)
+        elif self.VC_channel == None:
+            print('Could not find voice: ' + self.name)
 
     async def delete(self):
         await self.channel.delete()

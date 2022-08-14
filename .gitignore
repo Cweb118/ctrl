@@ -131,3 +131,5 @@ keys.py
 
 .vscode/launch.json
 _01_pickle_jar/*
+
+node_modules

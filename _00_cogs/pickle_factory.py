@@ -68,6 +68,13 @@ class PickleFactory(commands.Cog):
             loadJar['control']['explore-log'].reconstruct(self.bot.get_guild(778448646642728991))
             for entry in loadJar.keys():
                 theJar[entry] = loadJar[entry]
+
+        for player in theJar['players'].values():
+            await player.init()
+
+        for district in theJar['districts'].values():
+            await district.init()
+
         await ctx.send("Loaded!")
 
 def setup(bot):
