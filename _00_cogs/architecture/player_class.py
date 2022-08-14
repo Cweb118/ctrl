@@ -58,7 +58,7 @@ class Player():
         interfaceName = self.member.name.replace(' ', '-').lower() + '_interface'
         channelName = self.member.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', can_talk=False).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', VC_Mode = False, can_talk=False).init()
         self.channel = await Channel(self.guild, channelName, 'Players').init()
 
         await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member))
@@ -101,6 +101,7 @@ class Player():
             self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
         self.interfaceDirty = False
+        return self
 
     def __getstate__(self):
         return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
@@ -201,6 +202,18 @@ class Player():
                     can_add = True
         if can_add == True:
             self._stats[stat] = new_val
+        return can_add
+
+    def setStatCap(self, stat, quantity):
+        new_val = quantity
+        new_cap = quantity
+        can_add = False
+        if self._statcaps[stat]:
+            if new_val >= 0:
+                can_add = True
+        if can_add == True:
+            self._stats[stat] = new_val
+            self._statcaps[stat] = new_cap
         return can_add
 
     def modStatCap(self, stat, quantity):

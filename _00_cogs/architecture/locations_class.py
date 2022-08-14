@@ -19,7 +19,7 @@ class Region():
     
     #This is essentially the create channel.
     async def init(self):
-        return #Remove to enable channel creation.
+        return self
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
         category = nextcord.utils.get(self.guild.categories, name=self.name)
@@ -31,7 +31,7 @@ class Region():
 
         #Remove?
         #await self.channel.addPlayer(playerRole)
-    
+        return self
     #saves channel and guild id for retrieval on reconstruction.
     def __getstate__(self):
         if self.channel:
@@ -100,8 +100,8 @@ class District():
         self.size = size
         self.civics = Civics(self)
 
-        if guild:
-            self.createChannel.start()
+        #if guild:
+            #self.createChannel.start()
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
@@ -143,7 +143,7 @@ class District():
         interfaceName = self.name.replace(' ', '-').lower() + '_interface'
         channelName = self.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, VC_Mode = False, can_talk=False).init()
         self.channel = await Channel(self.guild, channelName, self.region).init()
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
@@ -160,6 +160,7 @@ class District():
             self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
         self.interfaceDirty = False
+        return self
 
     def __getstate__(self):
         # vars left out:
@@ -342,6 +343,8 @@ class District():
         for district in self.paths:
             path_rep['value'] += "- "+str(district)+"\n"
         path_rep['value'] = path_rep['value'][:-1]
+        if path_rep['value'] == '':
+            path_rep['value'] += '...'
         fields.append(path_rep)
 
         inv_report, inv_title, inv_fields = self.inventory.report()
