@@ -40,7 +40,7 @@ trait_kits_dict = {
         'inv_args': {'cont': 2},
         'play_cost': None,
         'stats': {'Defense': 2, 'Initiative': -1},
-        'upkeep': None,
+        'upkeep': {'Water': 1},
         'die_set': ['1d4']
     },
 
