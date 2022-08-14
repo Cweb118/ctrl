@@ -1,4 +1,4 @@
-from discord import Interaction
+from discord import Interaction, SlashOption
 from nextcord import slash_command
 from nextcord.ext import commands
 
@@ -310,6 +310,53 @@ class Commands(commands.Cog):
         player = theJar['players'][user.id]
         player.modStatCap(theJar['resources']['Influence'], quantity)
 
+    @slash_command(name="blankunit", guild_ids=guilds)
+    async def blankunit(self, ctx: Interaction):
+        player = theJar['players'][ctx.user.id]
+        status, card = player.inventory.addCard(Unit(), 'unit')
+        await ctx.send('Unit created successfully. Card ID: ' + str(card.uniqueID))
+
+    @slash_command(name="addtraits", guild_ids=guilds)
+    async def addtraits(self, ctx: Interaction, cardid: str = SlashOption(), traits: str = SlashOption()):
+        card = None
+
+        for player in theJar['players'].values():
+            unit = player.inventory.getCardByUniqueID('unit', cardid)
+            building = player.inventory.getCardByUniqueID('building', cardid)
+
+            if unit:
+                card = unit
+                break
+            elif building:
+                card = building
+                break
+        
+        if card:
+            for trait in traits.split(' '):
+                card.addTrait(trait)
+
+        await ctx.send('Added traits')
+
+    @slash_command(name="makebuilding", guild_ids=guilds)
+    async def makebuilding(self, ctx: Interaction, kit):
+        player = theJar['players'][ctx.user.id]
+        building_kit = building_kits_dict[kit]
+        hut = Building(building_kit)
+        player.inventory.addCard(hut, 'building')
+        await ctx.send('Building created successfully. Card ID: ' + str(hut.uniqueID))
+
+    @slash_command(name="makeresource", guild_ids=guilds)
+    async def makeresource(self, ctx: Interaction, resource: str = SlashOption(), quantity: int = SlashOption()):
+        if resource not in theJar['resources']:
+            return
+
+        player = theJar['players'][ctx.user.id]
+        can_add = player.inventory.addResource(resource, quantity)
+
+        if can_add:
+            await ctx.send('Added resources to inventory')
+        else:
+            await ctx.send('Could not add resources to inventory')
 
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):
