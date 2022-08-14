@@ -58,8 +58,10 @@ class Channel():
 
         if self.channel == None:
             print('Could not find: ' + self.name)
+            print('With id: ' + self.channel)
         elif self.VC_channel == None:
             print('Could not find voice: ' + self.name)
+            print('With ID: ' + self.VC_channel)
 
     async def delete(self):
         await self.channel.delete()
