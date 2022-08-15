@@ -14,6 +14,8 @@ from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.battle_logic import battle
 
+import _00_cogs.frontend.menus.menus as Menus
+
 guilds = [588095612436742173, 778448646642728991]
 
 class Commands(commands.Cog):
@@ -357,6 +359,11 @@ class Commands(commands.Cog):
             await ctx.send('Added resources to inventory')
         else:
             await ctx.send('Could not add resources to inventory')
+
+    @slash_command(name="makedistrictlist", guild_ids=guilds)
+    async def makedistrictlist(self, ctx: Interaction):
+        await Menus.districtListMenu.send(ctx.channel)
+        await ctx.send('District List Created', ephemeral=True)
 
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):

@@ -137,8 +137,6 @@ class District():
     #This is the create channel location
     async def init(self):
         playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
-        await asyncio.sleep(.25)
 
         interfaceName = self.name.replace(' ', '-').lower() + '_interface'
         channelName = self.name.replace(' ', '-').lower()
