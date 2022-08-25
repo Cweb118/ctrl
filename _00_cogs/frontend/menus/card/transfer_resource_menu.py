@@ -89,11 +89,8 @@ def resourceOptions(state):
 
     for resource, quantity in srcInv.resources.items():
         if quantity > 0 and destInv.canAddMath(resource, 1):
-            #default = 'resource' in state and state['resource'] in theJar['resources'] and theJar['resources'][state['resource']] == resource
-            name = resource
-            default = 'resource' in state and state['resource'] == resource
-
-            options.append(SelectOption(label=name, value=name, default=default))
+            default = 'resource' in state and state['resource'] in theJar['resources'] and theJar['resources'][state['resource']] == resource
+            options.append(SelectOption(label=resource.title, value=resource.title, default=default))
 
     return options
 
@@ -101,7 +98,7 @@ def quantityOptions(state):
     if 'resource' not in state or state['resource'] not in theJar['resources']:
         raise StateError
 
-    resource = state['resource']
+    resource = theJar['resources'][state['resource']]
 
     src, dest = getSrcAndDest(state)
 
@@ -166,7 +163,7 @@ class TransferResourceMenu(Menu):
         if 'quantity' not in state:
             return False
 
-        resource = state['resource']
+        resource = theJar['resources'][state['resource']]
         quantity = state['quantity']
 
         src, dest = getSrcAndDest(state)

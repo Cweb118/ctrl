@@ -1,22 +1,4 @@
 info_dict = {
-    'info': {'title':"-----Info-----",'info':'Type this command followed by a keyword to learn more about it.'},
-    'Overclock': {'title':"-----Overclock (Automata)-----",'info':'Unit consumes 3 steam for a boost in Endurance equal to their cap.'},
-    'Harmonize': {'title':"-----Harmonize (Yavari)-----",'info':'Pass your current effects to another unit (consumes all End)'},
-    'Explore': {'title':"-----Explore (Pathfinder)-----",'info':'Submits a directional exploration request to control.'},
-    'Scout': {'title':"-----Scout (Scout)-----",'info':'Scouts a location, requires 2 End'},
-    'Inspire': {'title':"-----Inspire (Barheim)-----",'info':'Charges Industrialist unit (not relevant to this playtest)'},
-    'Transport': {'title':"-----Transport (Various)-----",'info':'Links two buildings together, routing the output of one into the input of the other.'},
-    'Sentry': {'title':"-----Sentry (Sentry)-----",'info':' Gets a report on adj districts (needs full End)'},
-    'Recon': {'title':"-----Recon (Recon Units)-----",'info':'Provides access to chat if units are present'},
-    'Barheim': {'title':"-----Overtime (Barheim)-----",'info':'Works two slots in a building instead of one'},
-    'Inorganic': {'title':"-----Inorganic (Automata)-----",'info':'Does not have upkeep'},
-    'Harmony': {'title':"-----Harmony (Harmonist)-----",'info':'Protects unit from defense loss at upkeep (known bug: triggers twice)'},
-}
-
-
-
-
-info_dict_master = {
     #Game Mechanics
     'info': {'title':"-----Info-----",'info':'Type this command followed by a keyword to learn more about it.'},
     'harvest':{'title':"-----Harvest-----",'info':'At the end of every day phase there is a harvest. This occurs after any **ERROR** take place. At this time units will consume their upkeep from resources in their inventory. They will then roll for upkeep with their **dice set**. A hit for this roll is a value greater than their defense + fortitude. Hits result in damage taken.'},
@@ -97,6 +79,13 @@ info_dict_master = {
     'info': {'title':"-----Info-----",'info':''},
     'info': {'title':"-----Info-----",'info':''},
     'info': {'title':"-----Info-----",'info':''},
+
+
+
+
+
+
+
 
 }
 

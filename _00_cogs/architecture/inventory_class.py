@@ -151,19 +151,15 @@ class Inventory():
 
         if type(self.inv_owner).__name__ == 'District':
             srcLoc = self.inv_owner
-        elif type(self.inv_owner).__name__ == 'Player':
-            srcLoc = self.inv_owner.location
         else:
-            srcLoc = self.inv_owner.district
+            srcLoc = self.inv_owner.location
 
         if type(dest).__name__ == 'District':
             destLoc = dest
-        elif type(dest).__name__ == 'Player':
-            destLoc = dest.location
         else:
-            destLoc = dest.district
+            destLoc = dest.location
 
-        if str(srcLoc) == str(destLoc):
+        if srcLoc == destLoc:
             report = self.giveResource(resource, quantity, dest.inventory)
         else:
             report = 'Not at present location.'

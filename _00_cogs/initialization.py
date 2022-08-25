@@ -30,12 +30,14 @@ class PlayerCog(commands.Cog):
     async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
-            print(member, member.id)
-            theJar['players'][member.id]=(await Player(member).init())
-            charkit = character_kits_dict[member.id]
-            ch = Character()
-            await ch.init(*charkit)
-            await ch.setFaction()
+            theJar['players'][member.id]=(Player(member))
+            if member.id == 160020690051792898:
+                charkit = character_kits_dict[member.id]
+                ch = Character()
+                await ch.init(*charkit)
+                await ch.setFaction()
+            else:
+                print('no charkit for '+member.display_name)
         await ctx.send("Players Initialized and Channels Created.")
     
     @slash_command(name="listplayers", guild_ids=guilds)
@@ -80,7 +82,6 @@ class PlayerCog(commands.Cog):
 
     @slash_command(name="init_game", guild_ids=guilds)
     async def init_c(self, ctx: Interaction):
-        await ctx.response.defer()
         #INIT ORDER: Factions > Map > Players > Characters
         await init_factions(faction_kits_dict, ctx.guild)
         #print(theJar['factions'])
@@ -95,12 +96,12 @@ class PlayerCog(commands.Cog):
             #player.inventory.addResource(theJar['resources']['Metal'], 10)
             #player.inventory.addResource(theJar['resources']['Wood'], 10)
 
-        #await Region("Range", guild=ctx.guild).init()
+        #Region("Range", guild=ctx.guild)
         #name, region_name, size, paths=None
-        #await District('Home', 'Range', 'huge', guild=ctx.guild).init()
-        #await District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild).init()
-        #await District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild).init()
-        #await District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild).init()
+        #District('Home', 'Range', 'huge', guild=ctx.guild)
+        #District('Shooting', 'Range', 'small', ['Home'], guild=ctx.guild)
+        #District('Cattle', 'Range', 'medium', ['Home'], guild=ctx.guild)
+        #District('Free', 'Range', 'large', ['Cattle'], guild=ctx.guild)
 
         report = "Initialization Complete."
         await say(ctx,report)

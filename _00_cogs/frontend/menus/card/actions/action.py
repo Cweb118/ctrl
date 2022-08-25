@@ -4,7 +4,6 @@ from _02_global_dicts import theJar
 from _00_cogs.frontend.state_error import StateError
 import _00_cogs.frontend.menus.menus as Menus
 from _00_cogs.frontend.menu import Menu, MenuView
-import copy
 
 def getAction(card, act_id):
     if card.skillsets:
@@ -101,7 +100,7 @@ async def resolveAction(interaction: Interaction, state):
 
                 if last_type == 'current_location' or last_type == 'adjacent_location':
                     parsed_params.append(parseDistrict(raw_param))
-                elif last_type == 'unit' or last_type == 'industrialist_unit':
+                elif last_type == 'unit':
                     parsed_params.append(parseCard('unit', raw_param))
                 elif last_type == 'building':
                     parsed_params.append(parseCard('building', raw_param))
@@ -132,10 +131,6 @@ async def resolveAction(interaction: Interaction, state):
     elif param_type == 'adjacent_location':
         await Menus.adjacentParamMenu.show(interaction, newState=newState)
     elif param_type == 'unit':
-        await Menus.unitParamMenu.show(interaction, newState=newState)
-    elif param_type == 'industrialist_unit':
-        newState['cert_filter'] = 'Industrialist'
-
         await Menus.unitParamMenu.show(interaction, newState=newState)
     elif param_type == 'building':
         await Menus.buildingParamMenu.show(interaction, newState=newState)

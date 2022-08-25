@@ -1,4 +1,4 @@
-from discord import Interaction, SlashOption
+from discord import Interaction
 from nextcord import slash_command
 from nextcord.ext import commands
 
@@ -13,8 +13,6 @@ from _00_cogs.mechanics.unit_classes.__unit_parent_class import Unit, Squad
 from _00_cogs.mechanics.building_classes.__building_parent_class import Building
 from _00_cogs.mechanics.building_classes._building_kits import building_kits_dict
 from _00_cogs.mechanics.battle_logic import battle
-
-import _00_cogs.frontend.menus.menus as Menus
 
 guilds = [588095612436742173, 778448646642728991]
 
@@ -224,14 +222,14 @@ class Commands(commands.Cog):
         #await self._makeunit_f(ctx, ['Alchemist', 'Otavan'])
         #await self._makeunit_f(ctx, ['Worker', 'Automata'])
 
-        await self.playcard_f(ctx, 'building', 1, 'district', 'Yavar')
-        await self.playcard_f(ctx, 'building', 2, 'district', 'Yavar')
+        await self.playcard_f(ctx, 'building', 3, 'district', 'Yavar')
+        #await self.playcard_f(ctx, 'building', 2, 'district', 'Yavar')
 
         #await self.link_c(ctx, 2, 1)
-        await self.playcard_f(ctx, 'unit', 1, 'building', 1)
-        await self.playcard_f(ctx, 'unit', 2, 'building', 1)
-        await self.playcard_f(ctx, 'unit', 3, 'building', 2)
-        await self.playcard_f(ctx, 'unit', 4, 'building', 2)
+        await self.playcard_f(ctx, 'unit', 1, 'building', 3)
+        #await self.playcard_f(ctx, 'unit', 2, 'building', 1)
+        #await self.playcard_f(ctx, 'unit', 3, 'building', 2)
+        #await self.playcard_f(ctx, 'unit', 4, 'building', 2)
         #await self.playcard_f(ctx, 'unit', 5, 'district', 'Yavar')
 
     @commands.command(name="makefab", guild_ids=guilds)
@@ -267,13 +265,13 @@ class Commands(commands.Cog):
 
     @commands.command(name="makeregion", guild_ids=guilds)
     async def makeregion_c(self, ctx, name):
-        await Region(name, guild=ctx.guild).init()
+        Region(name, guild=ctx.guild)
         report = "Region "+name+" created."
         await say(ctx,report)
 
     @commands.command(name="makedistrict", guild_ids=guilds)
     async def makedistrict_c(self, ctx, name, region_name, size, paths=None):
-        await District(name, region_name, size, paths, guild=ctx.guild).init()
+        District(name, region_name, size, paths, guild=ctx.guild)
         report = "District "+name+" created in the "+region_name+" region."
         await say(ctx,report)
 
@@ -312,58 +310,6 @@ class Commands(commands.Cog):
         player = theJar['players'][user.id]
         player.modStatCap(theJar['resources']['Influence'], quantity)
 
-    @slash_command(name="blankunit", guild_ids=guilds)
-    async def blankunit(self, ctx: Interaction):
-        player = theJar['players'][ctx.user.id]
-        status, card = player.inventory.addCard(Unit(), 'unit')
-        await ctx.send('Unit created successfully. Card ID: ' + str(card.uniqueID))
-
-    @slash_command(name="addtraits", guild_ids=guilds)
-    async def addtraits(self, ctx: Interaction, cardid: str = SlashOption(), traits: str = SlashOption()):
-        card = None
-
-        for player in theJar['players'].values():
-            unit = player.inventory.getCardByUniqueID('unit', cardid)
-            building = player.inventory.getCardByUniqueID('building', cardid)
-
-            if unit:
-                card = unit
-                break
-            elif building:
-                card = building
-                break
-        
-        if card:
-            for trait in traits.split(' '):
-                card.addTrait(trait)
-
-        await ctx.send('Added traits')
-
-    @slash_command(name="makebuilding", guild_ids=guilds)
-    async def makebuilding(self, ctx: Interaction, kit):
-        player = theJar['players'][ctx.user.id]
-        building_kit = building_kits_dict[kit]
-        hut = Building(building_kit)
-        player.inventory.addCard(hut, 'building')
-        await ctx.send('Building created successfully. Card ID: ' + str(hut.uniqueID))
-
-    @slash_command(name="makeresource", guild_ids=guilds)
-    async def makeresource(self, ctx: Interaction, resource: str = SlashOption(), quantity: int = SlashOption()):
-        if resource not in theJar['resources']:
-            return
-
-        player = theJar['players'][ctx.user.id]
-        can_add = player.inventory.addResource(resource, quantity)
-
-        if can_add:
-            await ctx.send('Added resources to inventory')
-        else:
-            await ctx.send('Could not add resources to inventory')
-
-    @slash_command(name="makedistrictlist", guild_ids=guilds)
-    async def makedistrictlist(self, ctx: Interaction):
-        await Menus.districtListMenu.send(ctx.channel)
-        await ctx.send('District List Created', ephemeral=True)
 
     @slash_command(name="makeunit", guild_ids=guilds)
     async def makeunitd_c(self, ctx: Interaction, traits):

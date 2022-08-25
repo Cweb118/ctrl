@@ -26,5 +26,4 @@ class NicknameModal(Modal):
         card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
 
         nickname = values['nickname']
-        nickname = nickname[:25]
         card.setNick(nickname)

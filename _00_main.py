@@ -14,7 +14,6 @@ from nextcord.ext import commands
 from _00_cogs.frontend.menu import menus
 from _00_cogs.frontend.modal import modals
 from _02_global_dicts import theJar
-from _00_cogs.pickle_factory import PickleFactory
 
 intents = nextcord.Intents.all()
 client = nextcord.Client(intents=intents)
@@ -130,8 +129,6 @@ async def on_interaction(interaction: Interaction):
             allInterfaceUpdates.append(district.doInterfaceUpdate())
 
     await asyncio.gather(*allInterfaceUpdates)
-
-    PickleFactory.autosave()
 
 handler = FileWatch()
 observer = Observer()

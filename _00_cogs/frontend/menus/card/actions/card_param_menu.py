@@ -50,9 +50,6 @@ def cardOptions(card_type):
         if len(action.act_params[param_num][param_stage + 1]) > 1:
             filter = action.act_params[param_num][param_stage + 1][1]
 
-        if 'cert_filter' in state:
-            filter = lambda card: card.hasCert(state['cert_filter'])
-
         if len(params) <= param_num:
             raise StateError
 

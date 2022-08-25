@@ -20,6 +20,7 @@ class Player():
 
         self.channel = None
         self.interfaceChannel = None
+        self.createPrivateChannel.start()
 
         if inventory == None:
             self.inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
@@ -39,9 +40,19 @@ class Player():
         self.squads = []
 
         self.interfaceDirty = False
+
+    def __getstate__(self):
+        return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
+    def __setstate__(self, state):
+        self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty = state
     
-    #This is essentially the create channel.
-    async def init(self):
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guildID)
+        self.member = self.guild.get_member(self.memberID)
+        self.channel.reconstruct(self.guild)
+
+    @tasks.loop(seconds=1, count=1)
+    async def createPrivateChannel(self):
         if self.member == None or self.guild == None:
             return
 
@@ -58,7 +69,7 @@ class Player():
         interfaceName = self.member.name.replace(' ', '-').lower() + '_interface'
         channelName = self.member.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', VC_Mode = False, can_talk=False).init()
+        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', can_talk=False).init()
         self.channel = await Channel(self.guild, channelName, 'Players').init()
 
         await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member))
@@ -101,80 +112,6 @@ class Player():
             self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
         self.interfaceDirty = False
-        return self
-
-    def __getstate__(self):
-        return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
-    def __setstate__(self, state):
-        self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty = state
-    
-    def reconstruct(self, bot):
-        self.guild = bot.get_guild(self.guildID)
-        self.member = self.guild.get_member(self.memberID)
-        self.interfaceChannel.reconstruct(self.guild)
-        self.channel.reconstruct(self.guild)
-
-    # @tasks.loop(seconds=1, count=1)
-    # async def createPrivateChannel(self):
-    #     if self.member == None or self.guild == None:
-    #         return
-
-    #     interfaceOverwrites = {
-    #         self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
-    #         self.member: nextcord.PermissionOverwrite(read_messages=True)
-    #     }
-    #     overwrites = {
-    #         self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-    #         self.member: nextcord.PermissionOverwrite(read_messages=True)
-    #     }
-    #     topic = "Private Discussion"
-
-    #     interfaceName = self.member.name.replace(' ', '-').lower() + '_interface'
-    #     channelName = self.member.name.replace(' ', '-').lower()
-
-    #     self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', can_talk=False).init()
-    #     self.channel = await Channel(self.guild, channelName, 'Players').init()
-
-    #     await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member))
-
-    #     interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
-
-    #     self.infoMessage = None
-    #     #self.squadsMessage = None
-    #     self.unitsMessage = None
-    #     self.buildingsMessage = None
-
-    #     for interfaceMessage in interfaceMessages:
-    #         if interfaceMessage.author.id == theJar['client']:
-    #             if self.infoMessage == None:
-    #                 self.infoMessage = interfaceMessage
-    #             #elif self.squadsMessage == None:
-    #                 #self.squadsMessage = interfaceMessage
-    #             elif self.unitsMessage == None:
-    #                 self.unitsMessage = interfaceMessage
-    #             elif self.buildingsMessage == None:
-    #                 self.buildingsMessage = interfaceMessage
-    #                 break
-
-    #     if (self.infoMessage == None):
-    #         self.infoMessage = await Menus.playerInfoMenu.send(self.interfaceChannel.channel, state={'player': self.member.id})
-    #     else:
-    #         self.infoMessage = await Menus.playerInfoMenu.update(self.infoMessage, newState={'player': self.member.id})
-
-    #     #if (self.squadsMessage == None):
-    #         #self.squadsMessage = await Menus.squadsMenu.send(self.interfaceChannel.channel, state={'player': self._member.id})
-        
-    #     if (self.unitsMessage == None):
-    #         self.unitsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'unit'})
-    #     else:
-    #         self.unitsMessage = await Menus.cardsMenu.update(self.unitsMessage, newState={'player': self.member.id, 'card_type': 'unit'})
-        
-    #     if (self.buildingsMessage == None):
-    #         self.buildingsMessage = await Menus.cardsMenu.send(self.interfaceChannel.channel, state={'player': self.member.id, 'card_type': 'building'})
-    #     else:
-    #         self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
-
-    #     self.interfaceDirty = False
 
     def updateInterface(self):
         self.interfaceDirty = True
@@ -193,7 +130,7 @@ class Player():
         if hasattr(self, 'buildingsMessage') and self.buildingsMessage:
             self.buildingsMessage = await Menus.cardsMenu.update(self.buildingsMessage, newState={'player': self.member.id, 'card_type': 'building'})
 
-    def modStat(self, stat, quantity):
+    def modStat(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
         new_val = self._stats[stat] + quantity
         can_add = False
         if self._statcaps[stat]:
@@ -204,19 +141,7 @@ class Player():
             self._stats[stat] = new_val
         return can_add
 
-    def setStatCap(self, stat, quantity):
-        new_val = quantity
-        new_cap = quantity
-        can_add = False
-        if self._statcaps[stat]:
-            if new_val >= 0:
-                can_add = True
-        if can_add == True:
-            self._stats[stat] = new_val
-            self._statcaps[stat] = new_cap
-        return can_add
-
-    def modStatCap(self, stat, quantity):
+    def modStatCap(self, stat, quantity): #stat here is an INSTANCE (of relevent resouce!)
         new_val = self._stats[stat] + quantity
         new_cap = self._statcaps[stat] + quantity
         can_add = False

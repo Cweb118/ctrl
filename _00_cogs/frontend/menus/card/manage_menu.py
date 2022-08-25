@@ -18,7 +18,7 @@ def cantInteract(state):
     player = theJar['players'][state['player']]
     card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
 
-    if str(card.district) == str(player.location):
+    if str(card.location) == str(player.location):
         return False
 
     return True

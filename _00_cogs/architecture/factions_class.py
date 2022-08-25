@@ -27,14 +27,10 @@ class Faction():
         self.channel = await Channel(self.guild, self.title.replace(' ', '-').lower(), category_name='factions').init()
 
     def __getstate__(self):
-        return(self.title, self.guild.id, self.reps, self.rep_cypher, self.players, self.channel)
+        pass
 
-    def __setstate__(self, state):
-        self.title, self.guild, self.reps, self.rep_cypher, self.players, self.channel = state
-    
-    def reconstruct(self, bot):
-        self.guild = bot.get_guild(self.guild)
-        self.channel.reconstruct(self.guild)
+    def __setstate__(self):
+        pass
 
     async def addPlayer(self, player_obj):
         player_obj.addRep(self.title, 6)

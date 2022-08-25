@@ -2,12 +2,13 @@ import operator
 from _02_global_dicts import theJar
 import nextcord
 import time, asyncio
+from nextcord.ext import tasks
 from _00_cogs.architecture.inventory_class import Inventory
 import _00_cogs.frontend.menus.menus as Menus
 
 class Channel():
     #on instantiation, create channel or check if it already exists.
-    def __init__(self, guild, channel_name, category_name = None, VC_Mode = True, can_talk = True):
+    def __init__(self, guild, channel_name, category_name = None, VC_Mode = False, can_talk = True):
         self.name = channel_name.replace(' ', '-').lower()
         self.category_name = category_name
         self.guild = guild
@@ -39,11 +40,6 @@ class Channel():
         return self
 
     def __getstate__(self):
-        if (self.guild == None or self.channel == None):
-            print('Has none: ' + self.name)
-            print(self.guild)
-            print(self.channel)
-
         if self.VC_channel is not None:
             return (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel.id)
         return (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.channel.id, self.VC_channel)
@@ -53,8 +49,8 @@ class Channel():
         
     def reconstruct(self, guild):
         self.guild = guild
-        self.channel = nextcord.utils.get(self.guild.text_channels, name=self.channel)
-        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, name=self.VC_channel)
+        self.channel = nextcord.utils.get(self.guild.text_channels, name=self.name)
+        self.VC_channel = nextcord.utils.get(self.guild.voice_channels, name=self.name)
 
     async def delete(self):
         await self.channel.delete()

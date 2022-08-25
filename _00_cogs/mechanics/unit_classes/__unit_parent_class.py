@@ -156,19 +156,15 @@ class Unit(Card):
                     except:
                         self.play_cost[mod_res] = value
             if trait['upkeep']:
-                for resource in trait['upkeep'].keys():
-                    add = True
-                    if 'Inorganic' in self.certs:
-                        if resource == 'Food' or 'Water':
-                            add = False
-                    if add:
-                        value = trait['upkeep'][resource]
-                        try:
-                            self.upkeep[resource] += value
-                        except:
-                            self.upkeep[resource] = value
-                        if self.upkeep[resource] < 0:
-                            self.upkeep[resource] = 0
+                for mod_upkeep in trait['upkeep'].keys():
+                    resource = mod_upkeep
+                    value = trait['upkeep'][mod_upkeep]
+                    try:
+                        self.upkeep[resource] += value
+                    except:
+                        self.upkeep[resource] = value
+                    if self.upkeep[resource] < 0:
+                        self.upkeep[resource] = 0
             if trait['inv_args']:
                 inv = self.inventory
                 for key in trait['inv_args'].keys():
@@ -323,16 +319,14 @@ class Unit(Card):
         if self.status == 'Played':
             if self.stats['Endurance'] > 0:
                 if dest_type == 'district':
-                    if str(destination) in self.district.paths:
+                    if str(destination) in theJar['districts'][self.location].paths:
                         print('ding !')
                         can_move = True
-                    elif destination == self.district and self.location != self.district: # Only allow moving into your current district if you are in a card in your district
-                        can_move = True
                 if dest_type == 'unit':
-                    if self.location == destination.location:
+                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
                         can_move = True
                 if dest_type == 'building':
-                    if self.location == destination.location:
+                    if theJar['districts'][self.location] == theJar['districts'][destination.location]:
                         can_move = True
             else:
                 report = "Error: This unit does not have the Endurance."
@@ -344,7 +338,7 @@ class Unit(Card):
         move_report = None
         can_move, report = self.unitCanMove(dest_type, destination)
         print(destination, dest_type)
-        location = self.location
+        location = theJar['districts'][self.location]
         print(can_move)
         if can_move:
             slot_count = len(destination.inventory.slots['unit'])
@@ -355,7 +349,7 @@ class Unit(Card):
 
                 destination.inventory.addCardToSlot(self, 'unit')
                 location.inventory.removeCardFromSlot(self, 'unit')
-                self.location = destination
+                self.location = str(destination)
                 self.setStat('Endurance', -1)
 
                 report = "Unit moved successfully."
@@ -364,7 +358,7 @@ class Unit(Card):
         else:
             report = "Error: This destination is too far."
         if move_report:
-            report += "\n"+move_report
+            report += +"\n"+move_report
         return can_move, report
 
     async def harvest(self):
@@ -389,7 +383,6 @@ class Unit(Card):
             hit, report_dict = self.die_set.roll_math(self.stats['Defense']+self.stats['Fortitude'])
 
             harvest_arg_list = [self, def_dinged, hit]
-            print('triggering harvest')
             harvest_report = await self.triggerSkill('on_harvest', harvest_arg_list)
 
             if hit:
@@ -424,14 +417,7 @@ class Unit(Card):
         can_add = self.inventory.capMathCard('building')
         if can_add == True:
             kit = [k for k, v in building_kits_dict.items() if v['title'] == kit_title]
-            bldg = self.inventory.addCard(Building(*building_kits_dict[kit]), 'building')
-        return can_add, bldg
-
-    def addBuildingToUnitOwnerInv(self, kit_title):
-        can_add = self.inventory.capMathCard('building')
-        if can_add == True:
-            kit = [k for k, v in building_kits_dict.items() if v['title'] == kit_title]
-            bldg = self.owner.inventory.addCard(Building(*building_kits_dict[kit]), 'building')
+            bldg = self.inventory.cards['building'].append(Building(*building_kits_dict[kit]))
         return can_add, bldg
 
     def __str__(self):
@@ -473,13 +459,10 @@ class Unit(Card):
                              "\n- Effects: "+str(self.getTraitbyType('effect'))
         info_rep['value'] += "\n- Die Set: "+str(self.die_set)
         info_rep['value'] += "\n- Upkeep: "
-        if len(self.upkeep.keys()) > 1:
-            for key in self.upkeep.keys():
-                value = self.upkeep[key]
-                info_rep['value'] += str(value)+" "+str(key) +", "
-            info_rep['value'] = info_rep['value'][:-2]
-        else:
-            info_rep['value'] += 'None'
+        for key in self.upkeep.keys():
+            value = self.upkeep[key]
+            info_rep['value'] += str(value)+" "+str(key) +", "
+        info_rep['value'] = info_rep['value'][:-2]
         fields.append(info_rep)
 
         stats_rep = {'inline':True}

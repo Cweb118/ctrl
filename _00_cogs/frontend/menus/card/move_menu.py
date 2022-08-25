@@ -7,21 +7,6 @@ from _01_functions import *
 from _02_global_dicts import theJar
 import _00_cogs.frontend.menus.menus as Menus
 
-def inBuilding(state):
-    if 'card' not in state or 'card_type' not in state:
-        raise StateError
-
-    if 'player' not in state or state['player'] not in theJar['players']:
-        raise StateError
-
-    player = theJar['players'][state['player']]
-    card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
-
-    if card is None:
-        raise StateError
-
-    return card.district != card.location
-
 class MoveMenu(Menu):
     def __init__(self):
         super().__init__('movemenu')
@@ -41,35 +26,7 @@ class MoveMenu(Menu):
 
         return ('Where do you want to move the ' + card.title + ' card?', [])
 
-    @Button(id='current_district', label='Current District', style=ButtonStyle.success, includeFun=inBuilding)
-    async def current_district(self, state, interaction: Interaction):
-        if 'card' not in state or 'card_type' not in state:
-            raise StateError
-
-        if 'player' not in state or state['player'] not in theJar['players']:
-            raise StateError
-
-        player = theJar['players'][state['player']]
-        card = player.inventory.getCardByUniqueID(state['card_type'], state['card'])
-
-        if card is None:
-            raise StateError
-
-        district = card.district
-
-        can_move, result = await card.moveUnit('district', district)
-
-        if result == '':
-            result = 'Error'
-
-        if can_move:
-            await interaction.edit_original_message(content=result, view=MenuView())
-        else:
-            await interaction.followup.send(content=result, ephemeral=True)
-
-        return False
-
-    @Button(id='district', label='Adjacent District', style=ButtonStyle.success, includeFun=lambda state: not inBuilding(state))
+    @Button(id='district', label='Adjacent District', style=ButtonStyle.success)
     async def district(self, state, interaction: Interaction):
         if 'card' not in state or 'card_type' not in state:
             raise StateError
@@ -82,6 +39,7 @@ class MoveMenu(Menu):
 
         if card is None:
             raise StateError
+
         
         await Menus.districtMoveMenu.show(interaction, newState={'card': state['card'], 'card_type': state['card_type'], 'player': state['player']})
         return False
@@ -121,7 +79,7 @@ def districtOptions(state):
     if card is None:
         raise StateError
 
-    district = card.district
+    district = theJar['districts'][str(card.location)]
     paths = district.paths
 
     options = []
@@ -209,7 +167,7 @@ def travelOptions(state):
     if card is None:
         raise StateError
 
-    district = card.district
+    district = theJar['districts'][str(card.location)]
     buildings = district.inventory.slots['building']
 
     options = []
@@ -260,7 +218,7 @@ class BuildingMoveMenu(Menu):
         if card is None:
             raise StateError
 
-        district = card.district
+        district = theJar['districts'][str(card.location)]
         building = district.inventory.getSlotCardByUniqueID('building', state['building'])
 
         if building is None:

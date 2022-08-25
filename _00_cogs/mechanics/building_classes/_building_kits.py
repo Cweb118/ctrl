@@ -6,6 +6,8 @@ building_kits_dict = {
 
 
 
+
+
     # Village:
 
     'woodland_ranger_barracks':{
@@ -13,7 +15,8 @@ building_kits_dict = {
         'description':'A training grounds for Rangers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Ranger']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Ranger'],
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -27,7 +30,8 @@ building_kits_dict = {
         'description':'A training grounds for Scouts',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Scout']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Scout'],
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -41,7 +45,8 @@ building_kits_dict = {
         'description':'A training grounds for Sentries',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Sentry']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Sentry'],
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -55,7 +60,8 @@ building_kits_dict = {
         'description':'A training grounds for Laborers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Laborer']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Laborer'],
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -69,7 +75,8 @@ building_kits_dict = {
         'description':'A training grounds for Couriers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Courier']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Courier'],
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -83,7 +90,8 @@ building_kits_dict = {
         'description':'A training grounds for Architects',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Architect']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Architect'],
         'play_cost': {'Wood':3},
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
         'worker_req':None,
@@ -97,7 +105,8 @@ building_kits_dict = {
         'description':'A place to unwind after a long day...',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 2, None, None, 2, None],
-        'mechanics': {'Worker Boon':['Good Morale']}, #aka traits
+        'mechanics': ['Worker Boon'], #aka traits
+        'mechanics_args': ['Good Morale'],
         'play_cost': {'Wood':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':None,
@@ -112,6 +121,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[6, 1, None, None, 3, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Wood':4, 'Stone':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':3},
         'worker_req':['Laborer'],
@@ -126,6 +136,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 1, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Wood':3, 'Stone':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Laborer'],
@@ -140,6 +151,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[5, 2, None, None, 1, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Water':1, 'Stone':1},
         'stats':{'attack':0, 'health':1, 'defense':1, 'size':1},
         'worker_req':['Worker'],
@@ -154,6 +166,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 4, None, None, 1, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Wood':3, 'Stone':2},
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Worker'],
@@ -168,6 +181,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[12, 6, 2, 2, None, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Wood':5, 'Stone':3},
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':3},
         'worker_req':None,
@@ -183,7 +197,8 @@ building_kits_dict = {
         'description':'A training grounds for Warriors',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Warrior']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Warrior'],
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -197,7 +212,8 @@ building_kits_dict = {
         'description':'A training grounds for Pathfinders',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Pathfinder']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Pathfinder'],
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -211,7 +227,8 @@ building_kits_dict = {
         'description':'A training grounds for Sentries',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Sentry']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Sentry'],
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -225,7 +242,8 @@ building_kits_dict = {
         'description':'A training grounds for Laborers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Laborer']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Laborer'],
         'play_cost': {'Metal':1},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -239,7 +257,8 @@ building_kits_dict = {
         'description':'A training grounds for Couriers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Courier']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Courier'],
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -253,7 +272,8 @@ building_kits_dict = {
         'description':'A training grounds for Architects',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train':['Architect']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Architect'],
         'play_cost': {'Metal':2},
         'stats':{'attack':0, 'health':4, 'defense':5, 'size':1},
         'worker_req':None,
@@ -268,6 +288,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 1, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': None,
         'stats':{'attack':0, 'health':2, 'defense':2, 'size':2},
         'worker_req':['Laborer'],
@@ -282,6 +303,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 2, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Metal':2, 'Stone':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Laborer'],
@@ -296,6 +318,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[2, 2, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': None,
         'stats':{'attack':0, 'health':1, 'defense':1, 'size':1},
         'worker_req':['Worker'],
@@ -310,6 +333,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 3, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Metal':1, 'Stone':2},
         'stats':{'attack':0, 'health':2, 'defense':4, 'size':1},
         'worker_req':['Worker'],
@@ -324,6 +348,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[3, 4, None, None, 1, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Metal':1, 'Stone':2},
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Worker'],
@@ -338,6 +363,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[18, 4, 3, 3, None, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Metal':5, 'Stone':3},
         'stats':{'attack':0, 'health':5, 'defense':7, 'size':3},
         'worker_req':None,
@@ -354,7 +380,8 @@ building_kits_dict = {
         'description':'A training grounds for Pathfinders',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train':['Pathfinder']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Pathfinder'],
         'play_cost': {'Wood':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Harmonist'],
@@ -368,7 +395,8 @@ building_kits_dict = {
         'description':'A training grounds for Scouts',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Scout']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Scout'],
         'play_cost': {'Wood':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Harmonist'],
@@ -382,7 +410,8 @@ building_kits_dict = {
         'description':'A training grounds for Laborers',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Laborer']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Laborer'],
         'play_cost': {'Wood':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Harmonist'],
@@ -395,13 +424,14 @@ building_kits_dict = {
         'title':'Mother Tree',
         'description':'A kind tree who drinks from the deep',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[4, 1, None, None, 1, None],
+        'inv_args':[4, 1, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Food':3,'Water':2},
         'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
         'worker_req':['Laborer', 'Harmonist'],
         'input_dict':None,
-        'output_dict':{'Water':3},
+        'output_dict':{'Water':2},
         'cat_dict':None
     },
 
@@ -411,6 +441,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[6, 2, None, None, 3, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Food':4,'Water':2},
         'stats':{'attack':0, 'health':4, 'defense':2, 'size':2},
         'worker_req':['Laborer', 'Harmonist'],
@@ -425,11 +456,12 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[8, 2, None, None, 2, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Food':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':2},
         'worker_req':['Worker', 'Harmonist'],
         'input_dict':{'Water':2},
-        'output_dict':{'Food':5},
+        'output_dict':{'Food':4},
         'cat_dict':None
     },
 
@@ -439,6 +471,7 @@ building_kits_dict = {
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[12, 2, None, None, 3, None],
         'mechanics': None, #aka traits
+        'mechanics_args': None,
         'play_cost': {'Food':4},
         'stats':{'attack':0, 'health':4, 'defense':2, 'size':3},
         'worker_req':['Worker', 'Harmonist'],
@@ -452,7 +485,8 @@ building_kits_dict = {
         'description':'A vicious briar of thorns which provides security',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, None, None],
-        'mechanics': {'Defense': [2]}, #aka traits
+        'mechanics': ['Defense'], #aka traits
+        'mechanics_args': None,
         'play_cost': {'Food':2},
         'stats':{'attack':0, 'health':6, 'defense':8, 'size':3},
         'worker_req':None,
@@ -461,12 +495,13 @@ building_kits_dict = {
         'cat_dict':None
     },
 
-    'aqueduct':{
-        'title':'Aqueduct',
+    'aquaduct':{
+        'title':'Aquaduct',
         'description':'A constructed passage through which water can flow',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, None, None],
-        'mechanics': {'Transport': None}, #aka traits
+        'mechanics': ['Transport'], #aka traits
+        'mechanics_args': ['Water'],
         'play_cost': {'Wood':2, 'Stone':2},
         'stats':{'attack':0, 'health':1, 'defense':1, 'size':1},
         'worker_req':None,
@@ -480,7 +515,8 @@ building_kits_dict = {
         'description':'A soothing respite that regenerates 2 health of units within',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[2, 2, None, None, 1, None],
-        'mechanics': {'Mend': ['Health', 2]}, #aka traits
+        'mechanics': ['Mend'], #aka traits
+        'mechanics_args': ['Health', 2],
         'play_cost': {'Food':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':2},
         'worker_req':['Harmonist'],
@@ -496,7 +532,8 @@ building_kits_dict = {
         'description':'A training grounds for Knights',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Knight']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Knight'],
         'play_cost': {'Stone':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Arkanist'],
@@ -510,7 +547,8 @@ building_kits_dict = {
         'description':'A training grounds for Witches',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Witch']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Witch'],
         'play_cost': {'Wood':3, 'Stone':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Arkanist'],
@@ -524,7 +562,8 @@ building_kits_dict = {
         'description':'A training grounds for Architects',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Architect']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Architect'],
         'play_cost': {'Wood':2, 'Stone':1},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Arkanist'],
@@ -538,7 +577,8 @@ building_kits_dict = {
         'description':'A training grounds for Sentries',
         #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
         'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Sentry']}, #aka traits
+        'mechanics': ['Train'], #aka traits
+        'mechanics_args': ['Sentry'],
         'play_cost': {'Wood':1, 'Stone':2},
         'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
         'worker_req':['Arkanist'],
@@ -552,7 +592,8 @@ building_kits_dict = {
             'description':'An alter to the Librarian. May Her wealth of knowledge be a blessing and not a curse.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[None, None, None, None, 1, None],
-            'mechanics': {'Train': ['Arkanist']}, #aka traits
+            'mechanics': ['Train'], #aka traits
+            'mechanics_args': ['Arkanist'],
             'play_cost': {'Wood':1, 'Stone':2},
             'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
             'worker_req':['Arkanist'],
@@ -566,7 +607,8 @@ building_kits_dict = {
             'description':'An alter to the Harbinger. May the old be cleansed that the new may be reborn.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, None, None, 1, None],
-            'mechanics': {'Sacrifice':None}, #aka traits
+            'mechanics': ['Sacrifice'], #aka traits
+            'mechanics_args': None,
             'play_cost': {'Wood':2,'Stone':3, 'Metal':1},
             'stats':{'attack':0, 'health':4, 'defense':3, 'size':2},
             'worker_req':None,
@@ -581,6 +623,7 @@ building_kits_dict = {
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[9, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
+            'mechanics_args': None,
             'play_cost': {'Wood':5},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -595,6 +638,7 @@ building_kits_dict = {
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[12, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
+            'mechanics_args': None,
             'play_cost': {'Stone':5},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -609,6 +653,7 @@ building_kits_dict = {
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[5, 2, 0, None, 1, None],
             'mechanics': None, #aka traits
+            'mechanics_args': None,
             'play_cost': {'Metal':5},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -622,7 +667,8 @@ building_kits_dict = {
             'description':'An alter to the Warlord. May His strength fall upon you so that you may be a blight to your enemies.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, None, None],
-            'mechanics': {'Defense': [2]}, #aka traits
+            'mechanics': ['Defense'], #aka traits
+            'mechanics_args': [2], #Defense Modifier
             'play_cost': {'Metal':3, 'Stone':2},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -636,7 +682,8 @@ building_kits_dict = {
             'description':'An alter to the Patron. May His loving embrace satiate your hunger.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, 2, None],
-            'mechanics': {'Upkeep':None}, #aka traits
+            'mechanics': ['Upkeep'], #aka traits
+            'mechanics_args': None,
             'play_cost': {'Wood':3, 'Stone':2},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -650,7 +697,8 @@ building_kits_dict = {
             'description':'An alter to the Vigil. May His watchful eye be your ward.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, None, None],
-            'mechanics': {'Ward': [0]}, #aka traits
+            'mechanics': ['Ward'], #aka traits
+            'mechanics_args': [0], #Range
             'play_cost': {'Metal':2, 'Stone':3},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':None,
@@ -664,7 +712,8 @@ building_kits_dict = {
             'description':'An alter to the Traveler. May His wanderings inspire you to go far and wide.',
             #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
             'inv_args':[1, 1, 0, None, 2, None],
-            'mechanics': {'Speed':None}, #aka traits
+            'mechanics': ['Speed'], #aka traits
+            'mechanics_args': None,
             'play_cost': {'Wood':2, 'Stone':3},
             'stats':{'attack':0, 'health':3, 'defense':2, 'size':2},
             'worker_req':['Arkanist'],
@@ -673,164 +722,5 @@ building_kits_dict = {
             'cat_dict':{'Vessel':1},
         },
 
-
-    # Industrialist:
-
-    'industrialist_ranger_barracks':{
-        'title':'Industrialist Ranger Barracks',
-        'description':'A training grounds for Rangers',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train': ['Ranger']}, #aka traits
-        'play_cost': {'Stone':2},
-        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
-        'worker_req':['Industrialist'],
-        'input_dict':None,
-        'output_dict':None,
-        'cat_dict':None
-    },
-
-    'industrialist_alchemist_barracks':{
-        'title':'Industrialist Alchemist Barracks',
-        'description':'A training grounds for Rangers',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[1, 1, None, None, 1, None],
-        'mechanics': {'Train': ['Alchemist']}, #aka traits
-        'play_cost': {'Stone':2, 'Metal':1, 'Water':1},
-        'stats':{'attack':0, 'health':3, 'defense':4, 'size':1},
-        'worker_req':['Industrialist'],
-        'input_dict':{'Heart':1},
-        'output_dict':None,
-        'cat_dict':None
-    },
-
-    'industrialist_scout_guild':{
-        'title':'Industrialist Scouting Guild',
-        'description':'A training grounds for Scouts',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Scout']}, #aka traits
-        'play_cost': {'Stone':2},
-        'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
-        'worker_req':['Industrialist'],
-        'input_dict':None,
-        'output_dict':None,
-        'cat_dict':None
-    },
-
-    'industrialist_engineering_guild':{
-        'title':'Industrialist Engineering Guild',
-        'description':'A training grounds for Engineers',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[None, None, None, None, 1, None],
-        'mechanics': {'Train': ['Engineer']}, #aka traits
-        'play_cost': {'Stone':2},
-        'stats':{'attack':0, 'health':2, 'defense':1, 'size':1},
-        'worker_req':['Industrialist'],
-        'input_dict':None,
-        'output_dict':None,
-        'cat_dict':None
-    },
-
-    'steam_boiler':{
-        'title':'Steam Boiler',
-        'description':'A facility for turning water into steam.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[7, 3, None, None, 1, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':3},
-        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
-        'worker_req':['Worker'],
-        'input_dict': {'Water':2, 'Coal':1},
-        'output_dict':{'Steam':2},
-        'cat_dict':None
-    },
-
-    'sifting_facility':{
-        'title':'Sifting Facility',
-        'description':'A facility for gleaning ore from stone.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[7, 3, None, None, 3, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':2},
-        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
-        'worker_req':['Worker'],
-        'input_dict': {'Stone':3},
-        'output_dict':{'Ore':2},
-        'cat_dict': {'Water':2}
-    },
-
-    'metal_refinery':{
-        'title':'Metal Refinery',
-        'description':'A facility for turning unprocessed ore into sturdy metal.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[5, 3, None, None, 1, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':2},
-        'stats':{'attack':0, 'health':2, 'defense':2, 'size':1},
-        'worker_req':['Worker'],
-        'input_dict': {'Ore':3, 'Steam':1},
-        'output_dict':{'Metal':2},
-        'cat_dict':None
-    },
-
-
-    'mechanized_excavator':{
-        'title':'Mechanized Excavator',
-        'description':'A series of apparatus which allows for significantly more harvesting of minerals.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[5, 3, None, None, 3, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':3, 'Heart':1},
-        'stats':{'attack':0, 'health':4, 'defense':2, 'size':2},
-        'worker_req':['Engineer'],
-        'input_dict': {'Steam':4},
-        'output_dict':{'Stone':3, 'Coal':2,'Ore':2},
-        'cat_dict':None
-    },
-
-
-    'automata_forge':{
-        'title':'Automata Forge',
-        'description':'The place where new Automata are born.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[3, 4, None, None, 4, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':5},
-        'stats':{'attack':0, 'health':2, 'defense':5, 'size':2},
-        'worker_req':['Engineer'],
-        'input_dict':{'Heart':1, 'Vessel':1, 'Metal':2, 'Steam':2},
-        'output_dict':None,
-        'cat_dict':None
-    },
-
-
-    'kardiahorologist':{
-        'title':'Kardiahorologist',
-        'description':'A highly secure workshop wherein the miraculous clockwork Hearts are made.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[5, 3, None, None, 2, None],
-        'mechanics': None, #aka traits
-        'play_cost': {'Metal':4},
-        'stats':{'attack':0, 'health':4, 'defense':3, 'size':1},
-        'worker_req':['Engineer'],
-        'input_dict':{'Metal':3, 'Steam':2},
-        'output_dict':{'Heart':1},
-        'cat_dict':None
-    },
-
-    'kinetika_trolly':{
-        'title':'Kinetika Trolly',
-        'description':'Monorail for dangling cargo used to quickly distribute goods.',
-        #[r_cap, r_cont, u_cap, b_cap, u_slotcap, b_slotcap]
-        'inv_args':[None, None, None, None, None, None],
-        'mechanics': {'Transport': None}, #aka traits
-        'play_cost': {'Metal':2},
-        'stats':{'attack':0, 'health':1, 'defense':1, 'size':1},
-        'worker_req':None,
-        'input_dict':None,
-        'output_dict':None,
-        'cat_dict':None
-    },
 
     }
