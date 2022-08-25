@@ -14,6 +14,7 @@ import _00_cogs.frontend.menus.card.actions.adjacent_param_menu as adjacent_para
 import _00_cogs.frontend.menus.card.actions.card_param_menu as card_param_menu
 import _00_cogs.frontend.menus.card.actions.select_param_menu as select_param_menu
 import _00_cogs.frontend.menus.player.player_info_menu as player_info_menu
+import _00_cogs.frontend.menus.district.district_list_menu as district_list_menu
 
 cardsMenu = cards_menu.CardsMenu()
 cardMenu = cards_menu.CardMenu()
@@ -39,3 +40,5 @@ buildingMoveMenu = move_menu.BuildingMoveMenu()
 districtMoveMenu = move_menu.DistrictMoveMenu()
 
 playerInfoMenu = player_info_menu.PlayerInfoMenu()
+
+districtListMenu = district_list_menu.DistrictListMenu()

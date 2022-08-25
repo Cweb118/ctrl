@@ -35,12 +35,12 @@ trait_kits_dict = {
         'title': 'Barheim',
         'description': 'A race of Engineers, their hearts are said to be as hard and cold as their flesh.',
         'type': 'race',
-        'certs': ['Engineer'],
+        'certs': ['Engineer', 'Industrialist'],
         'skillsets': [Barheim()],
         'inv_args': {'cont': 2},
         'play_cost': None,
         'stats': {'Defense': 2, 'Initiative': -1},
-        'upkeep': None,
+        'upkeep': {'Water': 1},
         'die_set': ['1d4']
     },
 
@@ -48,7 +48,7 @@ trait_kits_dict = {
         'title': 'Automata',
         'description': 'A creation of the Barheim, the Automata can brave dangers no man should face.',
         'type': 'race',
-        'certs': ['Inorganic'],
+        'certs': ['Inorganic', 'Industrialist'],
         'skillsets': [Automata()],
         'inv_args': {'cont': 1},
         'play_cost': None,
