@@ -16,10 +16,22 @@ class Region():
         self.districts = districts
         self.guild = guild
         self.channel = None
-
-
-        #self.createChannel.start()
     
+    #This is essentially the create channel.
+    async def init(self):
+        return self
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
+
+        category = nextcord.utils.get(self.guild.categories, name=self.name)
+
+        if not category:
+            category = await self.guild.create_category(self.name)
+
+        self.channel = await Channel(self.guild, self.name, self.name).init()
+
+        #Remove?
+        #await self.channel.addPlayer(playerRole)
+        return self
     #saves channel and guild id for retrieval on reconstruction.
     def __getstate__(self):
         if self.channel:
@@ -31,10 +43,10 @@ class Region():
     def __setstate__(self, state):
         self.name, self.districts, self.guild, self.channel = state
     
-    def reconstruct(self, guild, channel):
-        self.guild = guild
-        self.channel = channel
-        self.channel.reconstruct(self.guild)
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guild)
+        if self.channel != None:
+            self.channel.reconstruct(self.guild)
     
 
     #TODO: New one incoming, james will review and delete later
@@ -59,19 +71,19 @@ class Region():
         return report
 
 
-    @tasks.loop(seconds=1, count=1)
-    async def createChannel(self):
-        playerRole = nextcord.utils.get(self.guild.roles, name="player")
+    # @tasks.loop(seconds=1, count=1)
+    # async def createChannel(self):
+    #     playerRole = nextcord.utils.get(self.guild.roles, name="player")
 
-        category = nextcord.utils.get(self.guild.categories, name=self.name)
+    #     category = nextcord.utils.get(self.guild.categories, name=self.name)
 
-        if not category:
-            category = await self.guild.create_category(self.name)
+    #     if not category:
+    #         category = await self.guild.create_category(self.name)
 
-        self.channel = await Channel(self.guild, self.name, self.name).init()
+    #     self.channel = await Channel(self.guild, self.name, self.name).init()
 
-        #Remove?
-        #await self.channel.addPlayer(playerRole)
+    #     #Remove?
+    #     #await self.channel.addPlayer(playerRole)
 
 
 class District():
@@ -88,8 +100,8 @@ class District():
         self.size = size
         self.civics = Civics(self)
 
-        if guild:
-            self.createChannel.start()
+        #if guild:
+            #self.createChannel.start()
 
         sizes = {
             #inv_args: [r_cap=None, r_cont=None, u_cap=None, b_cap=None, u_slotcap=None, b_slotcap=None]
@@ -122,9 +134,31 @@ class District():
 
         self.interfaceDirty = False
 
-    #TODO: James review
-    #def __reduce__(self):
-    #    return(self.__class__, (self.name, self.region, self.size, self.paths, None, True))
+    #This is the create channel location
+    async def init(self):
+        playerRole = nextcord.utils.get(self.guild.roles, name="player")
+
+        interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+        channelName = self.name.replace(' ', '-').lower()
+
+        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, VC_Mode = False, can_talk=False).init()
+        self.channel = await Channel(self.guild, channelName, self.region).init()
+
+        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+        self.interfaceMessage = None
+
+        for interfaceMessage in interfaceMessages:
+            if interfaceMessage.author.id == theJar['client']:
+                self.interfaceMessage = interfaceMessage
+                break
+
+        if self.interfaceMessage == None:
+            self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+        else:
+            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+
+        self.interfaceDirty = False
+        return self
 
     def __getstate__(self):
         # vars left out:
@@ -157,35 +191,37 @@ class District():
     def __setstate__(self, state):
         self.name, self.region, self.paths, self.players, self.size, self.civics, self.inventory, self.pathcap, self.interfaceDirty, self.channel, self.interfaceChannel, self.guild, self.voice = state
     
-    def reconstruct(self):
-        pass
+    def reconstruct(self, bot):
+        self.guild = bot.get_guild(self.guild)
+        self.channel.reconstruct(self.guild)
+        self.interfaceChannel.reconstruct(self.guild)
 
-    @tasks.loop(seconds=1, count=1)
-    async def createChannel(self):
-        playerRole = nextcord.utils.get(self.guild.roles, name="player")
-        #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
-        await asyncio.sleep(.25)
+    # @tasks.loop(seconds=1, count=1)
+    # async def createChannel(self):
+    #     playerRole = nextcord.utils.get(self.guild.roles, name="player")
+    #     #Wait a short period incase the region category was just made. Otherwise, it will not be able to find the category.
+    #     await asyncio.sleep(.25)
 
-        interfaceName = self.name.replace(' ', '-').lower() + '_interface'
-        channelName = self.name.replace(' ', '-').lower()
+    #     interfaceName = self.name.replace(' ', '-').lower() + '_interface'
+    #     channelName = self.name.replace(' ', '-').lower()
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
-        self.channel = await Channel(self.guild, channelName, self.region).init()
+    #     self.interfaceChannel = await Channel(self.guild, interfaceName, self.region, can_talk=False).init()
+    #     self.channel = await Channel(self.guild, channelName, self.region).init()
 
-        interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
-        self.interfaceMessage = None
+    #     interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
+    #     self.interfaceMessage = None
 
-        for interfaceMessage in interfaceMessages:
-            if interfaceMessage.author.id == theJar['client']:
-                self.interfaceMessage = interfaceMessage
-                break
+    #     for interfaceMessage in interfaceMessages:
+    #         if interfaceMessage.author.id == theJar['client']:
+    #             self.interfaceMessage = interfaceMessage
+    #             break
 
-        if self.interfaceMessage == None:
-            self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
-        else:
-            self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
+    #     if self.interfaceMessage == None:
+    #         self.interfaceMessage = await Menus.districtMenu.send(self.interfaceChannel.channel, state={'district': self.name})
+    #     else:
+    #         self.interfaceMessage = await Menus.districtMenu.update(self.interfaceMessage, newState={'district': self.name})
 
-        self.interfaceDirty = False
+    #     self.interfaceDirty = False
 
     # Ginger: Updates the interface message
     def updateInterface(self):
@@ -223,11 +259,11 @@ class District():
         local_card_list = []
         for unit in player.inventory.slots['unit']:
             print(unit, unit.location)
-            if unit.location == self.name:
+            if unit.location.name == self.name:
                 can_interface = True
                 local_card_list.append(unit)
         for building in player.inventory.slots['building']:
-            if building.location == self.name:
+            if building.location.name == self.name:
                 can_interface = True
                 local_card_list.append(building)
         for card in local_card_list:
@@ -305,6 +341,8 @@ class District():
         for district in self.paths:
             path_rep['value'] += "- "+str(district)+"\n"
         path_rep['value'] = path_rep['value'][:-1]
+        if path_rep['value'] == '':
+            path_rep['value'] += '...'
         fields.append(path_rep)
 
         inv_report, inv_title, inv_fields = self.inventory.report()

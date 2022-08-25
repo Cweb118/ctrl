@@ -59,57 +59,60 @@ class Card():
 
     async def triggerSkill(self, trigger, arg_list):
         report = None
+        queue = []
         if self.skillsets:
             for skillset_name in self.skillsets.keys():
                 skillsets = self.skillsets[skillset_name]
                 for skillset in skillsets:
-                    if trigger in skillset.triggers:
-                        report = None
-                        if trigger == 'on_act':
-                            try:
-                                report = await skillset.act(*arg_list)
-                            except:
-                                report = skillset.act(*arg_list)
-                        if trigger == 'on_work':
-                            try:
-                                report = await skillset.work(*arg_list)
-                            except:
-                                report = skillset.work(*arg_list)
-                        if trigger == 'on_move':
-                            try:
-                                report = await skillset.move(*arg_list)
-                            except:
-                                report = skillset.move(*arg_list)
-                        if trigger == 'on_battle':
-                            try:
-                                report = await skillset.battle(*arg_list)
-                            except:
-                                report = skillset.battle(*arg_list)
-                        if trigger == 'on_attack':
-                            try:
-                                report = await skillset.attack(*arg_list)
-                            except:
-                                report = skillset.attack(*arg_list)
-                        if trigger == 'on_defend':
-                            try:
-                                report = await skillset.defend(*arg_list)
-                            except:
-                                report = skillset.defend(*arg_list)
-                        if trigger == 'on_death':
-                            try:
-                                report = await skillset.death(*arg_list)
-                            except:
-                                report = skillset.death(*arg_list)
-                        if trigger == 'on_harvest':
-                            try:
-                                report = await skillset.harvest(*arg_list)
-                            except:
-                                report = skillset.harvest(*arg_list)
-                        if trigger == 'on_refresh':
-                            try:
-                                report = await skillset.refresh(*arg_list)
-                            except:
-                                report = skillset.refresh(*arg_list)
+                    queue.append(skillset)
+        for skillset in queue:
+            if trigger in skillset.triggers:
+                report = None
+                if trigger == 'on_act':
+                    try:
+                        report = await skillset.act(*arg_list)
+                    except:
+                        report = skillset.act(*arg_list)
+                if trigger == 'on_work':
+                    try:
+                        report = await skillset.work(*arg_list)
+                    except:
+                        report = skillset.work(*arg_list)
+                if trigger == 'on_move':
+                    try:
+                        report = await skillset.move(*arg_list)
+                    except:
+                        report = skillset.move(*arg_list)
+                if trigger == 'on_battle':
+                    try:
+                        report = await skillset.battle(*arg_list)
+                    except:
+                        report = skillset.battle(*arg_list)
+                if trigger == 'on_attack':
+                    try:
+                        report = await skillset.attack(*arg_list)
+                    except:
+                        report = skillset.attack(*arg_list)
+                if trigger == 'on_defend':
+                    try:
+                        report = await skillset.defend(*arg_list)
+                    except:
+                        report = skillset.defend(*arg_list)
+                if trigger == 'on_death':
+                    try:
+                        report = await skillset.death(*arg_list)
+                    except:
+                        report = skillset.death(*arg_list)
+                if trigger == 'on_harvest':
+                    try:
+                        report = await skillset.harvest(*arg_list)
+                    except:
+                        report = skillset.harvest(*arg_list)
+                if trigger == 'on_refresh':
+                    try:
+                        report = await skillset.refresh(*arg_list)
+                    except:
+                        report = skillset.refresh(*arg_list)
             if report:
                 return report
 
@@ -123,65 +126,68 @@ class Card():
         slot_count = len(target_obj.inventory.slots[card_type])
         slotcap = target_obj.inventory.slotcap[card_type]
         if card_status == 'Held':
-            if slot_count < slotcap:
-                can_play = True
-                if self.play_cost:
-                    for key in self.play_cost.keys():
-                        cost = self.play_cost[key]
-                        if player.inventory.resources[key] < cost:
-                            report = "Error: You lack the required resources to play this card."
-                            can_play = False
-                if player._stats['Influence'] == 0:
-                    report = "Error: You lack the required influence."
-                    can_play = False
-                if card_type == 'building':
-                    loc_gov_faction = None
-                    loc_occ_faction = None
-                    if target_type == 'district':
-                        loc_civics = target_obj.civics
-                    else:
-                        loc_civics = target_obj.location.civics
-
-                    if loc_civics.governance:
-                        loc_gov_faction = loc_civics.governance
-                    if loc_civics.occupance:
-                        loc_occ_faction = loc_civics.occupance
-                    if len(loc_civics.factions) > 0:
-                        for faction in loc_civics.factions:
-                            if faction:
-                                if self.owner.relationCheck(faction) < -1:
-                                    report = "Error: There is a Hostile party at present at this location."
-                                    can_play = False
-                        if can_play:
-                            if not loc_occ_faction or loc_occ_faction == loc_gov_faction != None:
-                                #Gov in charge
-                                if self.owner.relationCheck(loc_gov_faction) < 3:
-                                    #Player is neutral or hostile to local government
-                                    report = "Error: You are not Allied with the ruling governance."
-                                    can_play = False
-                            elif loc_occ_faction and loc_occ_faction != loc_gov_faction:
-                                #There is an occupation which is not the local government
-                                if self.owner.relationCheck(loc_occ_faction) < 2:
-                                    #Player is neutral or hostile to local occupance
-                                    report = "Error: You are not Cooperative with the ruling occupance."
-                                    can_play = False
-
-                if target_type == 'district':
-                    if player.location != str(target_obj):
-                        report = "Error: You are not currently present at the designated location."
-                        can_play = False
-                else:
-                    if player.location != target_obj.location:
-                        report = "Error: You are not currently present at the designated location."
-                        can_play = False
-                if target_type == 'building':
-                    if target_obj.certs:
-                        for cert in target_obj.certs:
-                            if cert not in self.certs:
-                                report = "Error: This unit does not meet all requirements for the destination."
+            if slotcap:
+                if slot_count < slotcap:
+                    can_play = True
+                    if self.play_cost:
+                        for key in self.play_cost.keys():
+                            cost = self.play_cost[key]
+                            if player.inventory.resources[key] < cost:
+                                report = "Error: You lack the required resources to play this card."
                                 can_play = False
+                    if player._stats['Influence'] == 0:
+                        report = "Error: You lack the required influence."
+                        can_play = False
+                    if card_type == 'building':
+                        loc_gov_faction = None
+                        loc_occ_faction = None
+                        if target_type == 'district':
+                            loc_civics = target_obj.civics
+                        else:
+                            loc_civics = target_obj.location.civics
+
+                        if loc_civics.governance:
+                            loc_gov_faction = loc_civics.governance
+                        if loc_civics.occupance:
+                            loc_occ_faction = loc_civics.occupance
+                        if len(loc_civics.factions) > 0:
+                            for faction in loc_civics.factions:
+                                if faction:
+                                    if self.owner.relationCheck(faction) < -1:
+                                        report = "Error: There is a Hostile party at present at this location."
+                                        can_play = False
+                            if can_play:
+                                if not loc_occ_faction or loc_occ_faction == loc_gov_faction != None:
+                                    #Gov in charge
+                                    if self.owner.relationCheck(loc_gov_faction) < 3:
+                                        #Player is neutral or hostile to local government
+                                        report = "Error: You are not Allied with the ruling governance."
+                                        can_play = False
+                                elif loc_occ_faction and loc_occ_faction != loc_gov_faction:
+                                    #There is an occupation which is not the local government
+                                    if self.owner.relationCheck(loc_occ_faction) < 2:
+                                        #Player is neutral or hostile to local occupance
+                                        report = "Error: You are not Cooperative with the ruling occupance."
+                                        can_play = False
+
+                    if target_type == 'district':
+                        if player.location != str(target_obj):
+                            report = "Error: You are not currently present at the designated location."
+                            can_play = False
+                    else:
+                        if player.location != str(target_obj.location):
+                            report = "Error: You are not currently present at the designated location."
+                            can_play = False
+                    if target_type == 'building':
+                        if target_obj.certs:
+                            for cert in target_obj.certs:
+                                if cert not in self.certs:
+                                    report = "Error: This unit does not meet all requirements for the destination."
+                                    can_play = False
+                else:
+                    report = "Error: This destination lacks the required number of slots available."
             else:
-                report = "Error: This destination lacks the required number of slots available."
+                report = "Error: This destination does not support the requested placement."
         else:
             report = "Error: This card is not in your hand."
         return can_play, report
@@ -240,7 +246,7 @@ class Card():
                 for key in self.play_cost.keys():
                     player.inventory.addResource(key, -self.play_cost[key])
             target_obj.inventory.addCardToSlot(self, card_type)
-            self.location = str(target_obj)
+            self.location = target_obj
             theJar['played_cards'][card_type].append(self)
             if card_type == 'building':
                 target_obj.civics.getGovernor(player.faction)
@@ -269,3 +275,45 @@ class Card():
             report = str(self)+' has been unplayed from '+str(target_obj)
         return report
 
+    @property
+    def location(self):
+        if self._location_type == None or self._location == None:
+            return None
+        elif self._location_type == 'District':
+            return theJar['districts'][self._location]
+        elif self._location_type == 'Building' or self._location_type == 'Unit':
+            card_type = self._location_type.lower()
+
+            for player in theJar['players'].values():
+                card = player.inventory.getCardByUniqueID(card_type, self._location)
+                if card != None:
+                    return card
+        else:
+            print('[Location Getter] Unknown location type on card: ' + str(self._location_type))
+            return self._location
+
+    @location.setter
+    def location(self, value):
+        location_type = type(value).__name__
+        if location_type == 'NoneType':
+            self._location_type = None
+            self._location = None
+        elif location_type == 'District':
+            self._location_type = location_type
+            self._location = value.name
+        elif location_type == 'Building' or location_type == 'Unit':
+            self._location_type = location_type
+            self._location = str(value.uniqueID)
+        else:
+            print('[Location Setter] Unknown location type on card: ' + str(location_type))
+            self._location_type = location_type
+            self._location = str(value)
+
+    @property
+    def district(self):
+        location = self.location
+
+        while type(location).__name__ != 'District':
+            location = location.location
+
+        return location

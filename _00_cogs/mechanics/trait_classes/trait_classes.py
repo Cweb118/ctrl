@@ -45,24 +45,30 @@ class Architect():
             if cert not in self_unit.certs:
                  c += 1
         if c < len(local_target_building.certs)/2:
-            report = 'Your **'+str(self_unit)+'** lacks the required knowledge...'
+            report = 'Your **'+str(self_unit)+'** lacks the knowledge required...'
             can_copy = False
         if can_copy:
-            self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
+            self_unit.setStat('Endurance', -self_unit.statcaps['Endurance'])
             self.subject = local_target_building
             report = 'Your **'+str(self_unit)+'**  begins their study...'
+            self.report = "**Action: Survey**\n"+\
+                     "Player: "+str(self_unit.owner)+"\n"+\
+                     "Unit: "+str(self_unit)+"\n"+\
+                     "Building: "+local_target_building+"\n"
         return report
 
-    def harvest(self, self_unit, def_lost, hit):
+    async def harvest(self, self_unit, def_lost, hit):
+        #TODO: This is broken!
         if self.subject:
+            await say(None, self.report, channel=theJar['control']['explore-log'])
             if self_unit.stats['Endurance'] != 0:
-                if self_unit.location != self.subject.location:
-                    status, bldg = self_unit.addBuildingToUnitInv(self.subject.title)
+                if self_unit.location == self.subject.location:
+                    status, bldg = self_unit.addBuildingToUnitOwnerInv(self.subject.title)
+                    print(status, bldg)
 
 
 
 class Pathfinder():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_harvest']
         self.report = None
@@ -93,7 +99,6 @@ class Pathfinder():
                  "Player: "+str(self_unit.owner)+"\n"+\
                  "From Location: "+str(from_location)+"\n"+\
                  "Direction: "+direction+"\n"
-        print(self.report)
         return self.report
 
     async def harvest(self, self_unit, def_lost, hit):
@@ -107,7 +112,6 @@ class Pathfinder():
         return report
 
 class Scout():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_act', 'on_daybreak', 'on_harvest']
         self.target_location = None
@@ -135,23 +139,22 @@ class Scout():
         if self_unit.stats['Endurance'] < 2:
             self.can_go = False
         if self.target_location:
-            if self.target_location not in self_unit.location.paths:
+            if self.target_location.name not in self_unit.location.paths:
                 self.can_go = False
 
     async def daybreak(self, self_unit):
         if self.can_go:
             player = self_unit.owner
-            report = self.target_location.report()
-            await say(None, report, channel=player.channel)
+            report, title, fields = self.target_location.report()
+            await say(None, report, title=title, fields=fields, channel=player.channel)
         else:
             if self.target_location:
                 player = self_unit.owner
-                report = str(self_unit)+' was unable to scout '+str(self.target_location)
+                report = "[Scout] **"+str(self_unit)+'** was unable to scout '+str(self.target_location)
                 await say(None, report, channel=player.channel)
 
 
 class Sentry():
-    #TODO: TEST
     #Shouldn't this be a passive vision of adj interfaces?
     def __init__(self):
         self.triggers = ['on_harvest']
@@ -159,16 +162,17 @@ class Sentry():
     async def harvest(self, self_unit, f, hit):
         player = self_unit.owner
         if self_unit.stats['Endurance'] >= self_unit.statcaps['Endurance']:
-            location = theJar['districts'][self_unit.location]
+            location = self_unit.location
             adj_locs = [theJar['districts'][x] for x in location.paths]
-            report = "Your **"+str(self_unit)+" watches as night falls, making the following observations..."
-            await say(None, report, channel=player.channel)
+            report = "[Sentry] Your **"+str(self_unit)+"** watches as night falls, making the following observations..."
             for adj_loc in adj_locs:
-                report = adj_loc.report()
-                await say(None, report, channel=player.channel)
+                locrep, title, fields = adj_loc.report()
+                await say(None, locrep, title=title, fields=fields, channel=player.channel)
         else:
-            report = "Your **"+str(self_unit)+" is not fully rested for their watch..."
-            await say(None, report, channel=player.channel)
+            report = "[Sentry] Your **"+str(self_unit)+"** is not fully rested for their watch..."
+        return report
+
+
 class Recon():
     def __init__(self):
         self.triggers = ['on_move', 'on_death']
@@ -503,19 +507,16 @@ class Automata():
 
         # Action Info
         self.act_id = 'Automata'
-        self.act_name = 'Refuel'
+        self.act_name = 'Overclock'
         self.act_params = []
 
     def act(self, self_unit):
         inv = self_unit.inventory
-        steam = theJar['resources']['Steam']
-        if inv.resources[steam] > 0:
-            if self_unit.stats['Endurance'] < self_unit.statcaps['Endurance']:
-                inv.addResource(steam, -1)
-                self_unit.stats['Endurance'] = self_unit.statcaps['Endurance']
-                report = "The "+str(self_unit)+" whistles as its Endurance grows."
-            else:
-                report = "The "+str(self_unit)+" already has full Endurance!"
+
+        if inv.resources['Steam'] >= 3:
+            inv.addResource('Steam', -3)
+            self_unit.stats['Endurance'] += self_unit.statcaps['Endurance']
+            report = "The "+str(self_unit)+" whistles as its Endurance grows."
         else:
             report = "The "+str(self_unit)+" lacks steam!"
         return report
@@ -527,11 +528,11 @@ class Barheim():
 
         # Action Info
         self.act_id = 'Barheim'
-        self.act_name = 'Tutor'
+        self.act_name = 'Inspire'
         self.act_params = [
             ['Local Industrialist Unit',
                 ['current_location'],
-                ['unit', lambda unit: unit.hasCert('Industrialist')]
+                ['industrialist_unit']
             ]
         ]
 
@@ -557,7 +558,7 @@ class Barheim():
     def act(self, self_unit, local_industrialist_target_unit):
         if not local_industrialist_target_unit.hasTrait('Charged'):
             if self_unit.stats['Endurance'] == self_unit.statcaps['Endurance']:
-                self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
+                self_unit.setStat('Endurance', -self_unit.statcaps['Endurance'])
                 local_industrialist_target_unit.addTrait('Charged')
                 report = str(local_industrialist_target_unit)+' has become Charged.'
             else:
@@ -629,7 +630,6 @@ class Xinn():
 
 
 class Yavari():
-    #TODO: TEST
     def __init__(self):
         self.triggers = ['on_play', 'on_act']
 
@@ -653,7 +653,7 @@ class Yavari():
             effect_trait_names = self_unit.getTraitbyType('effect')
         if effect_trait_names:
             if self_unit.stats['Endurance'] == self_unit.statcaps['Endurance']:
-                self_unit.modStat('Endurance', -self_unit.statcaps['Endurance'])
+                self_unit.setStat('Endurance', -self_unit.statcaps['Endurance'])
                 for effect_trait in effect_trait_names:
                     if not local_target_unit.hasTrait(effect_trait):
                         local_target_unit.addTrait(effect_trait)
@@ -673,24 +673,26 @@ class Harmony():
     def __init__(self):
         self.triggers = ['on_harvest']
 
-    #TODO: TEST
     def harvest(self, self_unit, def_lost, hit_status):
-        health_rep = "The "+str(self_unit)+" rests in revelries."
+        health_rep = "[Harmony] The "+str(self_unit)+" rests in revelries."
         if def_lost > 0:
+            print(def_lost)
             def_regen = int(round(def_lost/2-0.1, 0))
+            print(def_regen)
             self_unit.setStat('Defense', def_regen)
-            health_rep = "The "+str(self_unit)+" steels itself. "+str(def_regen)+" defense was regained."
+            health_rep = "[Harmony] The **"+str(self_unit)+"** steels itself. "+str(def_regen)+" defense was regained."
         return health_rep
 
 
 class Charged():
     def __init__(self):
-        self.triggers = ['on_havest']
+        self.triggers = ['on_harvest']
 
-    #TODO: TEST
     def harvest(self, self_unit, def_lost, hit_status):
         if self_unit.hasTrait('Charged'):
             self_unit.delTrait('Charged')
+            report = '[Charged] **'+str(self_unit)+"** rests."
+            return report
 
 
 class Morale():
@@ -718,11 +720,11 @@ class Gatherer():
         #self_unit.owner.updatePerms(from_location, to_location
 
         loc_size_pass_bars = {
-            'tiny': 1,
-            'small': 2,
-            'medium': 3,
-            'large': 4,
-            'huge': 5,
+            'tiny': 2,
+            'small': 3,
+            'medium': 4,
+            'large': 5,
+            'huge': 6,
         }
 
         res_per_hit = {
@@ -734,7 +736,7 @@ class Gatherer():
             5:9,
         }
         to_loc_bar = loc_size_pass_bars[to_location.size]
-        s, report = self_unit.dice.roll_math(to_loc_bar)
+        s, report = self_unit.die_set.roll_math(to_loc_bar)
         hits = report['hit_count']
         if hits > 5:
             hits = 5
@@ -748,7 +750,7 @@ class Gatherer():
         else:
             self.loot = 'Food'
 
-        report = str(self_unit)+" has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
+        report = "[Gather] **"+str(self_unit)+"** has found "+str(res_yield)+" "+str(self.loot)+" upon entering "+str(to_location)+"."
         return report
 
 
@@ -762,8 +764,8 @@ class Colonist():
         if hit_status:
             hit, report_dict = self_unit.die_set.roll_math(self_unit.stats['Defense']+self_unit.stats['Fortitude'])
             if not hit:
-                self_unit.setHealth(-1)
-                health_rep = "The "+str(self_unit)+" steels itself, negating loss of health."
+                self_unit.setHealth(1)
+                health_rep = "[Colonist] The "+str(self_unit)+" steels itself, negating loss of health."
         return health_rep
 
 
@@ -786,7 +788,7 @@ class Colonist():
 class Transport():
     #TODO: TEST
     def __init__(self):
-        self.triggers = ['on_act', 'on_harvest', 'on_refresh']
+        self.triggers = ['on_act', 'on_refresh']
         self.link_slots = 1
         self.links = []
 
@@ -817,7 +819,7 @@ class Transport():
             if len(self.links) < self.link_slots:
                 try:
                     if self_card.stats['Endurance'] == self_card.statcaps['Endurance']:
-                        self_card.modStat('Endurance', -self_card.statcaps['Endurance'])
+                        self_card.setStat('Endurance', -self_card.statcaps['Endurance'])
                         can_add = True
                     else:
                         can_add = False
@@ -840,7 +842,7 @@ class Transport():
             if pair in self.links:
                 try:
                     if self_card.stats['Endurance'] == 0:
-                        self_card.modStat('Endurance', self_card.statcaps['Endurance'])
+                        self_card.setStat('Endurance', self_card.statcaps['Endurance'])
                 except:
                     pass
                 self.links.remove(pair)
@@ -855,12 +857,12 @@ class Transport():
 
     #This engages the links
     #OOP: It does it too late in the order of operations lol. Moved to above
-    def harvest(self, self_card, def_lost, hit_status):
-        for link in self.links:
-            sender = link[0]
-            receiver = link[1]
-            if self_card.location == sender.location == receiver.location:
-                sender.addLink(receiver)
+    # def harvest(self, self_card, def_lost, hit_status):
+    #     for link in self.links:
+    #         sender = link[0]
+    #         receiver = link[1]
+    #         if self_card.location == sender.location == receiver.location:
+    #             sender.addLink(receiver)
 
     #This cleanses them
     def refresh(self, self_card):
@@ -927,7 +929,7 @@ class Ward():
     def work(self, self_building, subject_units, range):
         report = "**Action: Ward**\n"+\
                  "Player: "+self_building.owner+"\n"+\
-                 "Current Location: "+self_building.location+"\n"
+                 "Current Location: "+self_building.location.name+"\n"
         if range > 0:
             report += "Adj Locations: "+self_building.location.paths+"\n"
         #say to explore channel(report)
@@ -942,9 +944,9 @@ class Train():
     def work(self, self_building, subject_units, new_trait):
         for unit in subject_units:
             print(unit)
-            if new_trait.type == 'class':
+            if new_trait['type'] == 'class':
                 class_traits = unit.getTraitbyType('class')
-                print(class_traits)
+                print("traits pre delete: "+class_traits)
                 unit.delTrait(class_traits[0])
             unit.addTrait(new_trait)
 
