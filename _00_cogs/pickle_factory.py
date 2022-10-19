@@ -50,7 +50,7 @@ class PickleFactory(commands.Cog):
 
     @commands.command(name='load')
     async def load(self, ctx):
-        with open(f"{os.getcwd()}\\_01_pickle_jar\\theJar.pkl", "rb") as file:
+        with open(f"{os.getcwd()}\\_01_pickle_jar\\latest.pkl", "rb") as file:
             loadJar = pickle.load(file)
             for entry in loadJar.keys():
                     if entry == "districts":
