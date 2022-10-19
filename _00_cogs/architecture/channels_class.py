@@ -41,11 +41,11 @@ class Channel():
                 self.VC_channel = await channel_parent.create_voice_channel(self.name, overwrites=overwrites)
 
             if self.has_webhook:
-                if self.webhook is not None:
-                    self.webhook = nextcord.utils.get(await self.channel.webhooks(), id=self.webhook)
+                if self.webhook is None:
+                    self.webhook = nextcord.utils.get(await self.channel.webhooks(), name=self.name)
 
                 if self.webhook is None:
-                    self.webhook = self.channel.create_webhook(name=self.name)
+                    self.webhook = await self.channel.create_webhook(name=self.name)
 
         return self
 
@@ -58,19 +58,14 @@ class Channel():
         state = (self.name, self.category_name, self.guild.id, self.VC_Mode, self.can_talk, self.has_webhook, self.channel.id)
 
         if self.VC_channel is not None:
-            state += (self.VC_channel.id)
+            state += (self.VC_channel.id,)
         else:
-            state += (self.VC_channel)
-
-        if self.webhook is not None:
-            state += (self.webhook.id)
-        else:
-            state += (self.webhook)
+            state += (self.VC_channel,)
 
         return state
     
     def __setstate__(self, state):
-        self.name, self.category_name, self.guild, self.VC_Mode, self.can_talk, self.has_webhook, self.channel, self.VC_channel, self.webhook = state
+        self.name, self.category_name, self.guild, self.VC_Mode, self.can_talk, self.has_webhook, self.channel, self.VC_channel = state
         
     def reconstruct(self, guild):
         self.guild = guild

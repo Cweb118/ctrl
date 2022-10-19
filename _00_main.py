@@ -140,7 +140,7 @@ async def on_message(message):
 
     sendingPlayer = None
 
-    for player in theJar['players']:
+    for id, player in theJar['players'].items():
         if player.commsChannel.channel.id == message.channel.id:
             sendingPlayer = player
             break
@@ -151,11 +151,11 @@ async def on_message(message):
         messageAwaits.append(message.delete())
 
         if message.content != '':
-            for player in theJar['players']:
+            for id, player in theJar['players'].items():
                 if player.location == sendingPlayer.location:
                     messageAwaits.append(player.commsChannel.sudoSend(message.content))
 
-        await asyncio.gather(messageAwaits)
+        await asyncio.gather(*messageAwaits)
 
 handler = FileWatch()
 observer = Observer()

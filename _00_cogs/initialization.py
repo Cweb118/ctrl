@@ -21,6 +21,7 @@ from _01_functions import say
 from _02_global_dicts import theJar
 
 guilds = [588095612436742173, 778448646642728991]
+ops = [160020690051792898, 161520114657656832]
 
 class PlayerCog(commands.Cog):
     def __init__(self, bot):
@@ -30,6 +31,8 @@ class PlayerCog(commands.Cog):
     async def playerInit(self, ctx):
         playerRole = nextcord.utils.get(ctx.guild.roles, name="player")
         for member in playerRole.members:
+            if member.id not in ops:
+                continue
             print(member, member.id)
             theJar['players'][member.id]=(await Player(member).init())
             charkit = character_kits_dict[member.id]
