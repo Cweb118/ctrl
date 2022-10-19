@@ -20,6 +20,7 @@ class Player():
 
         self.channel = None
         self.interfaceChannel = None
+        self.commsChannel = None
 
         if inventory == None:
             self.inventory = Inventory(self, r_cap=100, u_cap=20, b_cap=10) #Inventory Instance
@@ -45,23 +46,15 @@ class Player():
         if self.member == None or self.guild == None:
             return
 
-        interfaceOverwrites = {
-            self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False, send_messages=False),
-            self.member: nextcord.PermissionOverwrite(read_messages=True)
-        }
-        overwrites = {
-            self.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
-            self.member: nextcord.PermissionOverwrite(read_messages=True)
-        }
-        topic = "Private Discussion"
-
-        interfaceName = self.member.name.replace(' ', '-').lower() + '_interface'
         channelName = self.member.name.replace(' ', '-').lower()
+        interfaceName = channelName + '_interface'
+        commsName = channelName + '_comms'
 
-        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', VC_Mode = False, can_talk=False).init()
         self.channel = await Channel(self.guild, channelName, 'Players').init()
-
-        await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member))
+        self.interfaceChannel = await Channel(self.guild, interfaceName, 'Interface', VC_Mode=False, can_talk=False).init()
+        self.commsChannel = await Channel(self.guild, commsName, 'Comms', VC_Mode=False, can_talk=True).init()
+        
+        await asyncio.gather(self.channel.addPlayer(self.member), self.interfaceChannel.addPlayer(self.member), self.commsChannel.addPlayer(self.member))
 
         interfaceMessages = await self.interfaceChannel.channel.history(limit=None, oldest_first=True).flatten()
 
@@ -104,15 +97,16 @@ class Player():
         return self
 
     def __getstate__(self):
-        return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
+        return (self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.commsChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty)
     def __setstate__(self, state):
-        self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty = state
+        self.cast, self.username, self.memberID, self.guildID, self.channel, self.interfaceChannel, self.commsChannel, self.inventory, self.location, self._stats, self._statcaps, self.faction, self.reps, self.squads, self.interfaceDirty = state
     
     def reconstruct(self, bot):
         self.guild = bot.get_guild(self.guildID)
         self.member = self.guild.get_member(self.memberID)
-        self.interfaceChannel.reconstruct(self.guild)
         self.channel.reconstruct(self.guild)
+        self.interfaceChannel.reconstruct(self.guild)
+        self.commsChannel.reconstruct(self.guild)
 
     # @tasks.loop(seconds=1, count=1)
     # async def createPrivateChannel(self):

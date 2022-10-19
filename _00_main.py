@@ -133,6 +133,30 @@ async def on_interaction(interaction: Interaction):
 
     PickleFactory.autosave()
 
+@bot.event
+async def on_message(message):
+    if message.author.bot or message.webhook_id:
+        return
+
+    sendingPlayer = None
+
+    for player in theJar['players']:
+        if player.commsChannel.channel.id == message.channel.id:
+            sendingPlayer = player
+            break
+
+    if sendingPlayer:
+        messageAwaits = []
+        
+        messageAwaits.append(message.delete())
+
+        if message.content != '':
+            for player in theJar['players']:
+                if player.location == sendingPlayer.location:
+                    messageAwaits.append(player.commsChannel.sudoSend(message.content))
+
+        await asyncio.gather(messageAwaits)
+
 handler = FileWatch()
 observer = Observer()
 observer.schedule(handler, path=cogsDir, recursive=False)

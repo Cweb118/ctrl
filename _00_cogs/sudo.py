@@ -25,13 +25,7 @@ class Sudo(commands.Cog):
         #await self.sudo_f(ctx, profile, message, channel)
 
     async def sudo_f(self, ctx, profile, message, channel=None, embed=None):
-        if channel:
-            channel = nextcord.utils.get(ctx.guild.text_channels, name=channel)
-        else:
-            channel = ctx.channel
-        webhook = await channel.create_webhook(name=time.time())
-        await webhook.send(message, embed=embed, username=sudo_profiles[profile]["name"], avatar_url=sudo_profiles[profile]["pfp"])
-        await webhook.delete()
+        pass
 
 def setup(bot):
     bot.add_cog(Sudo(bot))

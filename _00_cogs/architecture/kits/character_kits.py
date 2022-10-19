@@ -3,30 +3,6 @@ from _00_cogs.mechanics.building_classes._building_kits import building_kits_dic
 #TODO: Needs to be updated for game 0 balance
 
 g0_character_kits = {
-    #The Cartographer (me)
-    160020690051792898:[160020690051792898, 0, 'Yavar', 'Yavari',
-     {'resources':{'Food':10,'Water':10,'Wood':10,'Metal':10},
-      'stats':{'Influence':20},
-      'units':[['Loyavasi','Scout']],
-      'buildings':[]}],
-
-    #Cody, Uranu
-    155172173089210368:[155172173089210368, 0, 'The Overlook', 'Yavari',
-     {'resources':{'Food':10,'Water':10,'Wood':10},
-      'stats':{'Influence':20},
-      'units':[],
-      'buildings':[]}],
-
-    #Dan, Xinn
-    90231355677364224:[90231355677364224, 0, 'The Caves', 'Xinn',
-     {'resources':{'Food':10,'Water':10,'Wood':10},
-      'stats':{'Influence':20},
-      'units':[],
-      'buildings':[]}],
-
-
-
-
     #Ginger_Walnut, Military
     161520114657656832:[161520114657656832, 1, 'The Core', 'Barheim',
      {'resources':{'Food':10,'Water':10,'Vessel':1},
@@ -34,48 +10,12 @@ g0_character_kits = {
       'units':[['Barheim','Guardian'],['Barheim','Guardian'],['Barheim','Guardian'],['Barheim','Guardian']],
       'buildings':[]}],
 
-    #Tiat, Econ (ALERGIC TO ROBOTS)
-    162034951615676416:[162034951615676416, 2, 'The Core', 'Barheim',
+    #Cart, Econ (ALERGIC TO ROBOTS)
+    160020690051792898:[160020690051792898, 2, 'The Core', 'Barheim',
      {'resources':{'Food':10,'Water':10,'Vessel':1},
       'stats':{'Influence':3},
       'units':[['Barheim','Engineer'],['Barheim','Engineer']],
       'buildings':[bk['kardiahorologist'],bk['mechanized_excavator'],bk['metal_refinery']]}],
-    #Bam, Econ 2
-    644696938901405696:[644696938901405696, 3, 'The Core', 'Barheim',
-     {'resources':{'Metal':10,'Water':10,'Vessel':1},
-      'stats':{'Influence':4},
-      'units':[['Automata','Engineer'],['Automata','Worker'],['Automata','Worker'],['Automata','Worker']],
-      'buildings':[bk['kinetika_trolly'],bk['kinetika_trolly'],bk['kinetika_trolly']]}],
-
-    #Tong, Recon
-    163310421132967936:[163310421132967936, 4, 'The Core', 'Barheim',
-     {'resources':{'Steam':6,'Metal':5,'Water':10,'Vessel':1},
-      'stats':{'Influence':2},
-      'units':[['Automata','Pathfinder'],['Automata','Scout']],
-      'buildings':[bk['steam_boiler'],bk['steam_boiler']]}],
-
-
-
-    #Pairjax, Econ
-    169961433625264128:[169961433625264128, 5, 'Yavar', 'Yavari',
-     {'resources':{'Food':10,'Water':10},
-      'stats':{'Influence':4},
-      'units':[['Yavari','Courier'],['Yavari','Worker'],['Yavari','Laborer'],['Yavari','Laborer']],
-      'buildings':[bk['mother_tree'],bk['bountiful_field']]}],
-
-    #jamspinnle, Military
-    143574434874130432:[143574434874130432, 6, 'Yavar', 'Yavari',
-     {'resources':{'Food':10,'Water':10},
-      'stats':{'Influence':3},
-      'units':[['Yavari','Ranger'],['Yavari','Ranger'],['Xinn','Laborer']],
-      'buildings':[bk['living_briar']]}],
-
-    #Orlando, Recon
-    143467854358904832:[143467854358904832, 7, 'Yavar', 'Yavari',
-     {'resources':{'Food':10,'Water':10},
-      'stats':{'Influence':2},
-      'units':[['Loyavasi','Pathfinder'],['Loyavasi','Scout'],['Loyavasi','Engineer']],
-      'buildings':[]}],
 }
 
 
